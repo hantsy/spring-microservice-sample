@@ -1,0 +1,20 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.hantsylabs.sample.microservice</groupId>
+    <artifactId>spring-microservice-sample-parent</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
+    <packaging>pom</packaging>
+    <name>Spring Microservice Demo</name>
+    <description>Microservice demo by Spring technology stack(Spring Boot, Spring Security, Spring Data, Spring Batch, Spring Integration, Spring Cloud, etc)</description> 
+
+    <modules>
+        <module>user-service</module>
+        <module>auth-service</module>
+        <module>image-service</module>
+        <module>post-service</module>
+<!--        <module>comment-service</module>-->
+    </modules>
+	
+</project>
