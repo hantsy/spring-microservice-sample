@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -103,16 +102,22 @@ public class UserController {
         return ResponseEntity.ok(_user);
     }
 
-    @PutMapping(value = "/{id}")
-    public ResponseEntity updateUser(@PathVariable("id") Long id,
-        @RequestBody @Valid UserForm form,
-        HttpServletRequest req) {
+    @PostMapping(value = "/{id}/lock")
+    public ResponseEntity lockUser(@PathVariable("id") Long id) {
 
-        log.debug("updating user form:" + form);
+        log.debug("locking user:" + id);
 
-        User saved = this.userService.updateUser(id, form);
+        this.userService.lock(id);
 
-        log.debug("updated user:" + saved);
+        return ResponseEntity.noContent().build();
+    }
+    
+    @DeleteMapping(value = "/{id}/lock")
+    public ResponseEntity unlockUser(@PathVariable("id") Long id) {
+
+        log.debug("unlocking user:" + id);
+
+        this.userService.unlock(id);
 
         return ResponseEntity.noContent().build();
     }

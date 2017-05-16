@@ -12,9 +12,7 @@
     <modules>
         <module>user-service</module>
         <module>auth-service</module>
-        <module>image-service</module>
         <module>post-service</module>
-<!--        <module>comment-service</module>-->
     </modules>
 	
 </project>

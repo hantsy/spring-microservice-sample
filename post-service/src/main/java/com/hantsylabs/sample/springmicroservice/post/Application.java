@@ -2,12 +2,7 @@ package com.hantsylabs.sample.springmicroservice.post;
 
 import java.util.Optional;
 import org.springframework.boot.SpringApplication;
-import org.springframework.boot.actuate.trace.TraceProperties;
-import org.springframework.boot.actuate.trace.TraceRepository;
-import org.springframework.boot.actuate.trace.WebRequestTraceFilter;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.autoconfigure.security.SecurityProperties;
-import org.springframework.boot.autoconfigure.web.servlet.error.ErrorAttributes;
 import org.springframework.context.annotation.Bean;
 import org.springframework.data.domain.AuditorAware;
 import org.springframework.http.HttpMethod;
@@ -44,18 +39,6 @@ public class Application extends WebSecurityConfigurerAdapter {
                 .anyRequest().authenticated()
             .and()
                 .csrf().disable();
-    }
-
-    @Bean
-    public WebRequestTraceFilter webRequestLoggingFilter(ErrorAttributes errorAttributes,
-        TraceRepository traceRepository, TraceProperties traceProperties) {
-        WebRequestTraceFilter filter = new WebRequestTraceFilter(traceRepository,
-            traceProperties);
-        if (errorAttributes != null) {
-            filter.setErrorAttributes(errorAttributes);
-        }
-        filter.setOrder(SecurityProperties.DEFAULT_FILTER_ORDER - 1);
-        return filter;
     }
 
     @Bean

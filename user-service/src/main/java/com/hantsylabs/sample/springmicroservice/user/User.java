@@ -43,6 +43,10 @@ public class User implements Serializable {
 
     @Column(name = "email")
     private String email;
+    
+    @Column(name = "locked")
+    @Builder.Default
+    private boolean locked = false;
 
     @ElementCollection
     @Builder.Default

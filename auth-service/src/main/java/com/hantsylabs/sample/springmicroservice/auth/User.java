@@ -53,16 +53,19 @@ public class User implements UserDetails, Serializable {
     @Column(name = "email")
     private String email;
 
+    @Column(name = "locked")
+    @Builder.Default
+    private boolean locked = false;
+
     @ElementCollection(fetch = FetchType.EAGER)
     @Builder.Default
-    private List<String> roles  = new ArrayList<>();
-    
+    private List<String> roles = new ArrayList<>();
+
     @Column(name = "created_date")
     @CreatedDate
     private LocalDateTime createdDate;
 
     @Override
-    @Transient
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return AuthorityUtils.createAuthorityList(this.roles.toArray(new String[this.roles.size()]));
     }
@@ -74,7 +77,7 @@ public class User implements UserDetails, Serializable {
 
     @Override
     public boolean isAccountNonLocked() {
-        return true;
+        return !this.locked;
     }
 
     @Override

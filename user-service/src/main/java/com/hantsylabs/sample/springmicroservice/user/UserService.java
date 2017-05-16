@@ -53,4 +53,30 @@ public class UserService {
         
         return this.userRepository.save(_user);
     }
+
+    public User lock(Long id) {
+         User _user = this.userRepository.findById(id).orElseThrow(
+            () -> {
+                return new UserNotFoundException(id);
+            }
+        );
+        
+            
+        _user.setLocked(true);
+        
+        return this.userRepository.save(_user);
+    }
+
+    public User unlock(Long id) {
+         User _user = this.userRepository.findById(id).orElseThrow(
+            () -> {
+                return new UserNotFoundException(id);
+            }
+        );
+        
+            
+        _user.setLocked(false);
+        
+        return this.userRepository.save(_user);
+    }
 }
