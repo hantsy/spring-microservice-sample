@@ -2,6 +2,9 @@
 
 This demo application show you how to build an microservice application via Spring Boot.
 
+
+## Prerequisites
+
 Firstly install Docker, Docker Compose.
 
 Start up dependent servers via `docker-compose` command.
@@ -40,15 +43,17 @@ Run the dependent servers via `docker-compose` command line.
 docker-compose up
 ```
 
+## Run
+
 Run the services one by one.
 
 ```
 mvn spring-boot:run // run in user-service, auth-service, post-service
 ```
 
-When all are running successfully. 
+## Try
 
-Try to get authentication.
+When all service are running successfully, try to get authentication.
 
 ```
 curl -v  http://localhost:8000/user -u user:test123
