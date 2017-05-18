@@ -5,9 +5,11 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Scope;
 import org.springframework.data.domain.AuditorAware;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 import org.springframework.http.HttpMethod;
@@ -48,7 +50,8 @@ public class PostServiceApplication extends WebSecurityConfigurerAdapter {
                 .csrf().disable();
     }
 
-    @Bean
+    @Bean 
+    @Scope(value = ConfigurableBeanFactory.SCOPE_PROTOTYPE)
     public AuditorAware<Username> auditorAware() {
  //       return ()-> Optional.of(Username.builder().username("hantsy").build());
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
