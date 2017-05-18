@@ -1,6 +1,16 @@
 # Spring Microservice Sample
 
-Create a new machine for this project.
+This demo application show you how to build an microservice application via Spring Boot.
+
+Firstly install Docker, Docker Compose.
+
+Start up dependent servers via `docker-compose` command.
+
+```
+docker-compose up
+```
+
+If you are using Docker Toolbox, create a new machine for this project.
 
 ```
 $ docker-machine create -d virtualbox --engine-registry-mirror https://docker.m
@@ -24,7 +34,7 @@ Forward the virtualbox ports to local system, thus you can access the servers vi
  VBoxManage modifyvm "springms" --natpf1 "tcp-port27017,tcp,,27017,,27017"
 ```
 
-Run the dependent servers via docker-compose command line.
+Run the dependent servers via `docker-compose` command line.
 
 ```
 docker-compose up
@@ -36,7 +46,9 @@ Run the services one by one.
 mvn spring-boot:run // run in user-service, auth-service, post-service
 ```
 
-Get authentication.
+When all are running successfully. 
+
+Try to get authentication.
 
 ```
 curl -v  http://localhost:8000/user -u user:test123

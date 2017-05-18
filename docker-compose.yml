@@ -28,32 +28,11 @@ services:
     volumes:
       - ./data/postdb:/var/lib/mysql     
       
-  rabbitmq:
-    container_name: rabbitmq
-    image: rabbitmq:management
-    ports:
-      - "5672:5672"
-      - "15672:15672"
-    
+
   redis:
     container_name: redis
     image: redis
     ports:
       - "6379:6379"
-        
-  mongodata: 
-    container_name: mongodata # container name  
-    image: mongo
-    volumes:
-      - ./data/mongo:/data/db
-    command: --break-mongo
-    
-  mongodb: 
-    container_name: mongodb # container name
-    image: mongo # specify image to build container from
-    volumes_from:
-     - mongodata
-    ports:
-      - "27017:27017" # specify port forewarding
-    command: --smallfiles --rest --auth    
+  
     
