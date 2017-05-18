@@ -53,9 +53,9 @@ public class User implements UserDetails, Serializable {
     @Column(name = "email")
     private String email;
 
-    @Column(name = "locked")
+    @Column(name = "active")
     @Builder.Default
-    private boolean locked = false;
+    private boolean active = true;
 
     @ElementCollection(fetch = FetchType.EAGER)
     @Builder.Default
@@ -72,22 +72,22 @@ public class User implements UserDetails, Serializable {
 
     @Override
     public boolean isAccountNonExpired() {
-        return true;
+        return this.active;
     }
 
     @Override
     public boolean isAccountNonLocked() {
-        return !this.locked;
+        return this.active;
     }
 
     @Override
     public boolean isCredentialsNonExpired() {
-        return true;
+        return this.active;
     }
 
     @Override
     public boolean isEnabled() {
-        return true;
+        return this.active;
     }
 
 }

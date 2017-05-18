@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component;
  *
  * @author hantsy
  */
-@Component
+//@Component
 public class DataInitializer implements CommandLineRunner {
 
     @Inject

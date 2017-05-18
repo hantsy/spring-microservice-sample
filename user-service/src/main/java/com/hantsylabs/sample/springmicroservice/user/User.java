@@ -7,6 +7,7 @@ import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
+import javax.persistence.EntityListeners;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -16,6 +17,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 @Data
 @Builder
@@ -23,6 +25,7 @@ import org.springframework.data.annotation.CreatedDate;
 @AllArgsConstructor
 @Entity
 @Table(name = "users")
+@EntityListeners(AuditingEntityListener.class)
 public class User implements Serializable {
 
     /**
@@ -43,18 +46,17 @@ public class User implements Serializable {
 
     @Column(name = "email")
     private String email;
-    
-    @Column(name = "locked")
+
+    @Column(name = "active")
     @Builder.Default
-    private boolean locked = false;
+    private boolean active = true;
 
     @ElementCollection
     @Builder.Default
-    private List<String> roles  = new ArrayList<>();
-    
+    private List<String> roles = new ArrayList<>();
+
     @Column(name = "created_date")
     @CreatedDate
     private LocalDateTime createdDate;
-
 
 }

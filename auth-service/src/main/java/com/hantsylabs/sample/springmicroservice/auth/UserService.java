@@ -23,11 +23,11 @@ public class UserService {
     private PasswordEncoder passwordEncoder;
 
     public User handleSignup(SignupForm form) {
-        if(!this.userRepository.findByUsername(form.getUsername()).isPresent()){
+        if(this.userRepository.findByUsername(form.getUsername()).isPresent()){
             throw new UsernameWasTakenException("username was taken");
         }
         
-        if(!this.userRepository.findByEmail(form.getEmail()).isPresent()){
+        if(this.userRepository.findByEmail(form.getEmail()).isPresent()){
             throw new EmailWasTakenException("email was taken");
         }
         

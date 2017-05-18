@@ -25,11 +25,11 @@ public class UserService {
     private PasswordEncoder passwordEncoder;
 
     public User createUser(UserForm form) {
-        if (!this.userRepository.findByUsername(form.getUsername()).isPresent()) {
+        if (this.userRepository.findByUsername(form.getUsername()).isPresent()) {
             throw new UsernameWasTakenException("username was taken");
         }
 
-        if (!this.userRepository.findByEmail(form.getEmail()).isPresent()) {
+        if (this.userRepository.findByEmail(form.getEmail()).isPresent()) {
             throw new EmailWasTakenException("email was taken");
         }
 
@@ -62,7 +62,7 @@ public class UserService {
         );
         
             
-        _user.setLocked(true);
+        _user.setActive(false);
         
         return this.userRepository.save(_user);
     }
@@ -75,7 +75,7 @@ public class UserService {
         );
         
             
-        _user.setLocked(false);
+        _user.setActive(true);
         
         return this.userRepository.save(_user);
     }

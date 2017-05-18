@@ -65,7 +65,7 @@ public class UserController {
 
     @GetMapping(value = "")
     public ResponseEntity getAll(
-        @RequestParam("q") String q,
+        @RequestParam(value = "q", required = false) String q,
         @PageableDefault(page = 0, size = 10, sort = "createdDate", direction = Sort.Direction.DESC) Pageable page) {
         Page<User> users = this.userRepository.findAll(UserSpecifications.byKeyword(q), page);
 
@@ -111,7 +111,7 @@ public class UserController {
 
         return ResponseEntity.noContent().build();
     }
-    
+
     @DeleteMapping(value = "/{id}/lock")
     public ResponseEntity unlockUser(@PathVariable("id") Long id) {
 
