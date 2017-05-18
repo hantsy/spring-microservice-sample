@@ -72,5 +72,71 @@ Put this header into request header when you access the protected resources in a
 
 ```
 curl -v  http://localhost:8001/user -H "x-auth-token: 49090ba7-e641-45e3-935b-894a43b85f62"
+``` 
+
+Try to add some posts data:
+
+```
+>curl -v  http://localhost:8002/posts 
+-H "x-auth-token:  44586f33-4c51-4d8f-ab12-7ad25a1c3a30" 
+-H "Accept: application/json" 
+-H "Content-Type: application/json;charset=UTF-8" 
+-X POST 
+-d "{\"title\": \"test post\", \"content\":\"test content of post\"}"
 ```
 
+You will see the result. It returns 201 status, and set `Location` header to the new created `Post`.
+
+```
+Note: Unnecessary use of -X or --request, POST is already inferred.
+* timeout on name lookup is not supported
+*   Trying ::1...
+* TCP_NODELAY set
+* Connected to localhost (::1) port 8002 (#0)
+> POST /posts HTTP/1.1
+> Host: localhost:8002
+> User-Agent: curl/7.54.0
+> x-auth-token:  44586f33-4c51-4d8f-ab12-7ad25a1c3a30
+> Accept: application/json
+> Content-Type: application/json;charset=UTF-8
+> Content-Length: 56
+>
+* upload completely sent off: 56 out of 56 bytes
+< HTTP/1.1 201
+< X-Content-Type-Options: nosniff
+< X-XSS-Protection: 1; mode=block
+< Cache-Control: no-cache, no-store, max-age=0, must-revalidate
+< Pragma: no-cache
+< Expires: 0
+< X-Frame-Options: DENY
+< Location: http://localhost:8002/posts/4
+< Content-Length: 0
+< Date: Thu, 18 May 2017 06:54:40 GMT
+```
+
+Fetch the new created post.
+
+```
+curl -v  http://localhost:8002/posts/4 -H "Accept: application/json"
+* timeout on name lookup is not supported
+*   Trying ::1...
+* TCP_NODELAY set
+* Connected to localhost (::1) port 8002 (#0)
+> GET /posts/4 HTTP/1.1
+> Host: localhost:8002
+> User-Agent: curl/7.54.0
+> Accept: application/json
+>
+< HTTP/1.1 200
+< X-Content-Type-Options: nosniff
+< X-XSS-Protection: 1; mode=block
+< Cache-Control: no-cache, no-store, max-age=0, must-revalidate
+< Pragma: no-cache
+< Expires: 0
+< X-Frame-Options: DENY
+< Content-Type: application/json;charset=UTF-8
+< Transfer-Encoding: chunked
+< Date: Thu, 18 May 2017 06:59:42 GMT
+<
+{"id":4,"title":"test post","content":"test content of post","status":"DRAFT","author":null,"createdDate":null}*
+```

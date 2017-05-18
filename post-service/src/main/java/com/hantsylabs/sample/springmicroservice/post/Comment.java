@@ -5,24 +5,19 @@
  */
 package com.hantsylabs.sample.springmicroservice.post;
 
-import java.io.Serializable;
-import java.time.LocalDateTime;
 import javax.persistence.AttributeOverride;
 import javax.persistence.AttributeOverrides;
 import javax.persistence.Column;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.EntityListeners;
 import javax.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.validator.constraints.NotEmpty;
-import org.springframework.data.annotation.CreatedDate;
-
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 /**
  *
@@ -33,18 +28,13 @@ import org.springframework.data.annotation.CreatedDate;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-public class Comment implements Serializable {
+public class Comment extends AuditableEntity {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long id;
 
     @NotEmpty
     @Size(min = 10)
     private String content;
 
-    @CreatedDate
-    private LocalDateTime createdDate;
 
     @Embedded
     @AttributeOverrides(
@@ -54,12 +44,5 @@ public class Comment implements Serializable {
     )
     private PostId post;
 
-    @Embedded
-    @AttributeOverrides(
-        value = {
-            @AttributeOverride(name = "id", column = @Column(name = "author_id"))
-        }
-    )
-    private UserId author;
 
 }

@@ -12,6 +12,7 @@ import javax.persistence.AttributeOverrides;
 import javax.persistence.Column;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
+import javax.persistence.EntityListeners;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
@@ -21,7 +22,9 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 /**
  *
@@ -32,28 +35,16 @@ import org.springframework.data.annotation.CreatedDate;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-class Post implements Serializable {
+class Post extends AuditableEntity {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long id;
 
     private String title;
 
     private String content;
-    
+
     @Enumerated(EnumType.STRING)
     @Builder.Default
     private Status status = Status.DRAFT;
-
-    @Embedded
-    @AttributeOverrides(value = {
-        @AttributeOverride(name = "id", column = @Column(name = "author_id"))
-    })
-    private UserId author;
-
-    @CreatedDate
-    private LocalDateTime createdDate;
 
     static enum Status {
         DRAFT,

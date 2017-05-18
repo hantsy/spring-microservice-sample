@@ -5,19 +5,23 @@
  */
 package com.hantsylabs.sample.springmicroservice.post;
 
+import javax.persistence.Embeddable;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 
 /**
  *
  * @author hantsy
  */
-@Data()
-@EqualsAndHashCode(callSuper = false)
+@Data
+@Builder
+@AllArgsConstructor
 @RequiredArgsConstructor
-public class PostCreatedEvent extends PostEvent {
-
-    private @NonNull Post snapshot;
+@Embeddable
+public class Username {
+    
+    private String username;
+    
 }
