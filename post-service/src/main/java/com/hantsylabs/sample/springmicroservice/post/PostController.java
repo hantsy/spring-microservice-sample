@@ -31,16 +31,16 @@ public class PostController {
 
     private static final Logger log = LoggerFactory.getLogger(PostController.class);
 
-    @Inject
     private PostService postService;
 
-    @Inject
     private PostRepository postRepository;
 
-    @Inject
     private CommentRepository commentRepository;
 
-    public PostController() {
+    public PostController(PostService postService, PostRepository postRepository, CommentRepository commentRepository) {
+        this.postService = postService;
+        this.postRepository = postRepository;
+        this.commentRepository = commentRepository;
     }
 
     @GetMapping()
