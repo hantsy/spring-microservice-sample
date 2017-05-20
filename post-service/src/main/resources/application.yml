@@ -2,6 +2,8 @@ server:
   port: 8002
 
 spring:
+  redis:
+    host: ${REDIS_HOST:localhost}
   cache:
     type: redis
       
@@ -13,7 +15,7 @@ spring:
 
   datasource:
     dataSourceClassName: com.mysql.jdbc.jdbc2.optional.MysqlDataSource
-    url: jdbc:mysql://localhost:3307/postdb
+    url: ${POSTDB_URL:jdbc:mysql://localhost:3307/postdb}
     username: user
     password: password
     cachePrepStmts: true

@@ -1,7 +1,6 @@
 version: '2' # specify docker-compose version
 
-# Define the services/containers to be run
-services:
+services:    
   userdb:
     container_name: userdb
     image: mysql
