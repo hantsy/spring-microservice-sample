@@ -5,7 +5,7 @@ This demo application show you how to build an microservice application via Spri
 
 ## Prerequisites
 
-Firstly install Docker, Docker Compose.
+Following the installation guide from [Docker official website](https://www.docker.com), install the latest Docker, Docker Compose and Docker Machine into your local system.
 
 Start up dependent servers via `docker-compose` command.
 
@@ -16,8 +16,7 @@ docker-compose up
 If you are using Docker Toolbox, create a new machine for this project.
 
 ```
-$ docker-machine create -d virtualbox --engine-registry-mirror https://docker.m
-irrors.ustc.edu.cn springms
+$ docker-machine create -d virtualbox --engine-registry-mirror https://docker.mirrors.ustc.edu.cn springms
 ```
 
 Switch to the new created machine, `springms`.
@@ -37,15 +36,12 @@ Forward the virtualbox ports to local system, thus you can access the servers vi
  VBoxManage modifyvm "springms" --natpf1 "tcp-port27017,tcp,,27017,,27017"
 ```
 
-Run the dependent servers via `docker-compose` command line.
+Then run the dependent servers via `docker-compose` command line.
 
-```
-docker-compose up
-```
 
 ## Run
 
-Run the services one by one.
+For development stage, you can run the services one by one.
 
 ```
 mvn spring-boot:run // run in user-service, auth-service, post-service
@@ -157,3 +153,20 @@ curl -v  http://localhost:8002/posts/4 -H "Accept: application/json"
 <
 {"id":4,"title":"test post","content":"test content of post","status":"DRAFT","author":null,"createdDate":null}*
 ```
+
+## Bonus 
+
+Run all services in a staging server.
+
+Build the project via `mvn` command.
+
+```
+mvn clean package -DskipTests
+```
+
+Then run the following command to run all services.
+
+```
+docker-compose -f docker-compose.yml -f docker-compose.local.yml up
+```
+
