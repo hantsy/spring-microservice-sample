@@ -1,0 +1,62 @@
+version: '2' # specify docker-compose version
+
+services:
+
+  nginx-proxy:
+    image: hantsylab/nginx-proxy
+    container_name: nginx-proxy
+    build: 
+      context: ./nginx
+      dockerfile: Dockerfile
+    links:
+      - auth-service
+      - user-service
+      - post-service
+    ports:
+      - "80:80"
+      
+  auth-service:
+    image: hantsylab/auth-service
+    container_name: auth-service
+    build: 
+      context: ./auth-service # specify the directory of the Dockerfile
+      dockerfile: Dockerfile
+    environment:
+      USERDB_URL: jdbc:mysql://userdb:3306/userdb
+      REDIS_HOST: redis
+    ports:
+      - "8000:8000" #specify ports forewarding
+    links:
+      - userdb
+      - redis
+      
+  user-service: 
+    image: hantsylab/user-service
+    container_name: user-service
+    build: 
+      context: ./user-service
+      dockerfile: Dockerfile
+    environment:
+      USERDB_URL: jdbc:mysql://userdb:3306/userdb
+      REDIS_HOST: redis
+    ports:
+      - "8001:8001" #specify ports forewarding
+    links:
+      - userdb
+      - redis
+  
+  post-service: 
+    image: hantsylab/post-service
+    container_name: post-service
+    build: 
+      context: ./post-service
+      dockerfile: Dockerfile
+    environment:
+      POSTDB_URL: jdbc:mysql://postdb:3306/postdb
+      REDIS_HOST: redis
+    ports:
+      - "8002:8002" #specify ports forewarding
+    links:
+      - postdb
+      - redis
+  
