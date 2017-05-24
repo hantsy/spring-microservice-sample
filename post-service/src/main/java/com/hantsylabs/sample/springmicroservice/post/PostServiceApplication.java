@@ -2,6 +2,7 @@ package com.hantsylabs.sample.springmicroservice.post;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
@@ -80,7 +81,7 @@ public class PostServiceApplication extends WebSecurityConfigurerAdapter {
                 DeserializationFeature.FAIL_ON_IGNORED_PROPERTIES,
                 DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES
             )
-            .featuresToEnable(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY)
+            .featuresToEnable(MapperFeature.DEFAULT_VIEW_INCLUSION,DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY)
             .indentOutput(true);
     }
 

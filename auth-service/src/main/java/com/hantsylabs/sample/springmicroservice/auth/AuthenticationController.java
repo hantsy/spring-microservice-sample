@@ -1,5 +1,6 @@
 package com.hantsylabs.sample.springmicroservice.auth;
 
+import java.util.stream.Collectors;
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -21,75 +22,76 @@ import org.springframework.web.bind.annotation.RestController;
  *
  * @author Hantsy Bai<hantsy@gmail.com>
  */
-@RequestMapping(value="/auth")
+@RequestMapping(value = "/auth")
 @RestController
 public class AuthenticationController {
-
+    
     private static final Logger log = LoggerFactory.getLogger(AuthenticationController.class);
-
+    
     @Inject
     private UserService userService;
-
+    
     @Inject
     private AuthenticationManager authenticationManager;
-
+    
     public AuthenticationController() {
     }
-
+    
     @PostMapping(value = "/signin")
     public AuthenticationResult signin(
         @RequestBody @Valid AuthenticationRequest authenticationRequest,
         HttpServletRequest request) {
-
+        
         if (log.isDebugEnabled()) {
             log.debug("signin form  data@" + authenticationRequest);
         }
-
+        
         return this.handleAuthentication(
             authenticationRequest.getUsername(),
             authenticationRequest.getPassword(),
             request);
     }
-
+    
     private AuthenticationResult handleAuthentication(
         String username,
         String password,
         HttpServletRequest request) {
-
+        
         final UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(
             username,
             password
         );
-
+        
         final Authentication authentication = this.authenticationManager
             .authenticate(token);
-
+        
         SecurityContextHolder.getContext().setAuthentication(authentication);
-
+        
         final HttpSession session = request.getSession(true);
-
+        
         session.setAttribute(
             HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY,
             SecurityContextHolder.getContext());
-
+        
         return AuthenticationResult.builder()
-            .user(authentication.getPrincipal())
+            .name(authentication.getName())
+            .roles(authentication.getAuthorities().stream().map(r -> r.getAuthority()).collect(Collectors.toList()))
             .token(session.getId())
             .build();
     }
-
+    
     @PostMapping(value = {"/signup"})
     public AuthenticationResult signup(
         @RequestBody @Valid SignupForm form,
         HttpServletRequest req) {
         log.debug("signup data@" + form);
-
+        
         User saved = this.userService.handleSignup(form);
-
+        
         log.debug("registered user:" + saved);
         return this.handleAuthentication(form.getUsername(), form.getPassword(), req);
     }
-
+    
     @PostMapping(value = {"/signout"})
     public ResponseEntity signout(HttpServletRequest req) {
         req.getSession().invalidate();

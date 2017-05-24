@@ -5,6 +5,7 @@
  */
 package com.hantsylabs.sample.springmicroservice.post;
 
+import com.fasterxml.jackson.annotation.JsonView;
 import java.time.LocalDateTime;
 import javax.persistence.AttributeOverride;
 import javax.persistence.AttributeOverrides;
@@ -30,6 +31,7 @@ public abstract class AuditableEntity extends PersistableEntity {
     }
 
     @CreatedDate
+    @JsonView(View.Summary.class)
     protected LocalDateTime createdDate;
 
     @Embedded
@@ -37,6 +39,7 @@ public abstract class AuditableEntity extends PersistableEntity {
         @AttributeOverride(name = "username", column = @Column(name = "author"))
     })
     @CreatedBy
+    @JsonView(View.Summary.class)
     protected Username author;
 
 }

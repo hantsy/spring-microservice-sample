@@ -5,6 +5,7 @@
  */
 package com.hantsylabs.sample.springmicroservice.post;
 
+import com.fasterxml.jackson.annotation.JsonView;
 import java.io.Serializable;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -23,6 +24,7 @@ public abstract class PersistableEntity implements Serializable {
     
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
+    @JsonView(View.Summary.class)
     protected Long id;
 
     public PersistableEntity() {

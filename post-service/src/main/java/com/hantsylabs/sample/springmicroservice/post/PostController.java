@@ -1,7 +1,7 @@
 package com.hantsylabs.sample.springmicroservice.post;
 
+import com.fasterxml.jackson.annotation.JsonView;
 import java.net.URI;
-import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
@@ -50,6 +50,7 @@ public class PostController {
 //            @ApiResponse(code = 200, message = "return all posts by page")
 //        }
 //    )
+    @JsonView(View.Summary.class)
     public ResponseEntity<Page<Post>> getAllPosts(
         @RequestParam(value = "q", required = false) String keyword, //
         @RequestParam(value = "status", required = false) Post.Status status, //
@@ -65,6 +66,7 @@ public class PostController {
     }
 
     @GetMapping(value = "/{id}")
+    @JsonView(View.Public.class)
     public ResponseEntity<Post> getPost(@PathVariable("id") Long id) {
 
         log.debug("get postsinfo by id @" + id);

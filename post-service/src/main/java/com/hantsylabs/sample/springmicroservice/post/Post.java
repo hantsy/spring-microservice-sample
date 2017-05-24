@@ -5,26 +5,14 @@
  */
 package com.hantsylabs.sample.springmicroservice.post;
 
-import java.io.Serializable;
-import java.time.LocalDateTime;
-import javax.persistence.AttributeOverride;
-import javax.persistence.AttributeOverrides;
-import javax.persistence.Column;
-import javax.persistence.Embedded;
+import com.fasterxml.jackson.annotation.JsonView;
 import javax.persistence.Entity;
-import javax.persistence.EntityListeners;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.data.annotation.CreatedBy;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 /**
  *
@@ -37,13 +25,15 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 @Entity
 class Post extends AuditableEntity {
 
-
+    @JsonView(View.Summary.class)
     private String title;
 
+    @JsonView(View.Public.class)
     private String content;
 
     @Enumerated(EnumType.STRING)
     @Builder.Default
+    @JsonView(View.Summary.class)
     private Status status = Status.DRAFT;
 
     static enum Status {
