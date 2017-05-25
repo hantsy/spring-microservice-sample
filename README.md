@@ -16,6 +16,8 @@ This demo sample is built on Spring stack, including Spring Boot, Spring Data, S
 
 Following the installation guide from [Docker official website](https://www.docker.com), install the latest Docker, Docker Compose and Docker Machine into your local system.
 
+## Setup Development Environment
+
 Start up dependent servers via `docker-compose` command.
 
 ```
@@ -47,9 +49,6 @@ Forward the virtualbox ports to local system, thus you can access the servers vi
 
 Then run the dependent servers via `docker-compose` command line.
 
-
-## Run
-
 For development stage, you can run the services one by one.
 
 ```
@@ -60,11 +59,10 @@ The following services will be provided.
 
 |Service|Url|Description|
 |---|---|---|
-|auth-service|http://localhost:8000/user,http://localhost:8000/auth|Signin, signup, signout, user info|
-|user-service|http://localhost:8001/users|user management api|
-|post-service|http://localhost:8002/posts|post and comment api|
+|auth-service|http://localhost:8000/user,http://localhost:8000/auth|Authentication APIs(signin, signup, signout), user info|
+|user-service|http://localhost:8001/users|User management APIs|
+|post-service|http://localhost:8002/posts|Post and comment APIs|
 
-## Try
 
 The authentication flow is:
 
@@ -176,7 +174,7 @@ curl -v  http://localhost:8002/posts/4 -H "Accept: application/json"
 {"id":4,"title":"test post","content":"test content of post","status":"DRAFT","author":null,"createdDate":null}*
 ```
 
-## Bonus 
+## Staging Environment
 
 Run all services in your local system or a staging server.
 
@@ -192,7 +190,15 @@ Then run the following command to run all services.
 docker-compose -f docker-compose.yml -f docker-compose.local.yml up
 ```
 
-Now test the APIs in a single entry.
+Due we have run a Nginx a reverse proxy, all APIs can be accessed through a single entry. 
+
+The following services will be provided.
+
+|Service|Url|Description|
+|---|---|---|
+|auth-service|http://localhost/user,http://localhost/auth|Authentication APIs(signin, signup, signout), user info|
+|user-service|http://localhost/users|User management APIs|
+|post-service|http://localhost/posts|Post and comment APIs|
 
 Get authentication.
 
@@ -505,3 +511,7 @@ curl -v  http://localhost/posts/test-post-2/comments  -H "Accpet:application/jso
   "number" : 0
 }* Connection #0 to host localhost left intact
 ```
+
+## Deploy in Production
+
+TBD
