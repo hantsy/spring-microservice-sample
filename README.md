@@ -2,8 +2,17 @@
 
 This demo application show you how to build an microservice application via Spring Boot.
 
+There are three services in this demo.
+
+* **auth-service** is the service for signin, signup and siginout.
+* **user-service** is responsible for user management.
+* **post-service** is the APIs for a simple CMS, including posts and comments.
+* **nginx** includes the Dockerfile and nginx configuration file which use nginx as a reverse proxy for all services in a staging or production environment.
+
 
 ## Prerequisites
+
+This demo sample is built on Spring stack, including Spring Boot, Spring Data, Spring Security, etc. Following the 12 factors application guide, I suggest to use Docker in both development and production enviroment to make sure the same codebase working in different environments.
 
 Following the installation guide from [Docker official website](https://www.docker.com), install the latest Docker, Docker Compose and Docker Machine into your local system.
 
@@ -48,6 +57,11 @@ mvn spring-boot:run // run in user-service, auth-service, post-service
 ```
 
 ## Try
+
+The authentication flow is:
+
+1. Get authentication from `auth-service`, and get `X-Auth-Token` from response headers.
+2. Add `X-Auth-Token` to http request header to access the protected resources.
 
 When all service are running successfully, try to get authentication.
 
