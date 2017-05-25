@@ -56,11 +56,19 @@ For development stage, you can run the services one by one.
 mvn spring-boot:run // run in user-service, auth-service, post-service
 ```
 
+The following services will be provided.
+
+|Service|Url|Description|
+|---|---|---|
+|auth-service|http://localhost:8000/user,http://localhost:8000/auth|Signin, signup, signout, user info|
+|user-service|http://localhost:8001/users|user management api|
+|post-service|http://localhost:8002/posts|post and comment api|
+
 ## Try
 
 The authentication flow is:
 
-1. Get authentication from `auth-service`, and get `X-Auth-Token` from response headers.
+1. Get authentication from **auth-service**, and get `X-Auth-Token` from response headers.
 2. Add `X-Auth-Token` to http request header to access the protected resources.
 
 When all service are running successfully, try to get authentication.
