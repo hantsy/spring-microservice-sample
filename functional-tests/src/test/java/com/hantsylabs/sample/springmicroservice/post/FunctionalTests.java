@@ -18,12 +18,10 @@ import org.springframework.http.ResponseEntity;
 @Slf4j
 public class FunctionalTests {
 
-    private int port = 80;
-
     private final String AUTH_URL = "http://localhost/auth";
     private final String POST_URL = "http://localhost/posts";
 
-    private TestRestTemplate template = new TestRestTemplate();
+    private final TestRestTemplate template = new TestRestTemplate();
 
     @Test
     public void getAllPosts() {
