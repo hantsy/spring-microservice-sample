@@ -12,7 +12,6 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 
 @RestClientTest
@@ -21,8 +20,8 @@ public class FunctionalTests {
 
     private int port = 80;
 
-    private final String AUTH_URL = "http://localhost/api/auth-service/auth";
-    private final String POST_URL = "http://localhost/api/post-service/posts";
+    private final String AUTH_URL = "http://localhost/auth";
+    private final String POST_URL = "http://localhost/posts";
 
     private TestRestTemplate template = new TestRestTemplate();
 
@@ -40,25 +39,36 @@ public class FunctionalTests {
 
     @Test
     public void createPostWithAuthentication() {
-        
+
         //signin with user/test123
         ResponseEntity<String> authResponse = template.postForEntity(AUTH_URL + "/signin", AuthenticationRequest.builder().username("user").password("test123").build(), String.class);
         assertEquals(HttpStatus.OK, authResponse.getStatusCode());
         assertNotNull(authResponse.getHeaders().getFirst("X-Auth-Token"));
         log.debug("\nsignin response:\n {}", authResponse.getBody());
-        
+
         //create a new post
         HttpHeaders headers = new HttpHeaders();
         headers.add("X-Auth-Token", authResponse.getHeaders().getFirst("X-Auth-Token"));
-        headers.add("Content-Type", MediaType.APPLICATION_JSON_UTF8_VALUE);
-        
-        ResponseEntity<Void> response = template.exchange(POST_URL, 
-            HttpMethod.POST, 
-            new HttpEntity<>(PostForm.builder().title("my title").content("my content of my title").build(), headers), 
+        //headers.add("Content-Type", MediaType.APPLICATION_JSON_UTF8_VALUE);
+
+        ResponseEntity<Void> response = template.exchange(POST_URL,
+            HttpMethod.POST,
+            new HttpEntity<>(PostForm.builder().title("my title").content("my content of my title").build(), headers),
             Void.class
         );
 
         assertEquals(HttpStatus.CREATED, response.getStatusCode());
+        assertNotNull(response.getHeaders().getLocation());
+        
+        //verify the created post
+        ResponseEntity<String> postresponse = template.exchange(response.getHeaders().getLocation(),
+            HttpMethod.GET,
+            new HttpEntity<>(headers),
+            String.class
+        );
+
+        assertEquals(HttpStatus.OK, postresponse.getStatusCode());
+        assertNotNull(postresponse.getBody().contains("my title"));
     }
 
 }
