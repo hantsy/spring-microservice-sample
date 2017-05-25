@@ -11,15 +11,15 @@ package com.hantsylabs.sample.springmicroservice.post;
  */
 public class PostNotFoundException extends RuntimeException {
 
-    private Long id;
+    private String slug;
 
-    public PostNotFoundException(Long id) {
-        super("post:" + id + " was not found");
-        this.id = id;
+    public PostNotFoundException(String slug) {
+        super("post:" + slug + " was not found");
+        this.slug = slug;
     }
 
-    public Long getId() {
-        return id;
+    public String getSlug() {
+        return slug;
     }
     
 }

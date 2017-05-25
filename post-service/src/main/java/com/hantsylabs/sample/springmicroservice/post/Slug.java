@@ -22,8 +22,8 @@ import lombok.NonNull;
 @AllArgsConstructor
 @NoArgsConstructor
 @Embeddable
-public class PostId implements Serializable {
+public class Slug implements Serializable {
     
-    private @NonNull Long id;
+    private @NonNull String slug;
     
 }

@@ -5,19 +5,18 @@
  */
 package com.hantsylabs.sample.springmicroservice.post;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import javax.persistence.AttributeOverride;
 import javax.persistence.AttributeOverrides;
 import javax.persistence.Column;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
-import javax.persistence.EntityListeners;
 import javax.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.validator.constraints.NotEmpty;
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 /**
  *
@@ -39,10 +38,11 @@ public class Comment extends AuditableEntity {
     @Embedded
     @AttributeOverrides(
         value = {
-            @AttributeOverride(name = "id", column = @Column(name = "post_id"))
+            @AttributeOverride(name = "slug", column = @Column(name = "post_slug"))
         }
     )
-    private PostId post;
+    @JsonIgnore
+    private Slug post;
 
 
 }

@@ -170,3 +170,316 @@ Then run the following command to run all services.
 docker-compose -f docker-compose.yml -f docker-compose.local.yml up
 ```
 
+Now test the APIs in a single entry.
+
+Get authentication.
+
+```
+curl -v  http://localhost/api/auth-service/user -u user:test123
+
+>
+< HTTP/1.1 200
+< Server: nginx/1.13.0
+< Date: Thu, 25 May 2017 06:49:52 GMT
+< Content-Type: application/json;charset=UTF-8
+< Transfer-Encoding: chunked
+< Connection: keep-alive
+< X-Content-Type-Options: nosniff
+< X-XSS-Protection: 1; mode=block
+< Cache-Control: no-cache, no-store, max-age=0, must-revalidate
+< Pragma: no-cache
+< Expires: 0
+< X-Frame-Options: DENY
+< X-Auth-Token: 8b185a90-37db-444a-832b-6cbcd6db6df8
+<
+{"name":"user","roles":["USER"]}* Connection #0 to host localhost left intact
+```
+
+Create a new post.
+
+```
+curl -v  http://localhost/api/post-service/posts -X POST -H "X-Auth-Token: 8b185a90-37db-444a-832b-6cbcd6db6df8" -H "Content-Type:application/json" -d "{\"title\": \"test post\", \"content\":\"test content of post\"}"
+Note: Unnecessary use of -X or --request, POST is already inferred.
+* timeout on name lookup is not supported
+*   Trying ::1...
+* TCP_NODELAY set
+*   Trying 127.0.0.1...
+* TCP_NODELAY set
+* Connected to localhost (127.0.0.1) port 80 (#0)
+> POST /api/post-service/posts HTTP/1.1
+> Host: localhost
+> User-Agent: curl/7.54.0
+> Accept: */*
+> X-Auth-Token: 8b185a90-37db-444a-832b-6cbcd6db6df8
+> Content-Type:application/json
+> Content-Length: 56
+>
+* upload completely sent off: 56 out of 56 bytes
+< HTTP/1.1 201
+< Server: nginx/1.13.0
+< Date: Thu, 25 May 2017 06:52:46 GMT
+< Content-Length: 0
+< Connection: keep-alive
+< X-Content-Type-Options: nosniff
+< X-XSS-Protection: 1; mode=block
+< Cache-Control: no-cache, no-store, max-age=0, must-revalidate
+< Pragma: no-cache
+< Expires: 0
+< X-Frame-Options: DENY
+< Location: http://localhost/posts/1
+<
+* Connection #0 to host localhost left intact
+```
+
+Create another new post.
+
+```
+curl -v  http://localhost/api/post-service/posts -X POST -H "X-Auth-Token: 8b185a90-37db-444a-832b-6cbcd6db6df8" -H "Content-Type:application/json" -d "{\"title\": \"test post 2\", \"content\":\"test content of post 2\"}"
+Note: Unnecessary use of -X or --request, POST is already inferred.
+* timeout on name lookup is not supported
+*   Trying ::1...
+* TCP_NODELAY set
+*   Trying 127.0.0.1...
+* TCP_NODELAY set
+* Connected to localhost (127.0.0.1) port 80 (#0)
+> POST /api/post-service/posts HTTP/1.1
+> Host: localhost
+> User-Agent: curl/7.54.0
+> Accept: */*
+> X-Auth-Token: 8b185a90-37db-444a-832b-6cbcd6db6df8
+> Content-Type:application/json
+> Content-Length: 60
+>
+* upload completely sent off: 60 out of 60 bytes
+< HTTP/1.1 201
+< Server: nginx/1.13.0
+< Date: Thu, 25 May 2017 06:53:29 GMT
+< Content-Length: 0
+< Connection: keep-alive
+< X-Content-Type-Options: nosniff
+< X-XSS-Protection: 1; mode=block
+< Cache-Control: no-cache, no-store, max-age=0, must-revalidate
+< Pragma: no-cache
+< Expires: 0
+< X-Frame-Options: DENY
+< Location: http://localhost/posts/2
+<
+* Connection #0 to host localhost left intact
+```
+
+Verify the created posts.
+
+```
+E:\hantsylabs\spring-microservice-sample>curl -v  http://localhost/api/post-service/posts  -H "Accpet:application/json"
+* timeout on name lookup is not supported
+*   Trying ::1...
+* TCP_NODELAY set
+*   Trying 127.0.0.1...
+* TCP_NODELAY set
+* Connected to localhost (127.0.0.1) port 80 (#0)
+> GET /api/post-service/posts HTTP/1.1
+> Host: localhost
+> User-Agent: curl/7.54.0
+> Accept: */*
+> Accpet:application/json
+>
+< HTTP/1.1 200
+< Server: nginx/1.13.0
+< Date: Thu, 25 May 2017 06:53:58 GMT
+< Content-Type: application/json;charset=UTF-8
+< Transfer-Encoding: chunked
+< Connection: keep-alive
+< X-Content-Type-Options: nosniff
+< X-XSS-Protection: 1; mode=block
+< Cache-Control: no-cache, no-store, max-age=0, must-revalidate
+< Pragma: no-cache
+< Expires: 0
+< X-Frame-Options: DENY
+<
+{
+  "content" : [ {
+    "title" : "test post 2",
+    "slug" : "test-post-2",
+    "status" : "DRAFT",
+    "id" : 2,
+    "createdDate" : "2017-05-25T06:53:30",
+    "author" : {
+      "username" : "user"
+    }
+  }, {
+    "title" : "test post",
+    "slug" : "test-post",
+    "status" : "DRAFT",
+    "id" : 1,
+    "createdDate" : "2017-05-25T06:52:45",
+    "author" : {
+      "username" : "user"
+    }
+  } ],
+  "pageable" : {
+    "sort" : {
+      "sorted" : true,
+      "unsorted" : false
+    },
+    "pageSize" : 10,
+    "pageNumber" : 0,
+    "offset" : 0,
+    "paged" : true,
+    "unpaged" : false
+  },
+  "last" : true,
+  "totalElements" : 2,
+  "totalPages" : 1,
+  "sort" : {
+    "sorted" : true,
+    "unsorted" : false
+  },
+  "numberOfElements" : 2,
+  "first" : true,
+  "size" : 10,
+  "number" : 0
+}* Connection #0 to host localhost left intact
+```
+
+Create a comment for "test post 2".
+
+```
+curl -v  http://localhost/api/post-service/posts/test-post-2/comments -X POST -H "X-Auth-Token: 8b185a90-37db-444a-832b-6cbcd6db6df8" -H "Content-Type:application/json" -d "{ \"content\":\"conmment content of post 2\"}"
+Note: Unnecessary use of -X or --request, POST is already inferred.
+* timeout on name lookup is not supported
+*   Trying ::1...
+* TCP_NODELAY set
+*   Trying 127.0.0.1...
+* TCP_NODELAY set
+* Connected to localhost (127.0.0.1) port 80 (#0)
+> POST /api/post-service/posts/test-post-2/comments HTTP/1.1
+> Host: localhost
+> User-Agent: curl/7.54.0
+> Accept: */*
+> X-Auth-Token: 8b185a90-37db-444a-832b-6cbcd6db6df8
+> Content-Type:application/json
+> Content-Length: 41
+>
+* upload completely sent off: 41 out of 41 bytes
+< HTTP/1.1 201
+< Server: nginx/1.13.0
+< Date: Thu, 25 May 2017 06:54:59 GMT
+< Content-Length: 0
+< Connection: keep-alive
+< X-Content-Type-Options: nosniff
+< X-XSS-Protection: 1; mode=block
+< Cache-Control: no-cache, no-store, max-age=0, must-revalidate
+< Pragma: no-cache
+< Expires: 0
+< X-Frame-Options: DENY
+< Location: http://localhost/posts/test-post-2/comments/3
+<
+* Connection #0 to host localhost left intact
+```
+
+Create another comment.
+
+```
+curl -v  http://localhost/api/post-service/posts/test-post-2/comments -X POST -H "X-Auth-Token: 8b185a90-37db-444a-832b-6cbcd6db6df8" -H "Content-Type:application/json" -d "{ \"content\":\"conmment content of post, another comment\"}"
+Note: Unnecessary use of -X or --request, POST is already inferred.
+* timeout on name lookup is not supported
+*   Trying ::1...
+* TCP_NODELAY set
+*   Trying 127.0.0.1...
+* TCP_NODELAY set
+* Connected to localhost (127.0.0.1) port 80 (#0)
+> POST /api/post-service/posts/test-post-2/comments HTTP/1.1
+> Host: localhost
+> User-Agent: curl/7.54.0
+> Accept: */*
+> X-Auth-Token: 8b185a90-37db-444a-832b-6cbcd6db6df8
+> Content-Type:application/json
+> Content-Length: 56
+>
+* upload completely sent off: 56 out of 56 bytes
+< HTTP/1.1 201
+< Server: nginx/1.13.0
+< Date: Thu, 25 May 2017 06:55:21 GMT
+< Content-Length: 0
+< Connection: keep-alive
+< X-Content-Type-Options: nosniff
+< X-XSS-Protection: 1; mode=block
+< Cache-Control: no-cache, no-store, max-age=0, must-revalidate
+< Pragma: no-cache
+< Expires: 0
+< X-Frame-Options: DENY
+< Location: http://localhost/posts/test-post-2/comments/4
+<
+* Connection #0 to host localhost left intact
+```
+
+Verify the comments.
+
+```
+curl -v  http://localhost/api/post-service/posts/test-post-2/comments  -H "Accpet:application/json"
+* timeout on name lookup is not supported
+*   Trying ::1...
+* TCP_NODELAY set
+* connect to ::1 port 80 failed: Connection refused
+*   Trying 127.0.0.1...
+* TCP_NODELAY set
+* Connected to localhost (127.0.0.1) port 80 (#0)
+> GET /api/post-service/posts/test-post-2/comments HTTP/1.1
+> Host: localhost
+> User-Agent: curl/7.54.0
+> Accept: */*
+> Accpet:application/json
+>
+< HTTP/1.1 200
+< Server: nginx/1.13.0
+< Date: Thu, 25 May 2017 06:55:35 GMT
+< Content-Type: application/json;charset=UTF-8
+< Transfer-Encoding: chunked
+< Connection: keep-alive
+< X-Content-Type-Options: nosniff
+< X-XSS-Protection: 1; mode=block
+< Cache-Control: no-cache, no-store, max-age=0, must-revalidate
+< Pragma: no-cache
+< Expires: 0
+< X-Frame-Options: DENY
+<
+{
+  "content" : [ {
+    "content" : "conmment content of post, another comment",
+    "id" : 4,
+    "createdDate" : "2017-05-25T06:55:22",
+    "author" : {
+      "username" : "user"
+    }
+  }, {
+    "content" : "conmment content of post 2",
+    "id" : 3,
+    "createdDate" : "2017-05-25T06:54:59",
+    "author" : {
+      "username" : "user"
+    }
+  } ],
+  "pageable" : {
+    "sort" : {
+      "sorted" : true,
+      "unsorted" : false
+    },
+    "pageSize" : 10,
+    "pageNumber" : 0,
+    "offset" : 0,
+    "paged" : true,
+    "unpaged" : false
+  },
+  "last" : true,
+  "totalElements" : 2,
+  "totalPages" : 1,
+  "sort" : {
+    "sorted" : true,
+    "unsorted" : false
+  },
+  "numberOfElements" : 2,
+  "first" : true,
+  "size" : 10,
+  "number" : 0
+}* Connection #0 to host localhost left intact
+```

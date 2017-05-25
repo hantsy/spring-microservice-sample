@@ -31,10 +31,10 @@ public class PostService {
         return saved;
     }
 
-    public Post updatePost(Long id, PostForm form) {
-        Post _post = this.postRepository.findById(id).orElseThrow(
+    public Post updatePost(String slug, PostForm form) {
+        Post _post = this.postRepository.findBySlug(slug).orElseThrow(
             ()-> {
-                return new PostNotFoundException(id);
+                return new PostNotFoundException(slug);
             }
         );
         
@@ -46,8 +46,12 @@ public class PostService {
        return saved;
     }
 
-    public void deletePostById(Long id) {
-        this.postRepository.deleteById(id);
+    public void deletePost(String slug) {
+        this.postRepository.delete(this.postRepository.findBySlug(slug).orElseThrow(
+            () -> {
+                return new PostNotFoundException(slug);
+            }
+        ));
     }
 
 }
