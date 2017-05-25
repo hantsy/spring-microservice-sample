@@ -1,6 +1,7 @@
 package com.hantsylabs.sample.springmicroservice.post;
 
 import com.hantsylabs.sample.springmicroservice.test.AuthenticationRequest;
+import com.hantsylabs.sample.springmicroservice.test.CommentForm;
 import com.hantsylabs.sample.springmicroservice.test.PostForm;
 import lombok.extern.slf4j.Slf4j;
 import static org.junit.Assert.assertEquals;
@@ -57,7 +58,7 @@ public class FunctionalTests {
 
         assertEquals(HttpStatus.CREATED, response.getStatusCode());
         assertNotNull(response.getHeaders().getLocation());
-        
+
         //verify the created post
         ResponseEntity<String> postresponse = template.exchange(response.getHeaders().getLocation(),
             HttpMethod.GET,
@@ -67,6 +68,27 @@ public class FunctionalTests {
 
         assertEquals(HttpStatus.OK, postresponse.getStatusCode());
         assertNotNull(postresponse.getBody().contains("my title"));
+
+        //add comment to the created post
+        ResponseEntity<Void> postCommentsResponse = template.exchange(response.getHeaders().getLocation().toString() + "/comments",
+            HttpMethod.POST,
+             new HttpEntity<>(CommentForm.builder().content("test comment").build(), headers),
+            Void.class
+        );
+
+        assertEquals(HttpStatus.CREATED, postCommentsResponse.getStatusCode());
+        assertNotNull(postCommentsResponse.getHeaders().getLocation());
+        
+        
+        //verify the created post comment
+        ResponseEntity<String> commentresponse = template.exchange(response.getHeaders().getLocation().toString() + "/comments",
+            HttpMethod.GET,
+            new HttpEntity<>(headers),
+            String.class
+        );
+
+        assertEquals(HttpStatus.OK, commentresponse.getStatusCode());
+        assertNotNull(commentresponse.getBody().contains("test comment"));
     }
 
 }
