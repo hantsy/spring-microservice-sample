@@ -91,7 +91,7 @@ public class PostController {
         URI loacationHeader = ServletUriComponentsBuilder
             .fromContextPath(request)
             .path("/posts/{slug}")
-            .buildAndExpand(saved.getId())
+            .buildAndExpand(saved.getSlug())
             .toUri();
 
         HttpHeaders headers = new HttpHeaders();

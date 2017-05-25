@@ -156,7 +156,7 @@ curl -v  http://localhost:8002/posts/4 -H "Accept: application/json"
 
 ## Bonus 
 
-Run all services in a staging server.
+Run all services in your local system or a staging server.
 
 Build the project via `mvn` command.
 
@@ -175,7 +175,7 @@ Now test the APIs in a single entry.
 Get authentication.
 
 ```
-curl -v  http://localhost/api/auth-service/user -u user:test123
+curl -v  http://localhost/user -u user:test123
 
 >
 < HTTP/1.1 200
@@ -198,7 +198,7 @@ curl -v  http://localhost/api/auth-service/user -u user:test123
 Create a new post.
 
 ```
-curl -v  http://localhost/api/post-service/posts -X POST -H "X-Auth-Token: 8b185a90-37db-444a-832b-6cbcd6db6df8" -H "Content-Type:application/json" -d "{\"title\": \"test post\", \"content\":\"test content of post\"}"
+curl -v  http://localhost/posts -X POST -H "X-Auth-Token: 8b185a90-37db-444a-832b-6cbcd6db6df8" -H "Content-Type:application/json" -d "{\"title\": \"test post\", \"content\":\"test content of post\"}"
 Note: Unnecessary use of -X or --request, POST is already inferred.
 * timeout on name lookup is not supported
 *   Trying ::1...
@@ -206,7 +206,7 @@ Note: Unnecessary use of -X or --request, POST is already inferred.
 *   Trying 127.0.0.1...
 * TCP_NODELAY set
 * Connected to localhost (127.0.0.1) port 80 (#0)
-> POST /api/post-service/posts HTTP/1.1
+> POST /posts HTTP/1.1
 > Host: localhost
 > User-Agent: curl/7.54.0
 > Accept: */*
@@ -234,7 +234,7 @@ Note: Unnecessary use of -X or --request, POST is already inferred.
 Create another new post.
 
 ```
-curl -v  http://localhost/api/post-service/posts -X POST -H "X-Auth-Token: 8b185a90-37db-444a-832b-6cbcd6db6df8" -H "Content-Type:application/json" -d "{\"title\": \"test post 2\", \"content\":\"test content of post 2\"}"
+curl -v  http://localhost/posts -X POST -H "X-Auth-Token: 8b185a90-37db-444a-832b-6cbcd6db6df8" -H "Content-Type:application/json" -d "{\"title\": \"test post 2\", \"content\":\"test content of post 2\"}"
 Note: Unnecessary use of -X or --request, POST is already inferred.
 * timeout on name lookup is not supported
 *   Trying ::1...
@@ -242,7 +242,7 @@ Note: Unnecessary use of -X or --request, POST is already inferred.
 *   Trying 127.0.0.1...
 * TCP_NODELAY set
 * Connected to localhost (127.0.0.1) port 80 (#0)
-> POST /api/post-service/posts HTTP/1.1
+> POST /posts HTTP/1.1
 > Host: localhost
 > User-Agent: curl/7.54.0
 > Accept: */*
@@ -270,14 +270,14 @@ Note: Unnecessary use of -X or --request, POST is already inferred.
 Verify the created posts.
 
 ```
-E:\hantsylabs\spring-microservice-sample>curl -v  http://localhost/api/post-service/posts  -H "Accpet:application/json"
+E:\hantsylabs\spring-microservice-sample>curl -v  http://localhost/posts  -H "Accpet:application/json"
 * timeout on name lookup is not supported
 *   Trying ::1...
 * TCP_NODELAY set
 *   Trying 127.0.0.1...
 * TCP_NODELAY set
 * Connected to localhost (127.0.0.1) port 80 (#0)
-> GET /api/post-service/posts HTTP/1.1
+> GET /posts HTTP/1.1
 > Host: localhost
 > User-Agent: curl/7.54.0
 > Accept: */*
@@ -344,7 +344,7 @@ E:\hantsylabs\spring-microservice-sample>curl -v  http://localhost/api/post-serv
 Create a comment for "test post 2".
 
 ```
-curl -v  http://localhost/api/post-service/posts/test-post-2/comments -X POST -H "X-Auth-Token: 8b185a90-37db-444a-832b-6cbcd6db6df8" -H "Content-Type:application/json" -d "{ \"content\":\"conmment content of post 2\"}"
+curl -v  http://localhost/posts/test-post-2/comments -X POST -H "X-Auth-Token: 8b185a90-37db-444a-832b-6cbcd6db6df8" -H "Content-Type:application/json" -d "{ \"content\":\"conmment content of post 2\"}"
 Note: Unnecessary use of -X or --request, POST is already inferred.
 * timeout on name lookup is not supported
 *   Trying ::1...
@@ -352,7 +352,7 @@ Note: Unnecessary use of -X or --request, POST is already inferred.
 *   Trying 127.0.0.1...
 * TCP_NODELAY set
 * Connected to localhost (127.0.0.1) port 80 (#0)
-> POST /api/post-service/posts/test-post-2/comments HTTP/1.1
+> POST /posts/test-post-2/comments HTTP/1.1
 > Host: localhost
 > User-Agent: curl/7.54.0
 > Accept: */*
@@ -380,7 +380,7 @@ Note: Unnecessary use of -X or --request, POST is already inferred.
 Create another comment.
 
 ```
-curl -v  http://localhost/api/post-service/posts/test-post-2/comments -X POST -H "X-Auth-Token: 8b185a90-37db-444a-832b-6cbcd6db6df8" -H "Content-Type:application/json" -d "{ \"content\":\"conmment content of post, another comment\"}"
+curl -v  http://localhost/posts/test-post-2/comments -X POST -H "X-Auth-Token: 8b185a90-37db-444a-832b-6cbcd6db6df8" -H "Content-Type:application/json" -d "{ \"content\":\"conmment content of post, another comment\"}"
 Note: Unnecessary use of -X or --request, POST is already inferred.
 * timeout on name lookup is not supported
 *   Trying ::1...
@@ -388,7 +388,7 @@ Note: Unnecessary use of -X or --request, POST is already inferred.
 *   Trying 127.0.0.1...
 * TCP_NODELAY set
 * Connected to localhost (127.0.0.1) port 80 (#0)
-> POST /api/post-service/posts/test-post-2/comments HTTP/1.1
+> POST /posts/test-post-2/comments HTTP/1.1
 > Host: localhost
 > User-Agent: curl/7.54.0
 > Accept: */*
@@ -416,7 +416,7 @@ Note: Unnecessary use of -X or --request, POST is already inferred.
 Verify the comments.
 
 ```
-curl -v  http://localhost/api/post-service/posts/test-post-2/comments  -H "Accpet:application/json"
+curl -v  http://localhost/posts/test-post-2/comments  -H "Accpet:application/json"
 * timeout on name lookup is not supported
 *   Trying ::1...
 * TCP_NODELAY set
@@ -424,7 +424,7 @@ curl -v  http://localhost/api/post-service/posts/test-post-2/comments  -H "Accpe
 *   Trying 127.0.0.1...
 * TCP_NODELAY set
 * Connected to localhost (127.0.0.1) port 80 (#0)
-> GET /api/post-service/posts/test-post-2/comments HTTP/1.1
+> GET /posts/test-post-2/comments HTTP/1.1
 > Host: localhost
 > User-Agent: curl/7.54.0
 > Accept: */*
