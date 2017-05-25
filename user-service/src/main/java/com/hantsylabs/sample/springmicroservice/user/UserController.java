@@ -84,53 +84,53 @@ public class UserController {
         headers.setLocation(
             ServletUriComponentsBuilder
                 .fromContextPath(req)
-                .path("/users/{id}")
+                .path("/users/{username}")
                 .buildAndExpand(saved.getId()).toUri()
         );
 
         return new ResponseEntity<>(headers, HttpStatus.CREATED);
     }
 
-    @GetMapping(value = "/{id}")
-    public ResponseEntity getById(@PathVariable("id") Long id) {
-        User _user = this.userRepository.findById(id).orElseThrow(
+    @GetMapping(value = "/{username}")
+    public ResponseEntity getById(@PathVariable("id") String username) {
+        User _user = this.userRepository.findByUsername(username).orElseThrow(
             () -> {
-                return new UserNotFoundException(id);
+                return new UserNotFoundException(username);
             }
         );
 
         return ResponseEntity.ok(_user);
     }
 
-    @PostMapping(value = "/{id}/lock")
-    public ResponseEntity lockUser(@PathVariable("id") Long id) {
+    @PostMapping(value = "/{username}/lock")
+    public ResponseEntity lockUser(@PathVariable("id") String username) {
 
-        log.debug("locking user:" + id);
+        log.debug("locking user:" + username);
 
-        this.userService.lock(id);
-
-        return ResponseEntity.noContent().build();
-    }
-
-    @DeleteMapping(value = "/{id}/lock")
-    public ResponseEntity unlockUser(@PathVariable("id") Long id) {
-
-        log.debug("unlocking user:" + id);
-
-        this.userService.unlock(id);
+        this.userService.lock(username);
 
         return ResponseEntity.noContent().build();
     }
 
-    @DeleteMapping(value = "/{id}")
-    public ResponseEntity deleteById(@PathVariable("id") Long id) {
-        User _user = this.userRepository.findById(id).orElseThrow(
+    @DeleteMapping(value = "/{username}/lock")
+    public ResponseEntity unlockUser(@PathVariable("id") String username) {
+
+        log.debug("unlocking user:" + username);
+
+        this.userService.unlock(username);
+
+        return ResponseEntity.noContent().build();
+    }
+
+    @DeleteMapping(value = "/{username}")
+    public ResponseEntity deleteById(@PathVariable("id") String username) {
+        User _user = this.userRepository.findByUsername(username).orElseThrow(
             () -> {
-                return new UserNotFoundException(id);
+                return new UserNotFoundException(username);
             }
         );
 
-        this.userRepository.deleteById(id);
+        this.userRepository.delete(_user);
 
         return ResponseEntity.noContent().build();
     }

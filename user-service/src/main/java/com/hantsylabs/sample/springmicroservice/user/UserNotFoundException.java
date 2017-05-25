@@ -11,14 +11,14 @@ package com.hantsylabs.sample.springmicroservice.user;
  */
 public class UserNotFoundException extends RuntimeException {
 
-    Long id;
+    String username;
 
-    public UserNotFoundException(Long id) {
-        super("user:" + id + " was not found");
-        this.id = id;
+    public UserNotFoundException(String username) {
+        super("user:" + username + " was not found");
+        this.username = username;
     }
 
-    public Long getId() {
-        return this.id;
+    public String getUsername() {
+        return this.username;
     }
 }

@@ -41,10 +41,10 @@ public class UserService {
         return this.userRepository.save(_user);
     }
 
-    public User updateUser(Long id, UserForm form) {
-        User _user = this.userRepository.findById(id).orElseThrow(
+    public User updateUser(String username, UserForm form) {
+        User _user = this.userRepository.findByUsername(username).orElseThrow(
             () -> {
-                return new UserNotFoundException(id);
+                return new UserNotFoundException(username);
             }
         );
         
@@ -54,10 +54,10 @@ public class UserService {
         return this.userRepository.save(_user);
     }
 
-    public User lock(Long id) {
-         User _user = this.userRepository.findById(id).orElseThrow(
+    public User lock(String username) {
+         User _user = this.userRepository.findByUsername(username).orElseThrow(
             () -> {
-                return new UserNotFoundException(id);
+                return new UserNotFoundException(username);
             }
         );
         
@@ -67,13 +67,12 @@ public class UserService {
         return this.userRepository.save(_user);
     }
 
-    public User unlock(Long id) {
-         User _user = this.userRepository.findById(id).orElseThrow(
+    public User unlock(String username) {
+         User _user = this.userRepository.findByUsername(username).orElseThrow(
             () -> {
-                return new UserNotFoundException(id);
+                return new UserNotFoundException(username);
             }
         );
-        
             
         _user.setActive(true);
         

@@ -31,8 +31,8 @@ public class UserExeceptionHandler {
     @ExceptionHandler(value = {UserNotFoundException.class})
     public ResponseEntity userNotFound(UserNotFoundException ex, WebRequest req) {
         Map<String, String> errorMsg = new HashMap<>();
-        errorMsg.put("entityType", "USER");
-        errorMsg.put("entityId", ""+ ex.getId());
+        errorMsg.put("entity", "USER");
+        errorMsg.put("id", ""+ ex.getUsername());
         errorMsg.put("code", "not_found");
         errorMsg.put("message", ex.getMessage());
         return ResponseEntity.status(HttpStatus.CONFLICT).body(ex);
