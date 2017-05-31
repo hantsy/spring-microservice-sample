@@ -16,13 +16,15 @@ This demo sample is built on Spring stack, including Spring Boot, Spring Data, S
 
 Following the installation guide from [Docker official website](https://www.docker.com), install the latest Docker, Docker Compose and Docker Machine into your local system.
 
-## Setup Development Environment
+## Setup local development environment
 
 Start up dependent servers via `docker-compose` command.
 
 ```
 docker-compose up
 ```
+
+### Docker Toolbox Notes
 
 If you are using Docker Toolbox, create a new machine for this project.
 
@@ -96,7 +98,7 @@ curl -v  http://localhost:8000/user -u user:test123
 < Transfer-Encoding: chunked
 < Date: Mon, 15 May 2017 09:29:14 GMT
 <
-{"authorities":[{"authority":"USER"}],"details":{"remoteAddress":"0:0:0:0:0:0:0:1","sessionId":null},"authenticated":true,"principal":{"password":null,"username":"user","authorities":[{"authority":"USER"}],"accountNonExpired":true,"accountNonLocked":true,"credentialsNonExpired":true,"enabled":true,"name":"user"},"credentials":null,"name":"user"}* Connection #0 to host localhost left intact
+{"name":"user","roles":["USER"]}* Connection #0 to host localhost left intact
 ```
 
 You will see a `X-Auth-Token` header in the response.
@@ -111,7 +113,7 @@ Try to add some posts data:
 
 ```
 >curl -v  http://localhost:8002/posts 
--H "x-auth-token:  44586f33-4c51-4d8f-ab12-7ad25a1c3a30" 
+-H "x-auth-token:  49090ba7-e641-45e3-935b-894a43b85f62" 
 -H "Accept: application/json" 
 -H "Content-Type: application/json;charset=UTF-8" 
 -X POST 
@@ -129,7 +131,7 @@ Note: Unnecessary use of -X or --request, POST is already inferred.
 > POST /posts HTTP/1.1
 > Host: localhost:8002
 > User-Agent: curl/7.54.0
-> x-auth-token:  44586f33-4c51-4d8f-ab12-7ad25a1c3a30
+> x-auth-token:  49090ba7-e641-45e3-935b-894a43b85f62
 > Accept: application/json
 > Content-Type: application/json;charset=UTF-8
 > Content-Length: 56
@@ -174,7 +176,7 @@ curl -v  http://localhost:8002/posts/4 -H "Accept: application/json"
 {"id":4,"title":"test post","content":"test content of post","status":"DRAFT","author":null,"createdDate":null}*
 ```
 
-## Staging Environment
+## Run all services via Docker Compose
 
 Run all services in your local system or a staging server.
 
@@ -290,7 +292,7 @@ Note: Unnecessary use of -X or --request, POST is already inferred.
 < Pragma: no-cache
 < Expires: 0
 < X-Frame-Options: DENY
-< Location: http://localhost/posts/2
+< Location: http://localhost/posts/test-post-2
 <
 * Connection #0 to host localhost left intact
 ```
@@ -298,7 +300,7 @@ Note: Unnecessary use of -X or --request, POST is already inferred.
 Verify the created posts.
 
 ```
-E:\hantsylabs\spring-microservice-sample>curl -v  http://localhost/posts  -H "Accpet:application/json"
+curl -v  http://localhost/posts  -H "Accpet:application/json"
 * timeout on name lookup is not supported
 *   Trying ::1...
 * TCP_NODELAY set
@@ -512,6 +514,6 @@ curl -v  http://localhost/posts/test-post-2/comments  -H "Accpet:application/jso
 }* Connection #0 to host localhost left intact
 ```
 
-## Deploy in Production
+## Docker Swarm
 
 TBD
