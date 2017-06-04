@@ -19,6 +19,10 @@ public class PostService {
 
     @Inject
     private PostRepository postRepository;
+    
+//    public PostService(PostRepository posts){
+//        this.postRepository = posts;
+//    }
 
     public Post createPost(PostForm form) {
         Post _post = Post.builder()
