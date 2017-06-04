@@ -1,4 +1,4 @@
-version: '2' # specify docker-compose version
+version: '3.1' # specify docker-compose version
 
 services:
 
@@ -8,7 +8,7 @@ services:
     build: 
       context: ./nginx
       dockerfile: Dockerfile
-    links:
+    depends_on:
       - auth-service
       - user-service
       - post-service
@@ -26,7 +26,7 @@ services:
       REDIS_HOST: redis
     ports:
       - "8000:8000" #specify ports forewarding
-    links:
+    depends_on:
       - userdb
       - redis
       
@@ -41,7 +41,7 @@ services:
       REDIS_HOST: redis
     ports:
       - "8001:8001" #specify ports forewarding
-    links:
+    depends_on:
       - userdb
       - redis
   
@@ -56,7 +56,7 @@ services:
       REDIS_HOST: redis
     ports:
       - "8002:8002" #specify ports forewarding
-    links:
+    depends_on:
       - postdb
       - redis
   

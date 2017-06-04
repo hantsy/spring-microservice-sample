@@ -1,4 +1,4 @@
-version: '2' # specify docker-compose version
+version: '3.1' # specify docker-compose version
 
 services:    
   userdb:
