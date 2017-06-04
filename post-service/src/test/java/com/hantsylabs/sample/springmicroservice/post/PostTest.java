@@ -37,7 +37,6 @@ public class PostTest {
     public void tearDown() {
     }
 
-
     @Test
     public void testSlug() {
         System.out.println("getSlug");
@@ -46,7 +45,4 @@ public class PostTest {
         instance.slugify();
         assertEquals("test-post-1", instance.getSlug());
     }
-
-
-    
 }

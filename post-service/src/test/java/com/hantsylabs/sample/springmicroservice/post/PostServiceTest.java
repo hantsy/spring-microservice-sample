@@ -1,6 +1,5 @@
 package com.hantsylabs.sample.springmicroservice.post;
 
-
 import javax.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.After;
@@ -44,15 +43,19 @@ public class PostServiceTest {
 
     @Test
     public void createPost() {
-        Post post = Post.builder().title("test post title").content("test post content@").build();
-        post.setId(1L);
+        final String TITLE = "test post title";
+        final String CONTENT = "test post content";
 
-        given(posts.save(any(Post.class)))
-            .willReturn(post);
+        final PostForm input = PostForm.builder().title(TITLE).content(CONTENT).build();
+        Post expected = Post.builder().title(TITLE).content(CONTENT).build();
+        expected.setId(1L);
 
-        Post savedPost = postService.createPost(PostForm.builder().title("test").content("test").build());
+        given(posts.save(Post.builder().title(input.getTitle()).content(input.getContent()).build()))
+            .willReturn(expected);
 
-        assertTrue(savedPost == post);
+        Post returned = postService.createPost(input);
+
+        assertTrue(returned == expected);
 
         verify(posts, times(1)).save(any(Post.class));
         verifyNoMoreInteractions(posts);
