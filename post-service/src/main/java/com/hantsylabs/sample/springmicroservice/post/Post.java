@@ -50,7 +50,7 @@ class Post extends AuditableEntity {
     }
       
     @PrePersist
-    private void beforePersist(){
+    public void slugify(){
         this.slug = new Slugify().slugify(this.title);
     }
 
