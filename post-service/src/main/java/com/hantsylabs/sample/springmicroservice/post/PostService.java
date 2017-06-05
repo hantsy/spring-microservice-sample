@@ -5,6 +5,8 @@
  */
 package com.hantsylabs.sample.springmicroservice.post;
 
+import com.hantsylabs.sample.springmicroservice.post.PostRepository;
+import com.hantsylabs.sample.springmicroservice.post.Post;
 import javax.inject.Inject;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

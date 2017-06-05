@@ -32,7 +32,11 @@ public class FunctionalTests {
 
     @Test
     public void createPostWithoutAuthentication() {
-        ResponseEntity<Void> response = template.postForEntity(POST_URL, PostForm.builder().title("my title").content("my content of my title").build(), Void.class);
+        ResponseEntity<Void> response = template.postForEntity(
+            POST_URL, 
+            PostForm.builder().title("my title").content("my content of my title").build(), 
+            Void.class
+        );
         assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
     }
 
@@ -40,7 +44,11 @@ public class FunctionalTests {
     public void createPostWithAuthentication() {
 
         //signin with user/test123
-        ResponseEntity<String> authResponse = template.postForEntity(AUTH_URL + "/signin", AuthenticationRequest.builder().username("user").password("test123").build(), String.class);
+        ResponseEntity<String> authResponse = template.postForEntity(
+            AUTH_URL + "/signin",
+            AuthenticationRequest.builder().username("user").password("test123").build(),
+            String.class
+        );
         assertEquals(HttpStatus.OK, authResponse.getStatusCode());
         assertNotNull(authResponse.getHeaders().getFirst("X-Auth-Token"));
         log.debug("\nsignin response:\n {}", authResponse.getBody());
@@ -60,7 +68,8 @@ public class FunctionalTests {
         assertNotNull(response.getHeaders().getLocation());
 
         //verify the created post
-        ResponseEntity<String> postresponse = template.exchange(response.getHeaders().getLocation(),
+        ResponseEntity<String> postresponse = template.exchange(
+            response.getHeaders().getLocation(),
             HttpMethod.GET,
             new HttpEntity<>(headers),
             String.class
@@ -69,19 +78,31 @@ public class FunctionalTests {
         assertEquals(HttpStatus.OK, postresponse.getStatusCode());
         assertNotNull(postresponse.getBody().contains("my title"));
 
+        //verify all posts
+        ResponseEntity<String> allPostsResponse = template.exchange(
+            POST_URL,
+            HttpMethod.GET,
+            new HttpEntity<>(headers),
+            String.class
+        );
+
+        assertEquals(HttpStatus.OK, allPostsResponse.getStatusCode());
+        assertNotNull(allPostsResponse.getBody().contains("my title"));
+
         //add comment to the created post
-        ResponseEntity<Void> postCommentsResponse = template.exchange(response.getHeaders().getLocation().toString() + "/comments",
+        ResponseEntity<Void> postCommentsResponse = template.exchange(
+            response.getHeaders().getLocation().toString() + "/comments",
             HttpMethod.POST,
-             new HttpEntity<>(CommentForm.builder().content("test comment").build(), headers),
+            new HttpEntity<>(CommentForm.builder().content("test comment").build(), headers),
             Void.class
         );
 
         assertEquals(HttpStatus.CREATED, postCommentsResponse.getStatusCode());
         assertNotNull(postCommentsResponse.getHeaders().getLocation());
-        
-        
+
         //verify the created post comment
-        ResponseEntity<String> commentresponse = template.exchange(response.getHeaders().getLocation().toString() + "/comments",
+        ResponseEntity<String> commentresponse = template.exchange(
+            response.getHeaders().getLocation().toString() + "/comments",
             HttpMethod.GET,
             new HttpEntity<>(headers),
             String.class

@@ -5,6 +5,7 @@
  */
 package com.hantsylabs.sample.springmicroservice.post;
 
+import com.hantsylabs.sample.springmicroservice.post.PostNotFoundException;
 import java.util.HashMap;
 import java.util.Map;
 import org.springframework.http.HttpStatus;

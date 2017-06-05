@@ -5,6 +5,8 @@
  */
 package com.hantsylabs.sample.springmicroservice.post;
 
+import com.hantsylabs.sample.springmicroservice.post.Slug;
+import com.hantsylabs.sample.springmicroservice.post.Comment;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;

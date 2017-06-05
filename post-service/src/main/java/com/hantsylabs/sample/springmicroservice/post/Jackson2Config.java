@@ -30,7 +30,10 @@ public class Jackson2Config {
                 DeserializationFeature.FAIL_ON_IGNORED_PROPERTIES,
                 DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES
             )
-            .featuresToEnable(MapperFeature.DEFAULT_VIEW_INCLUSION, DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY)
+            .featuresToEnable(
+                MapperFeature.DEFAULT_VIEW_INCLUSION,
+                DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY
+            )
             .indentOutput(true);
     }
 }

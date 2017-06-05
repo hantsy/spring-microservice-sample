@@ -1,5 +1,15 @@
 package com.hantsylabs.sample.springmicroservice.post;
 
+import com.hantsylabs.sample.springmicroservice.post.CommentForm;
+import com.hantsylabs.sample.springmicroservice.post.PostService;
+import com.hantsylabs.sample.springmicroservice.post.PostNotFoundException;
+import com.hantsylabs.sample.springmicroservice.post.PostForm;
+import com.hantsylabs.sample.springmicroservice.post.PostSpecifications;
+import com.hantsylabs.sample.springmicroservice.post.PostRepository;
+import com.hantsylabs.sample.springmicroservice.post.CommentRepository;
+import com.hantsylabs.sample.springmicroservice.post.Post;
+import com.hantsylabs.sample.springmicroservice.post.Slug;
+import com.hantsylabs.sample.springmicroservice.post.Comment;
 import com.fasterxml.jackson.annotation.JsonView;
 import java.net.URI;
 import javax.servlet.http.HttpServletRequest;
@@ -57,8 +67,6 @@ public class PostController {
         log.debug("get all posts of q@" + keyword + ", status @" + status + ", page@" + page);
 
         Page<Post> posts = this.postRepository.findAll(PostSpecifications.filterByKeywordAndStatus(keyword, status), page);
-
-        log.debug("get posts size @" + posts.getTotalElements());
 
         return new ResponseEntity<>(posts, HttpStatus.OK);
     }

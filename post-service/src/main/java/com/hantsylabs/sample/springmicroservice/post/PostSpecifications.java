@@ -1,5 +1,7 @@
 package com.hantsylabs.sample.springmicroservice.post;
 
+import com.hantsylabs.sample.springmicroservice.post.Post_;
+import com.hantsylabs.sample.springmicroservice.post.Post;
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.criteria.CriteriaBuilder;

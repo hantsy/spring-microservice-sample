@@ -5,7 +5,7 @@
  */
 package com.hantsylabs.sample.springmicroservice.post;
 
-import static java.lang.StrictMath.log;
+import com.hantsylabs.sample.springmicroservice.post.Username;
 import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
@@ -26,20 +26,28 @@ import org.springframework.security.core.userdetails.UserDetails;
  */
 @Configuration
 @Slf4j
-public class SecurityConfig extends WebSecurityConfigurerAdapter {
+public class SecurityConfig {
+    
+    
+    @Bean
+    public WebSecurityConfigurerAdapter securityConfigBean(){
+        
+        return new  WebSecurityConfigurerAdapter() {
 
-    @Override
-    protected void configure(HttpSecurity http) throws Exception {
-        // We need this to prevent the browser from popping up a dialog on a 401
-        http
-            .httpBasic()
-            .and()
-                .authorizeRequests()
-                .antMatchers(HttpMethod.GET, "/posts/**").permitAll()
-                .antMatchers(HttpMethod.DELETE, "/posts/**").hasRole("ADMIN")
-                .anyRequest().authenticated()
-            .and()
-                .csrf().disable();
+            @Override
+            protected void configure(HttpSecurity http) throws Exception {
+                // We need this to prevent the browser from popping up a dialog on a 401
+                http
+                    .httpBasic()
+                    .and()
+                        .authorizeRequests()
+                        .antMatchers(HttpMethod.GET, "/posts/**").permitAll()
+                        .antMatchers(HttpMethod.DELETE, "/posts/**").hasRole("ADMIN")
+                        .anyRequest().authenticated()
+                    .and()
+                        .csrf().disable();
+            }
+        };   
     }
 
     @Bean
