@@ -5,7 +5,6 @@
  */
 package com.hantsylabs.sample.springmicroservice.post;
 
-import com.hantsylabs.sample.springmicroservice.post.Post;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;

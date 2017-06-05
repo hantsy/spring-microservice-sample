@@ -5,6 +5,7 @@
  */
 package com.hantsylabs.sample.springmicroservice.post;
 
+import java.io.Serializable;
 import javax.persistence.Embeddable;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -20,7 +21,7 @@ import lombok.RequiredArgsConstructor;
 @AllArgsConstructor
 @RequiredArgsConstructor
 @Embeddable
-public class Username {
+public class Username implements Serializable {
     
     private String username;
     
