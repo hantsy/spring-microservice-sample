@@ -16,8 +16,6 @@ import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.session.web.http.HeaderHttpSessionStrategy;
-import org.springframework.session.web.http.HttpSessionStrategy;
 
 /**
  *
@@ -27,11 +25,6 @@ import org.springframework.session.web.http.HttpSessionStrategy;
 @EnableJpaAuditing(auditorAwareRef = "auditorAware")
 @Slf4j
 public class DataJpaConfig {
-
-    @Bean
-    public HttpSessionStrategy httpSessionStrategy() {
-        return new HeaderHttpSessionStrategy();
-    }
 
     @Bean
     @Scope(value = ConfigurableBeanFactory.SCOPE_PROTOTYPE)

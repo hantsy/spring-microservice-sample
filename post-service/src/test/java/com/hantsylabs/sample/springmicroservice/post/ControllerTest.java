@@ -7,13 +7,11 @@ package com.hantsylabs.sample.springmicroservice.post;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.Arrays;
-import java.util.Locale;
 import javax.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.hasItem;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import static org.mockito.ArgumentMatchers.any;
@@ -31,6 +29,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.security.test.context.support.WithMockUser;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import org.springframework.security.web.FilterChainProxy;
@@ -45,8 +44,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.setup.MockMvcBuilders.standaloneSetup;
 import org.springframework.web.context.WebApplicationContext;
-import org.springframework.web.servlet.ViewResolver;
-import org.springframework.web.servlet.view.json.MappingJackson2JsonView;
 
 /**
  *
@@ -83,16 +80,17 @@ public class ControllerTest {
             .setCustomArgumentResolvers(
                 new PageableHandlerMethodArgumentResolver()
             )
-            .setViewResolvers(new ViewResolver() {
-                @Override
-                public org.springframework.web.servlet.View resolveViewName(String viewName, Locale locale) 
-                    throws Exception {
-                    return new MappingJackson2JsonView(objectMapper);
-                }
-            })
-            //            .setMessageConverters(
-            //                new MappingJackson2HttpMessageConverter(objectMapper)
-            //            )
+//            .setViewResolvers(new ViewResolver() {
+//                @Override
+//                public org.springframework.web.servlet.View resolveViewName(String viewName, Locale locale) 
+//                    throws Exception {
+//                    return new MappingJackson2JsonView(objectMapper);
+//                }
+//            })
+            
+            .setMessageConverters(
+                new MappingJackson2HttpMessageConverter(objectMapper)
+            )
 
             .alwaysDo(print())
             .apply(springSecurity(springSecurityFilterChain))
@@ -119,7 +117,7 @@ public class ControllerTest {
         MvcResult result = this.mockMvc
             .perform(
                 get("/posts?q=my")
-                    .accept(MediaType.APPLICATION_JSON_UTF8)
+                    .accept(MediaType.APPLICATION_JSON)
             )
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.content[*].title", hasItem("my first post1")))
@@ -131,7 +129,7 @@ public class ControllerTest {
     }
     
     @Test
-    public void createPostWithAuthentication() throws Exception {
+    public void createPostWithoutAuthentication() throws Exception {
         Post _data = Post.builder().title("my first post").content("my content of my post").build();
         given(this.postService.createPost(any(PostForm.class)))
             .willReturn(_data);
@@ -153,7 +151,7 @@ public class ControllerTest {
     
     @Test
     @WithMockUser
-    public void createPost() throws Exception {
+    public void createPostWithMockUser() throws Exception {
         Post _data = Post.builder().title("my first post").content("my content of my post").build();
         given(this.postService.createPost(any(PostForm.class)))
             .willReturn(_data);

@@ -20,7 +20,6 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 @Slf4j
 public class SecurityConfig {
     
-    
     @Bean
     public WebSecurityConfigurerAdapter securityConfigBean(){
         
