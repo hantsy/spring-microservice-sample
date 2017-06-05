@@ -2,8 +2,21 @@ server:
   port: 8002
 
 spring:
-  redis:
+  jackson:
+    mapper:
+      DEFAULT_VIEW_INCLUSION: true 
+    serialization: 
+      indent_output: true
+      WRITE_DATES_AS_TIMESTAMPS: false
+    deserialization:
+      FAIL_ON_IGNORED_PROPERTIES: false
+      FAIL_ON_UNKNOWN_PROPERTIES: false
+      ACCEPT_SINGLE_VALUE_AS_ARRAY: true
+    default-property-inclusion: non_empty 
+    
+  redis:  
     host: ${REDIS_HOST:localhost}
+    
   cache:
     type: redis
       

@@ -100,7 +100,7 @@ public class ControllerTest {
     }
     
     @Test
-    @Ignore
+    //@Ignore
     public void testGetAllPosts() throws Exception {
         given(this.posts
             .findAll(PostSpecifications.filterByKeywordAndStatus("my", null), PageRequest.of(0, 10)))
