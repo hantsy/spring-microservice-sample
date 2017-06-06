@@ -56,7 +56,7 @@ spring:
       repositories.enabled: true
 
 security:
-  sessions: ALWAYS
+  sessions: NEVER
 
 logging:
   level:
