@@ -66,8 +66,11 @@ public class UserController {
     @GetMapping(value = "")
     public ResponseEntity getAll(
         @RequestParam(value = "q", required = false) String q,
+        @RequestParam(value = "role", required = false) String role,
+        @RequestParam(value = "active", required = false) String active,
         @PageableDefault(page = 0, size = 10, sort = "createdDate", direction = Sort.Direction.DESC) Pageable page) {
-        Page<User> users = this.userRepository.findAll(UserSpecifications.byKeyword(q), page);
+        
+        Page<User> users = this.userRepository.findAll(UserSpecifications.byKeyword(q, role, active), page);
 
         return ResponseEntity.ok(users);
     }

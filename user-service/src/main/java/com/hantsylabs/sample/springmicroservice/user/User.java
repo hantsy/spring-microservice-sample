@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import javax.persistence.CollectionTable;
 import javax.persistence.Column;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
@@ -11,6 +12,8 @@ import javax.persistence.EntityListeners;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.PrePersist;
 import javax.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -53,10 +56,19 @@ public class User implements Serializable {
 
     @ElementCollection
     @Builder.Default
+    //@CollectionTable(name = "user_roles", joinColumns = {@JoinColumn(name = "user_id")})
+    //@Column(name="role_name")
     private List<String> roles = new ArrayList<>();
 
     @Column(name = "created_date")
     @CreatedDate
     private LocalDateTime createdDate;
+
+    @PrePersist()
+    public void beforePersist() {
+        if (this.roles.isEmpty()) {
+            this.roles.add("USER");
+        }
+    }
 
 }

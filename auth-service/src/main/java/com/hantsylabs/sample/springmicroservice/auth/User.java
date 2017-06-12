@@ -14,6 +14,7 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.PrePersist;
 import javax.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -63,6 +64,13 @@ public class User implements UserDetails, Serializable {
     @Column(name = "created_date")
     @CreatedDate
     private LocalDateTime createdDate;
+
+    @PrePersist()
+    public void beforePersist() {
+        if (this.roles.isEmpty()) {
+            this.roles.add("USER");
+        }
+    }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

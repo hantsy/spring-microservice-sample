@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.ListJoin;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import org.springframework.data.jpa.domain.Specification;
@@ -20,8 +21,7 @@ import org.springframework.util.StringUtils;
  */
 public class UserSpecifications {
 
-    public static Specification<User> byKeyword(String keyword) {
-
+    public static Specification<User> byKeyword(String keyword, String role, String active){
         return (Root<User> root, CriteriaQuery<?> query, CriteriaBuilder cb) -> {
 
             List<Predicate> predicates = new ArrayList<>();
@@ -34,14 +34,14 @@ public class UserSpecifications {
                     ));
             }
 
-            //           if (StringUtils.hasText(role) && !"ALL".equals(role)) {
-            //               predicates.add(cb.equal(root.get(User_.role), role));
-//                ListJoin<User_, String> roleJoin = root.join(User_.roles);
-//                predicates.add(cb.equal(roleJoin, role));
-            //           }
-//            if (StringUtils.hasText(locked)) {
-//                predicates.add(cb.equal(root.get(User_.locked), Boolean.valueOf(locked)));
-//            }
+            if (StringUtils.hasText(role) && !"ALL".equals(role)) {
+
+                ListJoin<User, String> roleJoin = root.join(User_.roles);
+                predicates.add(cb.equal(roleJoin, role));
+            }
+            if (StringUtils.hasText(active)) {
+                predicates.add(cb.equal(root.get(User_.active), Boolean.valueOf(active)));
+            }
             return cb.and(predicates.toArray(new Predicate[predicates.size()]));
         };
     }
