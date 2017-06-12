@@ -1,4 +1,4 @@
-package com.hantsylabs.sample.springmicroservice.post;
+package com.hantsylabs.sample.springmicroservice.ftest;
 
 import com.hantsylabs.sample.springmicroservice.test.AuthenticationRequest;
 import com.hantsylabs.sample.springmicroservice.test.CommentForm;
@@ -50,12 +50,13 @@ public class FunctionalTests {
             String.class
         );
         assertEquals(HttpStatus.OK, authResponse.getStatusCode());
-        assertNotNull(authResponse.getHeaders().getFirst("X-Auth-Token"));
+        final String xAuthToken = authResponse.getHeaders().getFirst("X-Auth-Token");
+        assertNotNull(xAuthToken);
         log.debug("\nsignin response:\n {}", authResponse.getBody());
 
         //create a new post
         HttpHeaders headers = new HttpHeaders();
-        headers.add("X-Auth-Token", authResponse.getHeaders().getFirst("X-Auth-Token"));
+        headers.add("X-Auth-Token", xAuthToken);
         //headers.add("Content-Type", MediaType.APPLICATION_JSON_UTF8_VALUE);
 
         ResponseEntity<Void> response = template.exchange(POST_URL,
@@ -88,10 +89,12 @@ public class FunctionalTests {
 
         assertEquals(HttpStatus.OK, allPostsResponse.getStatusCode());
         assertNotNull(allPostsResponse.getBody().contains("my title"));
+        
+        final String commentsUrl = response.getHeaders().getLocation().toString() + "/comments";
 
         //add comment to the created post
         ResponseEntity<Void> postCommentsResponse = template.exchange(
-            response.getHeaders().getLocation().toString() + "/comments",
+            commentsUrl,
             HttpMethod.POST,
             new HttpEntity<>(CommentForm.builder().content("test comment").build(), headers),
             Void.class
@@ -102,7 +105,7 @@ public class FunctionalTests {
 
         //verify the created post comment
         ResponseEntity<String> commentresponse = template.exchange(
-            response.getHeaders().getLocation().toString() + "/comments",
+            commentsUrl,
             HttpMethod.GET,
             new HttpEntity<>(headers),
             String.class
