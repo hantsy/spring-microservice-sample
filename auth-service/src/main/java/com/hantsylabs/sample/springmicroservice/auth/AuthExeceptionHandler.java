@@ -28,13 +28,4 @@ public class AuthExeceptionHandler {
         return ResponseEntity.status(HttpStatus.CONFLICT).body(ex);
     }
 
-    @ExceptionHandler(value = {UserNotFoundException.class})
-    public ResponseEntity userNotFound(UserNotFoundException ex, WebRequest req) {
-        Map<String, String> errorMsg = new HashMap<>();
-        errorMsg.put("entityType", "USER");
-        errorMsg.put("entityId", ""+ ex.getId());
-        errorMsg.put("code", "not_found");
-        errorMsg.put("message", ex.getMessage());
-        return ResponseEntity.status(HttpStatus.CONFLICT).body(ex);
-    }
 }
