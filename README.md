@@ -618,7 +618,7 @@ docker stack deploy -c docker-stack.yml blogapp
 The services will be scheduled to deploy in this swarm.
 
 
-The *docker-stack.yml* file includes a `visualizer` service to visualize all services. It can be accessed via http://<any manager ip>:8080, you can see the deployment progress.
+The *docker-stack.yml* file includes a `visualizer` service to visualize all services. It can be accessed via http://&lt;any manager ip&gt;:8080, you will see the deployment progress.
 
 ![visualizer](./docker-viz.png)
 
