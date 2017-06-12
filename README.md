@@ -572,6 +572,7 @@ To add a manager to this swarm, run the following command:
     docker swarm join \
     --token SWMTKN-1-10bwwj2u6erepp9oc0qlkwao4o79vogifon51qkhdqfsl7zkkd-4xus5y6wa7a4ass0f5bt20pym \
     192.168.99.101:2377
+```
 	
 Let us switch to *manager2*.
 
@@ -596,7 +597,7 @@ Switch to worker1, worker2, and worker3, join this swarm as a worker.
     192.168.99.101:2377
 ```
 
-Switch to any manager machine, and you can show all running nodes.
+Switch to any **manager** machine, and you can show all running nodes.
 
 ```
 $ docker node ls
@@ -608,7 +609,7 @@ lknqw5dg5jyxw3j2camcpnb0v *   manager1            Ready               Active    
 ovqfs7ymrgbeyfqu8db8n6apc     worker3             Ready               Active
 ```
 
-Switch to any *manager* machine, deploy all service via `docker stack` command.
+Switch to any **manager** machine, deploy all service via `docker stack` command.
 
 ```
 docker stack deploy -c docker-stack.yml blogapp
