@@ -59,4 +59,7 @@ services:
     depends_on:
       - postdb
       - redis
+ 
+
   
+     

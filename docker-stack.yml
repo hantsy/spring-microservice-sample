@@ -1,0 +1,156 @@
+version: '3.1' # specify docker-compose version
+
+services:
+
+  nginx-proxy:
+    image: hantsylab/nginx-proxy
+    ports:
+      - "80:80"
+    networks:
+      - frontend
+      - backend
+    depends_on:
+      - auth-service
+      - user-service
+      - post-service
+    deploy:
+      mode: replicated
+      replicas: 2
+      labels: [APP=GATEWAY]
+      restart_policy:
+        condition: on-failure
+        delay: 10s
+        max_attempts: 3
+        window: 120s
+      placement:
+        constraints: [node.role == manager]
+  
+  auth-service:
+    image: hantsylab/auth-service
+    environment:
+      USERDB_URL: jdbc:mysql://userdb:3306/userdb
+      REDIS_HOST: redis
+    ports:
+      - "8000:8000" #specify ports forewarding
+    networks:
+      - backend
+    depends_on:
+      - redis
+      - userdb
+    deploy:
+      replicas: 1
+      update_config:
+        parallelism: 2
+      restart_policy:
+        condition: on-failure
+  
+  user-service: 
+    image: hantsylab/user-service
+    environment:
+      USERDB_URL: jdbc:mysql://userdb:3306/userdb
+      REDIS_HOST: redis
+    ports:
+      - "8001:8001" #specify ports forewarding
+    networks:
+      - backend
+    depends_on:
+      - redis
+      - userdb
+    deploy:
+      replicas: 1
+      update_config:
+        parallelism: 2
+        delay: 10s
+      restart_policy:
+        condition: on-failure
+
+  post-service: 
+    image: hantsylab/post-service
+    environment:
+      POSTDB_URL: jdbc:mysql://postdb:3306/postdb
+      REDIS_HOST: redis
+    ports:
+      - "8002:8002" #specify ports forewarding
+    networks:
+      - backend
+    depends_on:
+      - redis
+      - postdb
+    deploy:
+      replicas: 3
+      update_config:
+        parallelism: 2
+        delay: 10s
+      restart_policy:
+        condition: on-failure
+        
+  visualizer:
+    image: dockersamples/visualizer:stable
+    ports:
+      - "8080:8080"
+    stop_grace_period: 1m30s
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock"
+    networks:
+      - frontend  
+    deploy:
+      placement:
+        constraints: [node.role == manager]
+
+  userdb:
+    image: mysql
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: mysecret
+      MYSQL_USER: user
+      MYSQL_PASSWORD: password
+      MYSQL_DATABASE: userdb
+    volumes:
+      - userdata:/var/lib/mysql
+    networks:
+      - backend
+    deploy:
+      placement:
+        constraints: [node.role == worker]
+        
+  postdb:
+    image: mysql
+    ports:
+      - "3307:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: mysecret
+      MYSQL_USER: user
+      MYSQL_PASSWORD: password
+      MYSQL_DATABASE:  postdb
+    volumes:
+      - postdata:/var/lib/mysql    
+    networks:
+      - backend
+    deploy:
+      placement:
+        constraints: [node.role == worker]
+  
+  redis:
+    image: redis
+    ports:
+      - "6379:6379"  
+    networks:
+      - backend
+    deploy:
+      replicas: 1
+      update_config:
+        parallelism: 2
+        delay: 10s
+      restart_policy:
+        condition: on-failure 
+      placement:
+        constraints: [node.role == worker]
+        
+networks:
+  frontend:
+  backend:
+
+volumes:
+  userdata:
+  postdata:

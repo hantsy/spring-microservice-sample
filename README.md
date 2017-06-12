@@ -32,7 +32,9 @@ If you are using Docker Toolbox, create a new machine for this project.
 $ docker-machine create -d virtualbox --engine-registry-mirror https://docker.mirrors.ustc.edu.cn springms
 ```
 
-Switch to the new created machine, `springms`.
+The `--engine-registry-mirror https://docker.mirrors.ustc.edu.cn` will add a docker registry mirror settings in docker-machine config. For Chinese users, it will speed up the Docker images downloading.
+
+Then switch to the new created machine **springms**.
 
 ```
 eval "$(docker-machine env springms)"
@@ -516,4 +518,111 @@ curl -v  http://localhost/posts/test-post-2/comments  -H "Accpet:application/jso
 
 ## Docker Swarm
 
-TBD
+Use Docker Machine to create multi nodes. In order to demonstrate running this project in Swarm mode, we created two managers and three workers.
+
+```
+$ docker-machine create -d virtualbox --engine-registry-mirror https://docker.mirrors.ustc.edu.cn manager1
+$ docker-machine create -d virtualbox --engine-registry-mirror https://docker.mirrors.ustc.edu.cn manager2
+$ docker-machine create -d virtualbox --engine-registry-mirror https://docker.mirrors.ustc.edu.cn worker1
+$ docker-machine create -d virtualbox --engine-registry-mirror https://docker.mirrors.ustc.edu.cn worker2
+$ docker-machine create -d virtualbox --engine-registry-mirror https://docker.mirrors.ustc.edu.cn worker3
+```
+
+Show the created machines.
+
+```
+$ docker-machine ls
+NAME       ACTIVE   DRIVER       STATE     URL                         SWARM   DOCKER        ERRORS
+default    *        virtualbox   Running   tcp://192.168.99.100:2376           v17.05.0-ce
+manager1   -        virtualbox   Running   tcp://192.168.99.101:2376           v17.05.0-ce
+manager2   -        virtualbox   Running   tcp://192.168.99.102:2376           v17.05.0-ce
+springms   -        virtualbox   Stopped                                       Unknown
+worker1    -        virtualbox   Running   tcp://192.168.99.103:2376           v17.05.0-ce
+worker2    -        virtualbox   Running   tcp://192.168.99.104:2376           v17.05.0-ce
+worker3    -        virtualbox   Running   tcp://192.168.99.105:2376           v17.05.0-ce
+```
+
+Switch to `manager1`.
+
+```
+eval "$(docker-manager env manager1)"
+```
+
+Initializes Docker Swarm.
+
+```
+$ docker swarm init --listen-addr 192.168.99.101 --advertise-addr 192.168.99.101
+Swarm initialized: current node (t36lxk020fasw5tdes4gm9ucf) is now a manager.
+
+To add a worker to this swarm, run the following command:
+
+    docker swarm join \
+    --token SWMTKN-1-10bwwj2u6erepp9oc0qlkwao4o79vogifon51qkhdqfsl7zkkd-810eddvkzt2g8vvxb4gul4pnb \
+    192.168.99.101:2377
+
+To add a manager to this swarm, run 'docker swarm join-token manager' and follow the instructions.
+```
+
+We want to add *manager2* as manager in this swarm. Follow the above info. Execute `docker swarm join-token manager`, it will show the guide to add more managers.
+
+```
+$ docker swarm join-token manager
+To add a manager to this swarm, run the following command:
+
+    docker swarm join \
+    --token SWMTKN-1-10bwwj2u6erepp9oc0qlkwao4o79vogifon51qkhdqfsl7zkkd-4xus5y6wa7a4ass0f5bt20pym \
+    192.168.99.101:2377
+	
+Let us switch to *manager2*.
+
+```
+eval "$(docker-machine env manager2)"
+```
+
+Copy and paste the `docker swarm join` command lines and execute it.
+
+```
+$ docker swarm join \
+     --token SWMTKN-1-10bwwj2u6erepp9oc0qlkwao4o79vogifon51qkhdqfsl7zkkd-4xus5y6wa7a4ass0f5bt20pym \
+     192.168.99.101:2377
+This node joined a swarm as a manager.
+```
+
+Switch to worker1, worker2, and worker3, join this swarm as a worker.
+
+```
+    docker swarm join \
+    --token SWMTKN-1-10bwwj2u6erepp9oc0qlkwao4o79vogifon51qkhdqfsl7zkkd-810eddvkzt2g8vvxb4gul4pnb \
+    192.168.99.101:2377
+```
+
+Switch to any manager machine, and you can show all running nodes.
+
+```
+$ docker node ls
+ID                            HOSTNAME            STATUS              AVAILABILITY        MANAGER STATUS
+9d07by6czpem6hx55ke3ks1v1     manager2            Ready               Active              Reachable
+er9klqvww0kdwyfaxr5f7n15l     worker1             Ready               Active
+hsmaugexj4l7p5ighl9nega8q     worker2             Ready               Active
+lknqw5dg5jyxw3j2camcpnb0v *   manager1            Ready               Active              Leader
+ovqfs7ymrgbeyfqu8db8n6apc     worker3             Ready               Active
+```
+
+Switch to any *manager* machine, deploy all service via `docker stack` command.
+
+```
+docker stack deploy -c docker-stack.yml blogapp
+```
+
+The services will be scheduled to deploy in this swarm.
+
+
+The *docker-stack.yml* file includes a `visualizer` service to visualize all services. It can be accessed via http://<any manager ip>:8080, you can see the deployment progress.
+
+![visualizer](./docker-viz.png)
+
+Remove this stack by the following command.
+
+```
+docker stack rm blogapp
+```
