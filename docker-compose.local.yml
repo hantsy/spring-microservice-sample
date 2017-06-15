@@ -3,7 +3,7 @@ version: '3.1' # specify docker-compose version
 services:
 
   nginx-proxy:
-    image: hantsylab/nginx-proxy
+    image: hantsy/nginx-proxy
     container_name: nginx-proxy
     build: 
       context: ./nginx
@@ -16,7 +16,7 @@ services:
       - "80:80"
       
   auth-service:
-    image: hantsylab/auth-service
+    image: hantsy/auth-service
     container_name: auth-service
     build: 
       context: ./auth-service # specify the directory of the Dockerfile
@@ -31,7 +31,7 @@ services:
       - redis
       
   user-service: 
-    image: hantsylab/user-service
+    image: hantsy/user-service
     container_name: user-service
     build: 
       context: ./user-service
@@ -46,7 +46,7 @@ services:
       - redis
   
   post-service: 
-    image: hantsylab/post-service
+    image: hantsy/post-service
     container_name: post-service
     build: 
       context: ./post-service
