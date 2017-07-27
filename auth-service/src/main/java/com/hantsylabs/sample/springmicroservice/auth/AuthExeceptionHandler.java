@@ -25,7 +25,7 @@ public class AuthExeceptionHandler {
         Map<String, String> errorMsg = new HashMap<>();
         errorMsg.put("code", "conflict");
         errorMsg.put("message", ex.getMessage());
-        return ResponseEntity.status(HttpStatus.CONFLICT).body(ex);
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(ex.getMessage());
     }
 
 }

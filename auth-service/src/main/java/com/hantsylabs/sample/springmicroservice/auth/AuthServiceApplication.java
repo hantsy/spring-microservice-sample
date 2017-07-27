@@ -15,7 +15,7 @@ import org.springframework.session.web.http.HeaderHttpSessionStrategy;
 import org.springframework.session.web.http.HttpSessionStrategy;
 
 @SpringBootApplication
-@EnableRedisHttpSession(maxInactiveIntervalInSeconds = 3600 * 24 * 30)
+@EnableRedisHttpSession(maxInactiveIntervalInSeconds = 3600 * 24)
 public class AuthServiceApplication {
 
     public static void main(String[] args) {
