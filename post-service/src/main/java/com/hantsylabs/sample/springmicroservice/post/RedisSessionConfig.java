@@ -7,8 +7,8 @@ package com.hantsylabs.sample.springmicroservice.post;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.session.web.http.HeaderHttpSessionStrategy;
-import org.springframework.session.web.http.HttpSessionStrategy;
+import org.springframework.session.web.http.HeaderHttpSessionIdResolver;
+import org.springframework.session.web.http.HttpSessionIdResolver;
 
 /**
  *
@@ -18,8 +18,8 @@ import org.springframework.session.web.http.HttpSessionStrategy;
 public class RedisSessionConfig {
 
     @Bean
-    public HttpSessionStrategy httpSessionStrategy() {
-        return new HeaderHttpSessionStrategy();
+    public HttpSessionIdResolver httpSessionStrategy() {
+        return HeaderHttpSessionIdResolver.xAuthToken();
     }
 
 }

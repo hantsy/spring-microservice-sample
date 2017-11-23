@@ -11,8 +11,8 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.session.data.redis.config.annotation.web.http.EnableRedisHttpSession;
-import org.springframework.session.web.http.HeaderHttpSessionStrategy;
-import org.springframework.session.web.http.HttpSessionStrategy;
+import org.springframework.session.web.http.HeaderHttpSessionIdResolver;
+import org.springframework.session.web.http.HttpSessionIdResolver;
 
 @SpringBootApplication
 @EnableRedisHttpSession(maxInactiveIntervalInSeconds = 3600 * 24)
@@ -23,8 +23,8 @@ public class AuthServiceApplication {
     }
 
     @Bean
-    public HttpSessionStrategy httpSessionStrategy() {
-        return new HeaderHttpSessionStrategy();
+    public HttpSessionIdResolver httpSessionStrategy() {
+        return HeaderHttpSessionIdResolver.xAuthToken();
     }
 
     @Bean
@@ -33,7 +33,7 @@ public class AuthServiceApplication {
     }
 
     @Configuration
-    @Order(SecurityProperties.ACCESS_OVERRIDE_ORDER)
+    @Order(SecurityProperties.DEFAULT_FILTER_ORDER)
     protected static class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
         @Override

@@ -16,8 +16,8 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.session.web.http.HeaderHttpSessionStrategy;
-import org.springframework.session.web.http.HttpSessionStrategy;
+import org.springframework.session.web.http.HttpSessionIdResolver;
+import org.springframework.session.web.http.HeaderHttpSessionIdResolver;
 
 @SpringBootApplication
 @EnableJpaAuditing
@@ -28,8 +28,8 @@ public class UserServiceApplication {
     }
     
     @Bean
-    public HttpSessionStrategy httpSessionStrategy() {
-        return new HeaderHttpSessionStrategy();
+    public HttpSessionIdResolver httpSessionStrategy() {
+        return HeaderHttpSessionIdResolver.xAuthToken();
     }
     
     @Bean
@@ -38,7 +38,7 @@ public class UserServiceApplication {
     }
 
     @Configuration
-    @Order(SecurityProperties.ACCESS_OVERRIDE_ORDER)
+    @Order(SecurityProperties.DEFAULT_FILTER_ORDER)
     protected static class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
         @Override
