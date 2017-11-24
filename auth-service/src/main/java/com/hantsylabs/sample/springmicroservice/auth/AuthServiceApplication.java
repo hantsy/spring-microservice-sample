@@ -6,6 +6,7 @@ import org.springframework.boot.autoconfigure.security.SecurityProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -42,13 +43,19 @@ public class AuthServiceApplication {
             http
                 .httpBasic()
                 .and()
-                    .authorizeRequests()
-                    .antMatchers("/auth/signin", "/auth/signup", "/").permitAll()
-                    .anyRequest().authenticated()
+                .authorizeRequests()
+                .antMatchers("/auth/signin", "/auth/signup", "/").permitAll()
+                .anyRequest().authenticated()
                 .and()
-                    .csrf().disable();
+                .csrf().disable();
             //.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse());
             // @formatter:on
+        }
+
+        @Bean
+        @Override
+        public AuthenticationManager authenticationManagerBean() throws Exception {
+            return super.authenticationManagerBean();
         }
     }
 }

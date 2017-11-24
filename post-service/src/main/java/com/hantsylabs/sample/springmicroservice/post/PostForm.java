@@ -25,11 +25,11 @@ public class PostForm implements Serializable {
      */
     private static final long serialVersionUID = 1L;
 
-    @NotNull
+    //@NotNull
     @NotEmpty
     private String title;
 
-    @NotNull
+    //@NotNull
     @NotEmpty
     private String content;
 

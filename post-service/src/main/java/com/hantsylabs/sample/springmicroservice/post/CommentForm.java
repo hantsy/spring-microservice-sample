@@ -25,7 +25,7 @@ public class CommentForm implements Serializable {
      */
     private static final long serialVersionUID = 1L;
 
-    @NotNull
+    //@NotNull
     @NotEmpty
     private String content;
 

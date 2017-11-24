@@ -10,6 +10,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.AuthorityUtils;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -18,9 +19,10 @@ import org.springframework.web.bind.annotation.RestController;
  * @author hantsy
  */
 @RestController
+@RequestMapping(value = "/user")
 public class UserInfoController {
 
-    @RequestMapping("/user")
+    @GetMapping("")
     public Map<String, Object> user(Principal user) {
         Map<String, Object> map = new LinkedHashMap<String, Object>();
         map.put("name", user.getName());
