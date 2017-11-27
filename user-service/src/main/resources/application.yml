@@ -40,8 +40,8 @@ spring:
     jpa:
       repositories.enabled: true
 
-security:
-  sessions: NEVER
+  security:
+    sessions: NEVER
 
 logging:
   level:

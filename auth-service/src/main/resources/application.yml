@@ -39,8 +39,8 @@ spring:
     jpa:
       repositories.enabled: true
 
-security:
-  sessions: ALWAYS
+  security:
+    sessions: ALWAYS
 
 logging:
   level:

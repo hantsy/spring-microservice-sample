@@ -6,7 +6,7 @@
 package com.hantsylabs.sample.springmicroservice.auth;
 
 import java.security.Principal;
-import java.util.LinkedHashMap;
+import java.util.HashMap;
 import java.util.Map;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.AuthorityUtils;
@@ -24,7 +24,7 @@ public class UserInfoController {
 
     @GetMapping("")
     public Map<String, Object> user(Principal user) {
-        Map<String, Object> map = new LinkedHashMap<String, Object>();
+        Map<String, Object> map = new HashMap<>();
         map.put("name", user.getName());
         map.put("roles", AuthorityUtils.authorityListToSet(((Authentication) user)
             .getAuthorities()));
