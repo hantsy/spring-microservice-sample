@@ -11,7 +11,6 @@ import org.springframework.session.web.http.HeaderHttpSessionIdResolver;
 import org.springframework.session.web.http.HttpSessionIdResolver;
 
 /**
- *
  * @author hantsy
  */
 @Configuration
