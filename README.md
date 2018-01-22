@@ -1,3 +1,26 @@
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+**Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
+
+- [Build a Microservice application with Spring Boot](#build-a-microservice-application-with-spring-boot)
+  - [Prerequisites](#prerequisites)
+    - [Setup local development environment](#setup-local-development-environment)
+      - [Docker Toolbox Notes](#docker-toolbox-notes)
+  - [Cook your first service](#cook-your-first-service)
+    - [REST API overview](#rest-api-overview)
+    - [Create domain models](#create-domain-models)
+    - [Declare a `Repository` for `Post` entity](#declare-a-repository-for-post-entity)
+    - [Create a domain service](#create-a-domain-service)
+    - [Produces RESTful APIs](#produces-restful-apis)
+    - [Exception Handling](#exception-handling)
+    - [Miscellaneous](#miscellaneous)
+  - [Secures microservice](#secures-microservice)
+  - [Run the application locally](#run-the-application-locally)
+  - [Run all services via Docker Compose](#run-all-services-via-docker-compose)
+  - [Docker Swarm](#docker-swarm)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 # Build a Microservice application with Spring Boot
 
 In the past years, 3-tiered enterprise application and B/S architecture can satisfy most of use cases. In that era, most of the applications are truly monolithic.  
