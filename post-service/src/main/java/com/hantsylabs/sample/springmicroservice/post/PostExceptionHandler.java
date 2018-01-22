@@ -14,6 +14,8 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
 
+import static org.springframework.http.ResponseEntity.*;
+
 /**
  *
  * @author hantsy
@@ -29,7 +31,7 @@ public class PostExceptionHandler {
         errors.put("code", "not_found");
         errors.put("message", ex.getMessage());
 
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errors);
+        return status(HttpStatus.NOT_FOUND).body(errors);
     }
 
 }
