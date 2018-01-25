@@ -15,50 +15,23 @@ import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.session.web.http.HttpSessionIdResolver;
 import org.springframework.session.web.http.HeaderHttpSessionIdResolver;
 
 @SpringBootApplication
-@EnableJpaAuditing
 public class UserServiceApplication {
 
     public static void main(String[] args) {
         SpringApplication.run(UserServiceApplication.class, args);
     }
-    
-    @Bean
-    public HttpSessionIdResolver httpSessionStrategy() {
-        return HeaderHttpSessionIdResolver.xAuthToken();
-    }
-    
+
     @Bean
     public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
+        return PasswordEncoderFactories.createDelegatingPasswordEncoder();
     }
 
-    @Configuration
-    @Order(SecurityProperties.DEFAULT_FILTER_ORDER)
-    protected static class SecurityConfiguration extends WebSecurityConfigurerAdapter {
-
-        @Override
-        protected void configure(HttpSecurity http) throws Exception {
-            // @formatter:off
-            http
-                .httpBasic()
-            .and()
-                .authorizeRequests()
-                .antMatchers("/").permitAll()
-                .antMatchers(HttpMethod.GET, "/users/**").permitAll()
-                .anyRequest().authenticated()
-            .and()
-                .csrf().disable();
-               // .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse());
-            // @formatter:on
-        }
-    }
-    
-    
     @Bean
     public Jackson2ObjectMapperBuilder objectMapperBuilder() {
 
@@ -71,5 +44,42 @@ public class UserServiceApplication {
             )
             .featuresToEnable(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY)
             .indentOutput(true);
+    }
+}
+
+@Configuration
+@EnableJpaAuditing
+class DataJpaConfig {
+}
+
+@Configuration
+class RedisSessionConfig {
+
+    @Bean
+    public HttpSessionIdResolver httpSessionStrategy() {
+        return HeaderHttpSessionIdResolver.xAuthToken();
+    }
+
+}
+
+
+@Configuration
+@Order(SecurityProperties.DEFAULT_FILTER_ORDER)
+class SecurityConfig extends WebSecurityConfigurerAdapter {
+
+    @Override
+    protected void configure(HttpSecurity http) throws Exception {
+        // @formatter:off
+            http
+                .httpBasic()
+            .and()
+                .authorizeRequests()
+                .antMatchers("/").permitAll()
+                .antMatchers(HttpMethod.GET, "/users/**").permitAll()
+                .anyRequest().authenticated()
+            .and()
+                .csrf().disable();
+               // .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse());
+            // @formatter:on
     }
 }

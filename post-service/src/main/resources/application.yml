@@ -27,9 +27,9 @@ spring:
     basename: messages
 
   datasource:
-    dataSourceClassName: com.mysql.jdbc.jdbc2.optional.MysqlDataSource
-    url: ${POSTDB_URL:jdbc:mysql://localhost:3307/postdb}
-    username: user
+    # dataSourceClassName: com.mysql.jdbc.jdbc2.optional.MysqlDataSource
+    url: ${POSTDB_URL:jdbc:postgresql://localhost:5432/postdb}
+    username: postgres
     password: password
     cachePrepStmts: true
     prepStmtCacheSize: 250
@@ -37,8 +37,8 @@ spring:
     useServerPrepStmts: true
 
   jpa:
-    database-platform: org.hibernate.dialect.MySQL5Dialect
-    database: MYSQL
+    #database-platform: org.hibernate.dialect.MySQL5Dialect
+    #database: MYSQL
     openInView: false
     show_sql: false
     generate-ddl: true
@@ -50,6 +50,8 @@ spring:
       hibernate.cache.use_query_cache: false
       hibernate.generate_statistics: true
       hibernate.cache.region.factory_class: org.hibernate.cache.internal.NoCachingRegionFactory
+      # fixes Caused by: java.sql.SQLFeatureNotSupportedException: Method org.postgresql.jdbc.PgConnection.createClob() is not yet implemented.
+      hibernate.jdbc.lob.non_contextual_creation: true
 
   data:
     jpa:

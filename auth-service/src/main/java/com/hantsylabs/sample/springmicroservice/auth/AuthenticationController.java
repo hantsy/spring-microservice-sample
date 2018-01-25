@@ -29,7 +29,7 @@ public class AuthenticationController {
     private static final Logger log = LoggerFactory.getLogger(AuthenticationController.class);
     
     @Inject
-    private UserService userService;
+    private UserServiceClient userService;
     
     @Inject
     private AuthenticationManager authenticationManager;
@@ -86,9 +86,7 @@ public class AuthenticationController {
         HttpServletRequest req) {
         log.debug("signup data@" + form);
         
-        User saved = this.userService.handleSignup(form);
-        
-        log.debug("registered user:" + saved);
+        this.userService.handleSignup(form);
         return this.handleAuthentication(form.getUsername(), form.getPassword(), req);
     }
     

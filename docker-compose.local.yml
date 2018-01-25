@@ -22,12 +22,12 @@ services:
       context: ./auth-service # specify the directory of the Dockerfile
       dockerfile: Dockerfile
     environment:
-      USERDB_URL: jdbc:mysql://userdb:3306/userdb
+      USER_SERVICE_URL: http://user-service:8001
       REDIS_HOST: redis
     ports:
       - "8000:8000" #specify ports forewarding
     depends_on:
-      - userdb
+      - user-service
       - redis
       
   user-service: 

@@ -20,7 +20,7 @@ import org.springframework.web.context.request.WebRequest;
 @RestControllerAdvice
 public class AuthExeceptionHandler {
 
-    @ExceptionHandler(value = {UsernameWasTakenException.class, EmailWasTakenException.class})
+    @ExceptionHandler(value = {SignupConflictException.class})
     public ResponseEntity signupFailed(Exception ex, WebRequest req) {
         Map<String, String> errorMsg = new HashMap<>();
         errorMsg.put("code", "conflict");

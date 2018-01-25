@@ -1479,7 +1479,11 @@ curl -v  http://localhost/posts/test-post-2/comments  -H "Accpet:application/jso
 }* Connection #0 to host localhost left intact
 ```
 
-## Docker Swarm
+## Tests microservice
+
+
+
+## Microservice deployment on Docker Swarm
 
 Use Docker Machine to create multi nodes. In order to demonstrate running this project in Swarm mode, we created two managers and three workers.
 
@@ -1590,3 +1594,5 @@ Remove this stack by the following command.
 ```
 docker stack rm blogapp
 ```
+
+## Microservice deployment on Kubernetes

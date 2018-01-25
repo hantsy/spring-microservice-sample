@@ -3,6 +3,8 @@ package com.hantsylabs.sample.springmicroservice.user;
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
+
+import com.sun.jndi.toolkit.url.Uri;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
@@ -22,6 +24,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+
+import java.net.URI;
+
+import static org.springframework.http.ResponseEntity.*;
+import static org.springframework.http.ResponseEntity.created;
 
 /**
  *
@@ -49,7 +56,7 @@ public class UserController {
     ) {
 
         if (StringUtils.isEmpty(username) || StringUtils.isEmpty(email)) {
-            return ResponseEntity.badRequest().build();
+            return badRequest().build();
         }
 
         if (StringUtils.hasText(username) && this.userRepository.findByUsername(username).isPresent()) {
@@ -60,7 +67,7 @@ public class UserController {
             throw new EmailWasTakenException(email);
         }
 
-        return ResponseEntity.ok().build();
+        return ok().build();
     }
 
     @GetMapping(value = "")
@@ -72,7 +79,7 @@ public class UserController {
         
         Page<User> users = this.userRepository.findAll(UserSpecifications.byKeyword(q, role, active), page);
 
-        return ResponseEntity.ok(users);
+        return ok(users);
     }
 
     @PostMapping(value = {""})
@@ -83,50 +90,47 @@ public class UserController {
 
         User saved = this.userService.createUser(form);
 
-        HttpHeaders headers = new HttpHeaders();
-        headers.setLocation(
-            ServletUriComponentsBuilder
-                .fromContextPath(req)
-                .path("/users/{username}")
-                .buildAndExpand(saved.getId()).toUri()
-        );
+        URI createdUri = ServletUriComponentsBuilder
+            .fromContextPath(req)
+            .path("/users/{username}")
+            .buildAndExpand(saved.getId()).toUri();
 
-        return new ResponseEntity<>(headers, HttpStatus.CREATED);
+        return created(createdUri).build();
     }
 
     @GetMapping(value = "/{username}")
-    public ResponseEntity getById(@PathVariable("id") String username) {
+    public ResponseEntity getById(@PathVariable("username") String username) {
         User _user = this.userRepository.findByUsername(username).orElseThrow(
             () -> {
                 return new UserNotFoundException(username);
             }
         );
 
-        return ResponseEntity.ok(_user);
+        return ok(_user);
     }
 
     @PostMapping(value = "/{username}/lock")
-    public ResponseEntity lockUser(@PathVariable("id") String username) {
+    public ResponseEntity lockUser(@PathVariable("username") String username) {
 
         log.debug("locking user:" + username);
 
         this.userService.lock(username);
 
-        return ResponseEntity.noContent().build();
+        return noContent().build();
     }
 
     @DeleteMapping(value = "/{username}/lock")
-    public ResponseEntity unlockUser(@PathVariable("id") String username) {
+    public ResponseEntity unlockUser(@PathVariable("username") String username) {
 
         log.debug("unlocking user:" + username);
 
         this.userService.unlock(username);
 
-        return ResponseEntity.noContent().build();
+        return noContent().build();
     }
 
     @DeleteMapping(value = "/{username}")
-    public ResponseEntity deleteById(@PathVariable("id") String username) {
+    public ResponseEntity deleteById(@PathVariable("username") String username) {
         User _user = this.userRepository.findByUsername(username).orElseThrow(
             () -> {
                 return new UserNotFoundException(username);
@@ -135,7 +139,7 @@ public class UserController {
 
         this.userRepository.delete(_user);
 
-        return ResponseEntity.noContent().build();
+        return noContent().build();
     }
 
 }

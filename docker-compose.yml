@@ -16,17 +16,15 @@ services:
       
   postdb:
     container_name:  postdb
-    image: mysql
+    image: postgres
     ports:
-      - "3307:3306"
+      - "5432:5432"
+    restart: always
     environment:
-      MYSQL_ROOT_PASSWORD: mysecret
-      MYSQL_USER: user
-      MYSQL_PASSWORD: password
-      MYSQL_DATABASE:  postdb
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: postdb
     volumes:
-      - ./data/postdb:/var/lib/mysql     
-      
+      - ./data/postdb:/var/lib/postgresql
 
   redis:
     container_name: redis

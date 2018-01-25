@@ -9,10 +9,10 @@ package com.hantsylabs.sample.springmicroservice.auth;
  *
  * @author hantsy
  */
-public class UsernameWasTakenException extends RuntimeException {
+public class SignupConflictException extends RuntimeException {
 
-    public UsernameWasTakenException(String username) {
-        super(username + " was taken");
+    public SignupConflictException(String message) {
+        super(message);
     }
 
 }
