@@ -101,7 +101,7 @@ public class ControllerTest {
     //@Ignore
     public void testGetAllPosts() throws Exception {
         given(this.posts
-            .findAll(PostSpecifications.filterByKeywordAndStatus("my", null), PageRequest.of(0, 10)))
+            .findAll(any(Specification.class), any(Pageable.class)))
             .willReturn(
                 new PageImpl(
                     Arrays.asList(

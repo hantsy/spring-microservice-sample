@@ -19,7 +19,6 @@ import org.springframework.session.web.http.HttpSessionIdResolver;
 import org.springframework.web.client.RestTemplate;
 
 @SpringBootApplication
-@EnableRedisHttpSession(maxInactiveIntervalInSeconds = 3600 * 24)
 public class AuthServiceApplication {
 
     public static void main(String[] args) {
@@ -40,6 +39,7 @@ public class AuthServiceApplication {
 }
 
 @Configuration
+@EnableRedisHttpSession(maxInactiveIntervalInSeconds = 3600 * 24)
 class RedisSessionConfig {
 
     @Bean
