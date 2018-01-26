@@ -3,7 +3,7 @@ server:
 
 spring:
   redis:
-    host: ${REDIS_HOST:localhost}  
+    host: localhost
   cache:
     type: redis
       
@@ -15,7 +15,7 @@ spring:
 
   datasource:
     dataSourceClassName: com.mysql.jdbc.jdbc2.optional.MysqlDataSource
-    url: ${USERDB_URL:jdbc:mysql://localhost:3306/userdb}
+    url: jdbc:mysql://localhost:3306/userdb
     username: user
     password: password
     cachePrepStmts: true

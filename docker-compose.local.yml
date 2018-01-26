@@ -22,8 +22,8 @@ services:
       context: ./auth-service # specify the directory of the Dockerfile
       dockerfile: Dockerfile
     environment:
-      USER_SERVICE_URL: http://user-service:8001
-      REDIS_HOST: redis
+      SERVICES_USER_SERVICE_URL: http://user-service:8001
+      SPRING_REDIS_HOST: redis
     ports:
       - "8000:8000" #specify ports forewarding
     depends_on:
@@ -37,8 +37,8 @@ services:
       context: ./user-service
       dockerfile: Dockerfile
     environment:
-      USERDB_URL: jdbc:mysql://userdb:3306/userdb
-      REDIS_HOST: redis
+      SPRING_DATASOURCE_URL: jdbc:mysql://userdb:3306/userdb
+      SPRING_REDIS_HOST: redis
     ports:
       - "8001:8001" #specify ports forewarding
     depends_on:
@@ -52,8 +52,8 @@ services:
       context: ./post-service
       dockerfile: Dockerfile
     environment:
-      POSTDB_URL: jdbc:mysql://postdb:3306/postdb
-      REDIS_HOST: redis
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postdb:5432/postdb
+      SPRING_REDIS_HOST: redis
     ports:
       - "8002:8002" #specify ports forewarding
     depends_on:

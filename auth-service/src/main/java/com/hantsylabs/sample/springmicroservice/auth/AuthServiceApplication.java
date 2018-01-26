@@ -56,16 +56,16 @@ class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         // @formatter:off
-            http
-                .httpBasic()
-                .and()
-                .authorizeRequests()
-                .antMatchers("/auth/signin", "/auth/signup", "/").permitAll()
-                .anyRequest().authenticated()
-                .and()
-                .csrf().disable();
-            //.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse());
-            // @formatter:on
+        http
+            .httpBasic()
+            .and()
+            .authorizeRequests()
+            .antMatchers("/auth/signin", "/auth/signup", "/").permitAll()
+            .anyRequest().authenticated()
+            .and()
+            .csrf().disable();
+        //.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse());
+        // @formatter:on
     }
 
     @Bean
