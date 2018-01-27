@@ -52,7 +52,7 @@ import org.springframework.web.context.WebApplicationContext;
 @SpringBootTest(webEnvironment = WebEnvironment.MOCK)
 @RunWith(SpringRunner.class)
 @Slf4j
-public class ControllerTest {
+public class PostControllerMockMvcTest {
     
     @Inject
     WebApplicationContext wac;
@@ -80,18 +80,9 @@ public class ControllerTest {
             .setCustomArgumentResolvers(
                 new PageableHandlerMethodArgumentResolver()
             )
-//            .setViewResolvers(new ViewResolver() {
-//                @Override
-//                public org.springframework.web.servlet.View resolveViewName(String viewName, Locale locale) 
-//                    throws Exception {
-//                    return new MappingJackson2JsonView(objectMapper);
-//                }
-//            })
-            
             .setMessageConverters(
                 new MappingJackson2HttpMessageConverter(objectMapper)
             )
-
             .alwaysDo(print())
             .apply(springSecurity(springSecurityFilterChain))
             .build();
