@@ -7,8 +7,9 @@ package com.hantsylabs.sample.springmicroservice.user;
 
 import java.io.Serializable;
 import lombok.Data;
-import org.hibernate.validator.constraints.Email;
-import org.hibernate.validator.constraints.NotEmpty;
+
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotEmpty;
 
 
 /**

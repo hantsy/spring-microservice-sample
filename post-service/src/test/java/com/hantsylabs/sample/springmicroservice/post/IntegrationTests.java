@@ -17,7 +17,7 @@ import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Import;
+import org.springframework.context.annotation.Primary;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -37,7 +37,6 @@ import static org.hamcrest.CoreMatchers.is;
  */
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @RunWith(SpringRunner.class)
-@Import(IntegrationTests.TestSecurityConfig.class)
 @Slf4j
 public class IntegrationTests {
 
@@ -265,6 +264,48 @@ public class IntegrationTests {
             .statusCode(HttpStatus.SC_CREATED);
         //@formatter:on
     }
+
+    /*
+    @TestComponent
+    static class TestUserDetailsService implements UserDetailsService {
+        private PasswordEncoder passwordEncoder;
+
+        TestUserDetailsService(PasswordEncoder passwordEncoder) {
+            this.passwordEncoder = passwordEncoder;
+        }
+
+        @Override
+        public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+            UserDetails user = User.withUsername("user")
+                .password(passwordEncoder.encode("password"))
+                .roles("USER")
+                .accountExpired(false)
+                .accountLocked(false)
+                .credentialsExpired(false)
+                .disabled(false)
+                .build();
+
+            UserDetails admin = User.withUsername("admin")
+                .password(passwordEncoder.encode("password"))
+                .roles("ADMIN")
+                .accountExpired(false)
+                .accountLocked(false)
+                .credentialsExpired(false)
+                .disabled(false)
+                .build();
+
+            log.debug("dummy user:" + user);
+            log.debug("dummy admin:" + admin);
+
+            if ("user".equals(username)) {
+                return user;
+            } else {
+                return admin;
+            }
+
+        }
+    }
+    */
 
 
     @TestConfiguration

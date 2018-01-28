@@ -8,6 +8,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Import;
 import org.springframework.test.context.junit4.SpringRunner;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
@@ -24,9 +25,6 @@ public class PostServiceTest {
     @MockBean
     private PostRepository posts;
 
-//    @MockBean
-//    private CommentRepository comments;
-    
     @Inject
     private PostService postService;
 
@@ -62,12 +60,9 @@ public class PostServiceTest {
     }
 
     @TestConfiguration
+    @Import(PostService.class)
     static class TestConfig {
 
-        @Bean
-        public PostService postService() {
-            return new PostService();
-        }
     }
 
 }

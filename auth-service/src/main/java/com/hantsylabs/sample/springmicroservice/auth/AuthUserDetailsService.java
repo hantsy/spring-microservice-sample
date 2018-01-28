@@ -26,7 +26,8 @@ public class AuthUserDetailsService implements UserDetailsService {
         return org.springframework.security.core.userdetails.User
             .withUsername(_user.getUsername())
             .password(_user.getPassword())
-            .authorities(AuthorityUtils.createAuthorityList(_user.getRoles().toArray(new String[0])))
+            //.authorities(AuthorityUtils.createAuthorityList(_user.getRoles().toArray(new String[0])))
+            .roles(_user.getRoles().toArray(new String[0]))
             .accountLocked(!_user.isActive())
             .accountExpired(!_user.isActive())
             .disabled(!_user.isActive())
