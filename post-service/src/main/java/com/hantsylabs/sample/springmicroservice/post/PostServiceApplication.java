@@ -56,7 +56,6 @@ class SecurityConfig {
 
             @Override
             protected void configure(HttpSecurity http) throws Exception {
-                // We need this to prevent the browser from popping up a dialog on a 401
                 http
                     .httpBasic()
                     .and()

@@ -14,13 +14,21 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
+import org.springframework.boot.test.context.TestComponent;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Primary;
+import org.springframework.context.annotation.Import;
+import org.springframework.core.annotation.Order;
+import org.springframework.http.HttpMethod;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.junit4.SpringRunner;
 
@@ -56,6 +64,7 @@ public class IntegrationTests {
 
     @Before
     public void setup() {
+        RestAssured.reset();
         RestAssured.port = this.port;
         this.comments.deleteAllInBatch();
         this.posts.deleteAllInBatch();
@@ -308,15 +317,18 @@ public class IntegrationTests {
     */
 
 
-    @TestConfiguration
+    @TestComponent
     @Slf4j
-    static class TestSecurityConfig {
+    static class TestUserDetailsService implements UserDetailsService {
 
-        @Inject
-        PasswordEncoder passwordEncoder;
+        private final PasswordEncoder passwordEncoder;
 
-        @Bean
-        UserDetailsService userDetailsService() {
+        TestUserDetailsService(PasswordEncoder passwordEncoder) {
+            this.passwordEncoder = passwordEncoder;
+        }
+
+        @Override
+        public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
             UserDetails user = User.withUsername("user")
                 .password(passwordEncoder.encode("password"))
                 .roles("USER")
@@ -338,13 +350,52 @@ public class IntegrationTests {
             log.debug("dummy user:" + user);
             log.debug("dummy admin:" + admin);
 
-            return (username) -> {
-                if ("user".equals(username)) {
-                    return user;
-                } else {
-                    return admin;
-                }
-            };
+
+            if ("user".equals(username)) {
+                return user;
+            } else {
+                return admin;
+            }
         }
     }
+
+    @TestConfiguration
+    @Slf4j
+    @Import(TestUserDetailsService.class)
+    @Order(-1)
+    static class TestSecurityConfig extends WebSecurityConfigurerAdapter {
+
+        @Inject
+        PasswordEncoder passwordEncoder;
+
+        @Inject
+        UserDetailsService userDetailsService;
+
+        @Override
+        protected void configure(HttpSecurity http) throws Exception {
+            http
+                .httpBasic()
+                .and()
+                .authorizeRequests()
+                .antMatchers(HttpMethod.GET, "/posts/**").permitAll()
+                .antMatchers(HttpMethod.DELETE, "/posts/**").hasRole("ADMIN")
+                .anyRequest().authenticated()
+                .and()
+                .csrf().disable();
+        }
+
+        @Override
+        protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+            auth.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder);
+        }
+
+        @Override
+        @Bean
+        public AuthenticationManager authenticationManagerBean() throws Exception {
+            return super.authenticationManagerBean();
+        }
+
+    }
 }
+
+
