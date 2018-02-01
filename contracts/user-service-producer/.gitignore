@@ -22,8 +22,3 @@ nbbuild/
 dist/
 nbdist/
 .nb-gradle/
-/image-service
-/post-service/nbproject/
-
-*.log
-*.log*

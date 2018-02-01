@@ -14,6 +14,7 @@
         <module>auth-service</module>
         <module>post-service</module>
         <module>functional-tests</module>
+        <module>contracts</module>
     </modules>
 	
 </project>

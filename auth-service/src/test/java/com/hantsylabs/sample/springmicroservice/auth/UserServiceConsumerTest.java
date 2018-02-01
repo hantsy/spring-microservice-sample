@@ -20,7 +20,13 @@ import static org.junit.Assert.*;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@AutoConfigureStubRunner(workOffline = true, ids = "com.hantsylabs.sample.springmicroservice:user-service:+:stubs:8001")
+//@AutoConfigureStubRunner(workOffline = true, ids = "com.hantsylabs.sample.springmicroservice:user-service:+:stubs:8001")
+@AutoConfigureStubRunner(
+    workOffline = true,
+    stubsPerConsumer = true,
+    consumerName = "auth-service",
+    ids = "com.hantsylabs.sample.springmicroservice.contracts:user-service-producer:+:stubs:8001"
+)
 @Slf4j
 public class UserServiceConsumerTest {
 

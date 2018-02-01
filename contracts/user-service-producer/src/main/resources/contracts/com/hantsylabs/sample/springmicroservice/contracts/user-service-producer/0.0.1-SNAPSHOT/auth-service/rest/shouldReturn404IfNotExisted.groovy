@@ -1,4 +1,8 @@
-org.springframework.cloud.contract.spec.Contract.make {
+import org.springframework.cloud.contract.spec.Contract
+import org.springframework.http.HttpHeaders
+import org.springframework.http.MediaType
+
+Contract.make {
     description("""
         return error 404 if user is not existed
     """)
@@ -14,14 +18,13 @@ org.springframework.cloud.contract.spec.Contract.make {
     response{
         status 404
         body(
-            entity: "User",
+            entity: "USER",
             id: "noneExisting",
-            code:"not found",
-            message:"User:noneExisting is not found"
+            code:"not_found",
+            message:"User:noneExisting was not found"
         )
         headers {
             contentType(applicationJson())
         }
     }
 }
-
