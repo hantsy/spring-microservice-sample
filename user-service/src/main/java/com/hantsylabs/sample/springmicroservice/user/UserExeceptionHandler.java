@@ -27,7 +27,7 @@ public class UserExeceptionHandler {
         Map<String, String> errorMsg = new HashMap<>();
         errorMsg.put("code", "conflict");
         errorMsg.put("message", ex.getMessage());
-        return status(HttpStatus.CONFLICT).body(ex);
+        return status(HttpStatus.CONFLICT).body(errorMsg);
     }
 
     @ExceptionHandler(value = {UserNotFoundException.class})
@@ -37,6 +37,6 @@ public class UserExeceptionHandler {
         errorMsg.put("id", ""+ ex.getUsername());
         errorMsg.put("code", "not_found");
         errorMsg.put("message", ex.getMessage());
-        return status(HttpStatus.CONFLICT).body(ex);
+        return status(HttpStatus.NOT_FOUND).body(errorMsg);
     }
 }

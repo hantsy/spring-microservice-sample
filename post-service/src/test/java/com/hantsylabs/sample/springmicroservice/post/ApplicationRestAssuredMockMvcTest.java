@@ -111,7 +111,7 @@ public class ApplicationRestAssuredMockMvcTest {
                 .post("/posts")
             .then()
                 .assertThat()
-            .statusCode(HttpStatus.SC_UNAUTHORIZED);
+                .statusCode(HttpStatus.SC_UNAUTHORIZED);
         //@formatter:on
 
 

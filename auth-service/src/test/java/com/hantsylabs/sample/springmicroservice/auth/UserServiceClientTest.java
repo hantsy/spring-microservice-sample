@@ -40,6 +40,8 @@ public class UserServiceClientTest {
         User user = this.client.findByUsername("user");
         assertNotNull(user);
         assertEquals("user", user.getUsername());
+
+        this.server.verify();
     }
 
     @Test
@@ -50,5 +52,7 @@ public class UserServiceClientTest {
 
         User user = this.client.findByUsername("user1");
         assertNull(user);
+
+        this.server.verify();
     }
 }
