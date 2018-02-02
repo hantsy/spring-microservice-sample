@@ -1,0 +1,65 @@
+{
+    "provider": {
+        "name": "user-service"
+    },
+    "consumer": {
+        "name": "auth-service"
+    },
+    "interactions": [
+        {
+            "description": "Get a user by none-existing username: noneExisting",
+            "request": {
+                "method": "GET",
+                "path": "/users/noneExisting"
+            },
+            "response": {
+                "status": 404,
+                "headers": {
+                    "Content-Type": "application/json"
+                },
+                "body": {
+                    "entity": "USER",
+                    "id": "noneExisting",
+                    "code": "not_found",
+                    "message": "User:noneExisting was not found"
+                }
+            },
+            "providerStates": [
+                {
+                    "name": "should return error 404 if not existed"
+                }
+            ]
+        },
+        {
+            "description": "Get a user by existing username: user",
+            "request": {
+                "method": "GET",
+                "path": "/users/user"
+            },
+            "response": {
+                "status": 200,
+                "headers": {
+                    "Content-Type": "application/json"
+                },
+                "body": {
+                    "username": "user",
+                    "password": "password",
+                    "email": "user@example.com"
+                }
+            },
+            "providerStates": [
+                {
+                    "name": "should return user if existed"
+                }
+            ]
+        }
+    ],
+    "metadata": {
+        "pact-specification": {
+            "version": "3.0.0"
+        },
+        "pact-jvm": {
+            "version": "3.5.11"
+        }
+    }
+}
