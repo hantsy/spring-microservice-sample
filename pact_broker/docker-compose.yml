@@ -1,0 +1,40 @@
+version: '3.4'
+
+services:
+
+  postgres:
+    image: postgres
+    healthcheck:
+      test: psql postgres --command "select 1"
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: postgres
+
+  broker:
+    image: dius/pact-broker
+    ports:
+      - "80:80"
+    depends_on:
+      - postgres
+    environment:
+      PACT_BROKER_DATABASE_USERNAME: postgres
+      PACT_BROKER_DATABASE_PASSWORD: password
+      PACT_BROKER_DATABASE_HOST: postgres
+      PACT_BROKER_DATABASE_NAME: postgres
+      PACT_BROKER_BASIC_AUTH_USERNAME: user
+      PACT_BROKER_BASIC_AUTH_PASSWORD: password
+
+  nginx:
+    image: hantsy/pact-broker-nginx
+    container_name: pact-broker-nginx    
+    build: 
+      context: .
+      dockerfile: Dockerfile
+    depends_on:
+      - broker  
+    ports:
+      - "8443:443"
+      

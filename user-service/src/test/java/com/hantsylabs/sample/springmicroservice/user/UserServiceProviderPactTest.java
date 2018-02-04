@@ -27,8 +27,15 @@ import static org.hamcrest.Matchers.is;
 
 @RunWith(SpringRestPactRunner.class)
 @Provider("user-service")
-//@PactBroker(protocol = "https", host = "${pactBrokerHost}", port = "443",
-//    authentication = @PactBrokerAuth(username = "${pactBrokerUser}", password = "${pactBrokerPassword}"))
+//@PactBroker(
+//    protocol = "https",
+//    host = "${pactBrokerHost}",
+//    port = "8443",
+//    authentication = @PactBrokerAuth(
+//        username = "${pactBrokerUser}",
+//        password = "${pactBrokerPassword}"
+//    )
+//)
 @PactFolder("pacts")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 public class UserServiceProviderPactTest {

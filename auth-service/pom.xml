@@ -166,8 +166,18 @@
                     <tag>${project.version}</tag>
                 </configuration>
             </plugin>
+            <plugin>
+                <groupId>au.com.dius</groupId>
+                <artifactId>pact-jvm-provider-maven_2.12</artifactId>
+                <version>3.5.11</version>
+                <configuration>
+                    <pactBrokerUrl>https://192.168.99.100:8443</pactBrokerUrl>
+                    <pactBrokerUsername>user</pactBrokerUsername>
+                    <pactBrokerPassword>password</pactBrokerPassword>
+                </configuration>
+            </plugin>
         </plugins>
-        
+
         <!--        <extensions>
             <extension>
                 <groupId>com.spotify</groupId>
