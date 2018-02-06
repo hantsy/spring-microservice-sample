@@ -11,4 +11,4 @@
 docker-machine stop $(docker-machine ls -q --filter "name=(manager|worker)[\d]??")
 
 # remove machines
-docker-machine rm $(docker-machine ls -q --filter "name=(manager|worker)[\d]??)
+docker-machine rm $(docker-machine ls -q --filter "name=(manager|worker)[\d]??")
