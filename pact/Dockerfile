@@ -1,5 +1,5 @@
 # Set nginx base image
-FROM nginx 
+FROM nginx:alpine 
 
 RUN mkdir /etc/nginx/ssl  
 COPY ssl /etc/nginx/ssl 

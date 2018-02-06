@@ -15,7 +15,7 @@ echo "======> Creating $managers manager machines ...";
 for node in $(seq 1 $managers);
 do
 	echo "======> Creating manager$node machine ...";
-	docker-machine create -d virtualbox --virtualbox-cpu-count 1 --virtualbox-memory "512" --virtualbox-disk-size "5000"  --engine-registry-mirror https://docker.mirrors.ustc.edu.cn manager$node;
+	docker-machine create -d virtualbox --virtualbox-cpu-count 1 --virtualbox-memory "1024" --virtualbox-disk-size "5000"  --engine-registry-mirror https://registry.docker-cn.com manager$node;
 done
 
 # create worker machines
@@ -23,7 +23,7 @@ echo "======> Creating $workers worker machines ...";
 for node in $(seq 1 $workers);
 do
 	echo "======> Creating worker$node machine ...";
-	docker-machine create -d virtualbox --virtualbox-cpu-count 1 --virtualbox-memory "512" --virtualbox-disk-size "5000" --engine-registry-mirror https://docker.mirrors.ustc.edu.cn worker$node;
+	docker-machine create -d virtualbox --virtualbox-cpu-count 1 --virtualbox-memory "1024" --virtualbox-disk-size "5000" --engine-registry-mirror https://registry.docker-cn.com worker$node;
 done
 
 # list all machines

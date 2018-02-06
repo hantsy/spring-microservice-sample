@@ -165,7 +165,7 @@
                 <configuration>
                     <systemPropertyVariables>
                         <maven.repo.local>${settings.localRepository}</maven.repo.local>
-                        <pactBrokerHost>192.168.99.100</pactBrokerHost>
+                        <pactBrokerHost>localhost</pactBrokerHost>
                         <pactBrokerUser>user</pactBrokerUser>
                         <pactBrokerPassword>password</pactBrokerPassword>
                     </systemPropertyVariables>

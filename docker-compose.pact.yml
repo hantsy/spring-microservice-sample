@@ -26,12 +26,22 @@ services:
       PACT_BROKER_DATABASE_NAME: postgres
       PACT_BROKER_BASIC_AUTH_USERNAME: user
       PACT_BROKER_BASIC_AUTH_PASSWORD: password
+      
+#  nginx:
+#    image: nginx:alpine
+#    links:
+#      - broker_app:broker
+#    volumes:
+#      - ./ssl/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+#      - ./ssl:/etc/nginx/ssl
+#    ports:
+#      - "8443:443
 
   nginx:
     image: hantsy/pact-broker-nginx
     container_name: pact-broker-nginx    
     build: 
-      context: .
+      context: ./pact
       dockerfile: Dockerfile
     depends_on:
       - broker  

@@ -23,17 +23,23 @@
 
 # Build a Microservice application with Spring Boot
 
-In the past years, 3-tiered enterprise application and B/S architecture can satisfy most of use cases. In that era, most of the applications are truly monolithic.  
+10 years ago, when we talked about the topic of application architecture, what we suddenly realized was 3-tiered applications and B/S architecture, which was the mainstream in that era. Today we have a word named it, **monolithic applications**.  
 
 In the latest years, cloud based applications make mobile devices become the main clients instead of browsers in your personal computer. RESTful architecture is a good option to serve different clients.
 
-I have created a Spring based [RESTful application sample](https://github.com/hantsy/angularjs-springmvc-sample) and its [Spirng Boot variant](https://github.com/hantsy/angularjs-springmvc-sample-boot) to demonstrate how to build a  RESTful API based backend with Spring technology stack and a SPA frontend application with AngularJS. Compare to the traditional enterprise applications, the RESTful architecture improves the application scalability by separating the backend and frontend UI codes into different smaller applications. 
+*I have created a Spring based [RESTful application sample](https://github.com/hantsy/angularjs-springmvc-sample) and its [Spirng Boot variant](https://github.com/hantsy/angularjs-springmvc-sample-boot) to demonstrate how to build a  RESTful API based backend with Spring technology stack and a SPA frontend application with AngularJS.*
+
+Compare to the traditional enterprise applications, RESTful architecture improves the the scalability by separating the backend RESTful API and frontend UI into different smaller applications. And the RESTful APIs provided in the backend can serve varied clients, such as frontend websites, a mobile applications, or third-party applications.
 
 To improve the scalability of backend, just need to add one or more copies behind a load balance server. 
 
 ![rest-api](./rest-api.png)
 
-For building modern applications, it is a good start point. But the backend application is still a monolithic application. As time goes by, when the application becomes more complex, the backend application will be problematic.
+It is a really good start point for building modern applications. 
+
+>NOTE: Although we are talking about Microservice in this post, I still suggest you start building your application with a monolithic RESTful backend and SPA based frontend UI if you know little about the complexity of Microservice. In the initial development stage, you have to spend lots of time on clarifying the problem domains, defining the bounded context etc, it is valuable when you are ready for migrating to Microservice architecture.
+
+No doubt the above backend is still considered as a monolithic application. As time goes by, when the application becomes more complex, the backend will be problematic as you faced in the traditional 3-tiered applications.
 
 * When apply a change, you have to redeploy the whole backend application even it is just a small fix.
 * When you deploy multi copies of the backend applications behinds a load balance server, the transactional consistence will be a new challenge.
@@ -43,17 +49,20 @@ Microservice componentizes your application into small services(componentized ap
 
 ![microservice](./microservice.png)
 
-Follow the **BoundedContext** of DDD, we will break the backend into three small services, including:
+To demonstrate the Microservice architecture, we will reuse the models in my [RESTful application sample](https://github.com/hantsy/angularjs-springmvc-sample), and follow the **Bounded Context** concept of DDD(Domain Driven Design), break the backend monolithic application into three small services, including:
 
-* **auth-service** is the service for signin, signup and signout.
+* **auth-service** is serving the operations of signin, signup and signout.
 * **user-service** is responsible for user management.
-* **post-service** is the APIs for a simple CMS, including posts and comments.
+* **post-service** exposes APIs for a simple CMS, including posts and comments.
 
-Besides these, we use **nginx** as the **API Gateway**, in this demo it is just responsible for routing the incoming requests to downstream services. 
+Besides these, we use **nginx** as the **API Gateway**, which is just responsible for routing the incoming requests to downstream services. 
 
 ## Prerequisites
 
-I assume you have some experience of Spring, and you have also installed the following software.
+I assume you have some experience of Spring, and know well about the [REST convention](https://en.wikipedia.org/wiki/Representational_state_transfer), esp the [CHAPTER 5: Representational State Transfer (REST)](https://www.ics.uci.edu/~fielding/pubs/dissertation/rest_arch_style.htm) from Roy Fielding's dissertation: [Architectural Styles and
+the Design of Network-based Software Architectures](https://www.ics.uci.edu/~fielding/pubs/dissertation/top.htm). 
+
+And you have also installed the following software.
 
 * [Oracle Java 8 SDK](https://java.oracle.com) 
 * [Apache Maven](https://maven.apache.org)
@@ -63,13 +72,13 @@ I assume you have some experience of Spring, and you have also installed the fol
   * [Eclipse IDE](http://www.eclipse.org) (or  Eclipse based IDE,  Spring ToolSuite is highly recommended) 
   * [Intellij IDEA](http://www.jetbrains.com)
 
-This demo sample is built on Spring stack, including Spring Boot, Spring Data, Spring Security, etc. 
+This sample application is built on the newest Spring technology stack, including Spring Boot, Spring Data, Spring Security, etc. 
 
-* Every small service is a Spring Boot application.
-* Every small service owns its database, we use MySQL as main database.
+* Every small service is a Spring Boot application. Every service will be packaged as a **jar** file and use the embedded Tomcat as target runtime to serve the services.
+* Every small service owns its database, eg. we use MySQL as the backing database for **auth-service**, and PostgreSQL for the **post-service**.
 * Spring Data is used for simplifying data operations.
-* Spring Session provides a simple strategy to generate and validate header based authentication token(the session in Redis).
-* Spring Security is responsible for protecting REST APIs.
+* Spring Session provides a simple strategy to generate and validate header based authentication token via sharing sessions in a backing session repository, in this sample we use Redis as session storage.
+* Spring Security is responsible for protecting RESTful APIs.
 
 Follow the 12 factors application guide, I suggest you use Docker in both development and production environment to make sure the same code base works well in different environments.
 
@@ -85,10 +94,10 @@ Docker Compose allow you start up the dependent infrastructural services(such as
 docker-compose up
 ```
 
-We will use MySQL and Redis in this demo, the following is a sample *docker-compose.yml* file.
+We will use MySQL, PostgreSQL and Redis in this demo, the following is a sample *docker-compose.yml* file.
 
 ```yaml
-version: '3.1' # specify docker-compose version
+version: '3.3' # specify docker-compose version
 
 services:    
   userdb:
@@ -106,16 +115,15 @@ services:
       
   postdb:
     container_name:  postdb
-    image: mysql
+    image: postgres
     ports:
-      - "3307:3306"
+      - "5432:5432"
+    restart: always
     environment:
-      MYSQL_ROOT_PASSWORD: mysecret
-      MYSQL_USER: user
-      MYSQL_PASSWORD: password
-      MYSQL_DATABASE:  postdb
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: postdb
     volumes:
-      - ./data/postdb:/var/lib/mysql     
+      - ./data/postdb:/var/lib/postgresql     
       
 
   redis:
@@ -125,9 +133,6 @@ services:
       - "6379:6379"
 ```
 
-**userdb** and **postdb** are both MySQL servers, but for different microservices. **postdb** is for **post-service**, and **userdb** is shared for **auth-service** and **user-service**.
-
->NOTE: We use a shared MySQL for **auth-service** and **user-service**, it could be a bad idea. For more ideal architecture, auth-service should interact with user-service. This may be a topic about interoperability between services which we maybe discuss in a further post.
 
 #### Docker Toolbox Notes
 
@@ -137,7 +142,7 @@ If you are using Docker Toolbox, create a new machine for this project.
 $ docker-machine create -d virtualbox --engine-registry-mirror https://docker.mirrors.ustc.edu.cn springms
 ```
 
->NOTE: The `--engine-registry-mirror https://docker.mirrors.ustc.edu.cn` will add a docker registry mirror setting in docker-machine specific *config.json*. For most of Chinese users, it will speed up the Docker images downloading.
+>NOTE: The `--engine-registry-mirror https://docker.mirrors.ustc.edu.cn` will add a docker registry mirror setting in docker-machine specific *config.json*. For most of Chinese users, using a local mirror will speed up the Docker images downloading.
 
 Then switch to the new created machine **springms**, and set the environment variables.
 
@@ -162,16 +167,18 @@ Then run the dependent servers via `docker-compose` command line.
 
 As an example, we build the **post-service** as the start point. 
 
-To kick up a Spring Boot based project in seconds, go to [Spring Initializr](https://start.spring.io) page, fill the following essential fields in the form.
+With [Spring Initializr](https://start.spring.io), you can get a Spring Boot based project skeleton in seconds. 
+
+Open your browser, go to [Spring Initializr](https://start.spring.io) page, fill the following essential fields for a project.
 
 1. Choose **Java** as programming language.
 2. Select the latest version of Spring Boot, **2.0.0.M7** is the latest milestone at the moment when I wrote this post.
-3. Search and select the required dependencies of your project, such as **Web**, **Data JPA**, **Data Redis**, **Security**, **Session**, **Lombok** etc.
+3. Search and select the required facilities will be used in your project, such as **Web**, **Data JPA**, **Data Redis**, **Security**, **Session**, **Lombok** etc.
 4. Set project name(maven artifact id) to **post-service**. 
 
 Click **Generate Project** button or press **ALT+ENTER** keys to generate the project skeleton for downloading in your browser.
 
-After download the generated  archive, and extract the files into your local disk, import it into your favorite IDE.
+After downloading the generated archive, extract the files into your local disk and import it into your favorite IDE.
 
 ### REST API overview
 
@@ -1479,11 +1486,13 @@ curl -v  http://localhost/posts/test-post-2/comments  -H "Accpet:application/jso
 }* Connection #0 to host localhost left intact
 ```
 
-## Tests microservice
+## Testing Microservice
 
+```
+openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout ssl/nginx.key -out ssl/nginx.crt
+```
 
-
-## Microservice deployment on Docker Swarm
+## Deployment on Docker Swarm
 
 Use Docker Machine to create multi nodes. In order to demonstrate running this project in Swarm mode, we created two managers and three workers.
 
@@ -1588,6 +1597,12 @@ The services will be scheduled to deploy in this swarm.
 The *docker-stack.yml* file includes a `visualizer` service to visualize all services. It can be accessed via http://&lt;any manager ip&gt;:8080, you will see the deployment progress.
 
 ![visualizer](./docker-viz.png)
+
+
+```
+#curl http://192.168.99.102/user -u user:test123
+{"roles":["ROLE_USER"],"name":"user"}
+```
 
 Remove this stack by the following command.
 

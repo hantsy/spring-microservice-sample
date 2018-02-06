@@ -1,9 +1,9 @@
-version: '3.1' # specify docker-compose version
+version: '3.4' # specify docker-compose version
 
 services:
 
   nginx-proxy:
-    image: hantsylab/nginx-proxy
+    image: hantsy/nginx-proxy
     ports:
       - "80:80"
     networks:
@@ -26,29 +26,30 @@ services:
         constraints: [node.role == manager]
   
   auth-service:
-    image: hantsylab/auth-service
+    image: hantsy/auth-service
     environment:
-      USERDB_URL: jdbc:mysql://userdb:3306/userdb
-      REDIS_HOST: redis
+      SERVICES_USER_SERVICE_URL: http://user-service:8001
+      SPRING_REDIS_HOST: redis
     ports:
       - "8000:8000" #specify ports forewarding
     networks:
       - backend
     depends_on:
       - redis
-      - userdb
+      - user-service
     deploy:
       replicas: 1
+      labels: [APP=AUTHSERVICE]
       update_config:
         parallelism: 2
       restart_policy:
         condition: on-failure
   
   user-service: 
-    image: hantsylab/user-service
+    image: hantsy/user-service
     environment:
-      USERDB_URL: jdbc:mysql://userdb:3306/userdb
-      REDIS_HOST: redis
+      SPRING_DATASOURCE_URL: jdbc:mysql://userdb:3306/userdb
+      SPRING_REDIS_HOST: redis
     ports:
       - "8001:8001" #specify ports forewarding
     networks:
@@ -58,6 +59,7 @@ services:
       - userdb
     deploy:
       replicas: 1
+      labels: [APP=USERSERVICE]
       update_config:
         parallelism: 2
         delay: 10s
@@ -65,10 +67,10 @@ services:
         condition: on-failure
 
   post-service: 
-    image: hantsylab/post-service
+    image: hantsy/post-service
     environment:
-      POSTDB_URL: jdbc:mysql://postdb:3306/postdb
-      REDIS_HOST: redis
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postdb:5432/postdb
+      SPRING_REDIS_HOST: redis
     ports:
       - "8002:8002" #specify ports forewarding
     networks:
@@ -78,6 +80,7 @@ services:
       - postdb
     deploy:
       replicas: 3
+      labels: [APP=POSTSERVICE]
       update_config:
         parallelism: 2
         delay: 10s
@@ -115,14 +118,12 @@ services:
         constraints: [node.role == worker]
         
   postdb:
-    image: mysql
+    image: postgres
     ports:
-      - "3307:3306"
+      - "5432:5432"
     environment:
-      MYSQL_ROOT_PASSWORD: mysecret
-      MYSQL_USER: user
-      MYSQL_PASSWORD: password
-      MYSQL_DATABASE:  postdb
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: postdb
     volumes:
       - postdata:/var/lib/mysql    
     networks:

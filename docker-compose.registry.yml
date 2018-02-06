@@ -1,0 +1,22 @@
+version: '3.4'
+
+services:  
+    registry:
+      restart: always
+      image: hantsy/docker-registry
+      container_name: docker-registry
+      build: 
+        context: ./registry
+        dockerfile: Dockerfile
+      ports:
+        - 5000:5000     
+#      environment:
+#        REGISTRY_HTTP_TLS_CERTIFICATE: /certs/domain.crt
+#        REGISTRY_HTTP_TLS_KEY: /certs/domain.key
+#        REGISTRY_AUTH: htpasswd
+#        REGISTRY_AUTH_HTPASSWD_PATH: /auth/htpasswd
+#        REGISTRY_AUTH_HTPASSWD_REALM: Registry Realm
+      volumes:
+        - ./registry/data:/var/lib/registry
+#        - ./registry/certs:/certs
+#        - ./registry/auth:/auth
