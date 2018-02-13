@@ -1492,9 +1492,23 @@ curl -v  http://localhost/posts/test-post-2/comments  -H "Accpet:application/jso
 openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout ssl/nginx.key -out ssl/nginx.crt
 ```
 
+## Create a private Docker Registry
+
+https://github.com/boot2docker/boot2docker/pull/1195
+docker-machine scp certfile default:ca.crt
+docker-machine ssh default
+sudo mv ~/ca.crt /etc/docker/certs.d/hostname/ca.crt
+exit
+docker-machine restart
+
+openssl req -newkey rsa:4096 -nodes -sha256 -keyout certs/domain.key \
+				-x509 -days 356 -out certs/domain.crt
+
 ## Deployment on Docker Swarm
 
-Use Docker Machine to create multi nodes. In order to demonstrate running this project in Swarm mode, we created two managers and three workers.
+Use Docker Machine to create multi nodes. 
+
+In order to demonstrate running this project in Swarm mode, we will create two managers and three workers.
 
 ```
 $ docker-machine create -d virtualbox --engine-registry-mirror https://docker.mirrors.ustc.edu.cn manager1
@@ -1504,27 +1518,25 @@ $ docker-machine create -d virtualbox --engine-registry-mirror https://docker.mi
 $ docker-machine create -d virtualbox --engine-registry-mirror https://docker.mirrors.ustc.edu.cn worker3
 ```
 
-Show the created machines.
+List all docker machines you just created.
 
 ```
 $ docker-machine ls
 NAME       ACTIVE   DRIVER       STATE     URL                         SWARM   DOCKER        ERRORS
-default    *        virtualbox   Running   tcp://192.168.99.100:2376           v17.05.0-ce
 manager1   -        virtualbox   Running   tcp://192.168.99.101:2376           v17.05.0-ce
 manager2   -        virtualbox   Running   tcp://192.168.99.102:2376           v17.05.0-ce
-springms   -        virtualbox   Stopped                                       Unknown
 worker1    -        virtualbox   Running   tcp://192.168.99.103:2376           v17.05.0-ce
 worker2    -        virtualbox   Running   tcp://192.168.99.104:2376           v17.05.0-ce
 worker3    -        virtualbox   Running   tcp://192.168.99.105:2376           v17.05.0-ce
 ```
 
-Switch to `manager1`.
+Switch to machine `manager1`.
 
 ```
 eval "$(docker-manager env manager1)"
 ```
 
-Initializes Docker Swarm.
+Try to initialize a Docker Swarm host.
 
 ```
 $ docker swarm init --listen-addr 192.168.99.101 --advertise-addr 192.168.99.101
@@ -1550,7 +1562,7 @@ To add a manager to this swarm, run the following command:
     192.168.99.101:2377
 ```
 
-Let us switch to *manager2*.
+Let us switch to machine *manager2*.
 
 ```
 eval "$(docker-machine env manager2)"
@@ -1597,6 +1609,7 @@ The services will be scheduled to deploy in this swarm.
 The *docker-stack.yml* file includes a `visualizer` service to visualize all services. It can be accessed via http://&lt;any manager ip&gt;:8080, you will see the deployment progress.
 
 ![visualizer](./docker-viz.png)
+
 
 
 ```
