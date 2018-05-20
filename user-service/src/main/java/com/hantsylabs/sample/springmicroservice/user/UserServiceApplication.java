@@ -79,7 +79,7 @@ class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .anyRequest().authenticated()
             .and()
                 .csrf().disable();
-               // .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse());
-            // @formatter:on
+	    // .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse());
+		// @formatter:on
     }
 }

@@ -23,6 +23,40 @@
 
 # Build a Microservice application with Spring Boot
 
+**Microservice** is a very hot topic in these years, you can see it everywhere, there is a lots of books, blog entries, conference sessions, training courses etc are talking about it.
+
+## What is microservice?
+
+Microservice is not a standard specification, so there is no official definition. Here I listed some well-known explanation from community.
+
+[Martin Fowler](https://martinfowler.com/) described it as the following in his article [Microservice](https://martinfowler.com/articles/microservices.html):
+
+>In short, the microservice architectural style is an approach to developing a single application as a suite of small services, each running in its own process and communicating with lightweight mechanisms, often an HTTP resource API. These services are built around business capabilities and independently deployable by fully automated deployment machinery. There is a bare minimum of centralized management of these services, which may be written in different programming languages and use different data storage technologies. 
+
+On the [Wikipedia Microservice page](https://en.wikipedia.org/wiki/Microservices), Microservice was defined as:
+
+>Microservices is a variant of the service-oriented architecture (SOA) architectural style that structures an application as a collection of loosely coupled services. In a microservices architecture, services should be fine-grained and the protocols should be lightweight. The benefit of decomposing an application into different smaller services is that it improves modularity and makes the application easier to understand, develop and test. It also parallelizes development by enabling small autonomous teams to develop, deploy and scale their respective services independently.[1] It also allows the architecture of an individual service to emerge through continuous refactoring. Microservices-based architectures enable continuous delivery and deployment.
+
+Chris Richardson, the author of POJOs in Action and the creator of the original CloudFoundry.com, and also an advocator of microservice, summarized Microservice as the following in the home page of [Microservices.io](http://microservices.io/index.html).
+
+>Microservices - also known as the microservice architecture - is an architectural style that structures an application as a collection of loosely coupled services, which implement business capabilities. The microservice architecture enables the continuous delivery/deployment of large, complex applications. It also enables an organization to evolve its technology stack.
+
+There are some common characteristics can be used to describe a microservice based application.
+
+* A microservice application should be consist of a collection of small services. One service is not microservice. Every service are  fine-grained, and target to perform a small function. So microservice was described as *fine-grained SOA* or *SOA done right* in some articles. So This is the main difference from traditional monolithic applications.
+
+* Every service should have its own independent lifecycle. 
+
+Microservice componentizes your application into small services(componentized applications), and make it more maintainable and scalable.  This demo application shows you how to build a Microservice application via Spring Boot. 
+
+![microservice](./microservice.png)
+
+To demonstrate the Microservice architecture, we will reuse the models in my [RESTful application sample](https://github.com/hantsy/angularjs-springmvc-sample), and follow the **Bounded Context** concept of DDD(Domain Driven Design), break the backend monolithic application into three small services, including:
+
+* **auth-service** is serving the operations of signin, signup and signout.
+* **user-service** is responsible for user management.
+* **post-service** exposes APIs for a simple CMS, including posts and comments.
+
 10 years ago, when we talked about the topic of application architecture, what we suddenly realized was 3-tiered applications and B/S architecture, which was the mainstream in that era. Today we have a word named it, **monolithic applications**.  
 
 In the latest years, cloud based applications make mobile devices become the main clients instead of browsers in your personal computer. RESTful architecture is a good option to serve different clients.
@@ -45,15 +79,6 @@ No doubt the above backend is still considered as a monolithic application. As t
 * When you deploy multi copies of the backend applications behinds a load balance server, the transactional consistence will be a new challenge.
 * The database itself will be a huge performance bottleneck when the concurrency of incoming requests is increasing. 
 
-Microservice componentizes your application into small services(componentized applications), and make it more maintainable and scalable.  This demo application shows you how to build a Microservice application via Spring Boot. 
-
-![microservice](./microservice.png)
-
-To demonstrate the Microservice architecture, we will reuse the models in my [RESTful application sample](https://github.com/hantsy/angularjs-springmvc-sample), and follow the **Bounded Context** concept of DDD(Domain Driven Design), break the backend monolithic application into three small services, including:
-
-* **auth-service** is serving the operations of signin, signup and signout.
-* **user-service** is responsible for user management.
-* **post-service** exposes APIs for a simple CMS, including posts and comments.
 
 Besides these, we use **nginx** as the **API Gateway**, which is just responsible for routing the incoming requests to downstream services. 
 
