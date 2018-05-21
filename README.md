@@ -27,7 +27,7 @@
 
 ## What is microservice?
 
-Microservice is not a standard specification, so there is no official definition. Here I listed some well-known explanation from community.
+Microservice is not a standard specification, so there is no official definition. Here I listed some well-known explanation from the communities.
 
 [Martin Fowler](https://martinfowler.com/) described it as the following in his article [Microservice](https://martinfowler.com/articles/microservices.html):
 
@@ -37,52 +37,83 @@ On the [Wikipedia Microservice page](https://en.wikipedia.org/wiki/Microservices
 
 >Microservices is a variant of the service-oriented architecture (SOA) architectural style that structures an application as a collection of loosely coupled services. In a microservices architecture, services should be fine-grained and the protocols should be lightweight. The benefit of decomposing an application into different smaller services is that it improves modularity and makes the application easier to understand, develop and test. It also parallelizes development by enabling small autonomous teams to develop, deploy and scale their respective services independently.[1] It also allows the architecture of an individual service to emerge through continuous refactoring. Microservices-based architectures enable continuous delivery and deployment.
 
-Chris Richardson, the author of POJOs in Action and the creator of the original CloudFoundry.com, and also an advocator of microservice, summarized Microservice as the following in the home page of [Microservices.io](http://microservices.io/index.html).
+Chris Richardson, the author of POJOs in Action and the creator of the original CloudFoundry.com, and also an advocator of Microservice, summarized Microservice as the following in the home page of [Microservices.io](http://microservices.io/index.html).
 
->Microservices - also known as the microservice architecture - is an architectural style that structures an application as a collection of loosely coupled services, which implement business capabilities. The microservice architecture enables the continuous delivery/deployment of large, complex applications. It also enables an organization to evolve its technology stack.
+>Microservices - also known as the Microservice architecture - is an architectural style that structures an application as a collection of loosely coupled services, which implement business capabilities. The Microservice architecture enables the continuous delivery/deployment of large, complex applications. It also enables an organization to evolve its technology stack.
 
-There are some common characteristics can be used to describe a microservice based application.
+There are some common characteristics can be used to describe a Microservice based application.
 
-* A microservice application should be consist of a collection of small services. One service is not microservice. Every service are  fine-grained, and target to perform a small function. So microservice was described as *fine-grained SOA* or *SOA done right* in some articles. So This is the main difference from traditional monolithic applications.
+* A Microservice application should be consist of a collection of small services. One service is not Microservice. Every service are fine-grained, and target to perform a small function. So Microservice was described as *fine-grained SOA* or *SOA done right* in some articles. So This is the main difference from traditional monolithic applications.
 
-* Every service should have its own independent lifecycle. 
+* Every service should have its own independent life cycle. Every service can be developed and deployed independently, if you are using a CI/CD automation service, every service should be done in a complete DevOps pipeline flow, but not affect others.
 
-Microservice componentizes your application into small services(componentized applications), and make it more maintainable and scalable.  This demo application shows you how to build a Microservice application via Spring Boot. 
+* Service-to-service communication is based on light-weight protocols, eg. HTTP based REST APIs for synchronous communication, WebSocket for asynchronous messages, MQTT/AMQP protocol for varied messaging from client or devices(eg. IOT applications).
+
+* The organization or team structures should be changed simultaneously when you are embracing Microservice architecture. You have to break your traditional organization tree. In traditional application development, your teams are organized by roles, eg architects, database administrators, developers, testers, operators etc. In the development stage of a Microservice based application, a team should be responsible for the whole DevOps lifecycle of one or more services. 
+
+Microservice componentizes your application into small services(componentized applications), and make it more maintainable and scalable. In this demo application, I will show you building a Microservice application via Spring Boot. 
+
+## Migrate to  Microservice architecture
+
+Contrast with Microservice applications, traditional layered enterprise applications were called **monolithic** applications.
+
+In the past years, I have created some samples to demonstrate different technology stack, such as [REST APIs sample with Spring MVC](https://github.com/hantsy/angularjs-springmvc-sample), [REST APIs sample with Spring Boot](https://github.com/hantsy/angularjs-springmvc-sample-boot), in these samples, the backends are monolithic application and they are based on the same model prototype, **a blog application**.
+
+* A user can login with an existed account, or sign up a new account.
+* An authenticated user can create a new post.
+* An authenticated user can update his/her posts.
+* An authenticated user who has **ADMIN** role can delete a post directly.
+* All users(who are authenticated or anonymous) can view posts.
+* An authenticated user can add comments to an existed post.
+* ...
+
+No doubt these monolithic backend applications are easy to develop and deploy, but as time goes by, when the application becomes more complex, the backend will be problematic, you maybe face some barriers which block you to the next stages.
+
+* When you apply a change, you have to redeploy the whole backend application even it is just a small fix. The application may be stopped to work for some minutes or some hours.
+* When you scale your applications and deploy multi copies of the backend applications behinds a load balance server, the transactional consistence will be a new challenge.
+* The database itself will be a huge performance bottleneck when the concurrency of incoming requests are increasing. 
+
+Microservice architecture addresses these problems, including:
+
+1. Smaller services are more easy to develop and deploy, when you upgrade one of the services, you do not need to shutdown all services in production.
+2. ACID can not satisfy the scenario of those long run workflow which across several services, although it is still a good option within a single service, but for these long run **transactions**, a stateful Saga or workflow solution fills this field. 
+3. A service can has its own database, and only responsible for storing data of this service itself.  Traditional complex queries will become a big challenge, in Microservice architecture, it could need to query multi independent database and aggregate the query results. CQRS, Event Store can save these. Perform commands in standalone services, and execute queries in another service which has marshal view of the data and was synced with messaging from events triggered by other services.
+
+Follow the **Bounded Context** concept of DDD(Domain Driven Design), we break the backend monolithic application into three small services, including:
+
+* A **auth-service** is serving the operations of signin, signup and signout.
+* A **user-service** is responsible for user management.
+* A **post-service** exposes APIs for a simple CMS, including posts and comments.
+* An **API Gateway** which is just responsible for routing the incoming requests to downstream services.
+* The databases are also aligned to Microservice architecture, and **user-service** and **post-service** have their own databases, a **Redis** is used for sharing session between services, and to simplify the security.
 
 ![microservice](./microservice.png)
 
-To demonstrate the Microservice architecture, we will reuse the models in my [RESTful application sample](https://github.com/hantsy/angularjs-springmvc-sample), and follow the **Bounded Context** concept of DDD(Domain Driven Design), break the backend monolithic application into three small services, including:
+As mentioned, if there is a [legacy application](https://github.com/hantsy/angularjs-springmvc-sample) planned to migrate to Microservice architecture, you can follow the following steps to extract some domain into a standalone service.
 
-* **auth-service** is serving the operations of signin, signup and signout.
-* **user-service** is responsible for user management.
-* **post-service** exposes APIs for a simple CMS, including posts and comments.
+1. Find the domains which are easiest to separate from the main application, eg, posts and comments in our application.
+2. Use an identifier object in the entity links instead of the hard relations of entities outside of this domain. eg. use a `Username` which stands for an unique username of an `User` entity, and erase the direct connection to `User` entity.
+3. Move the related data to a standalone database, and connect to this new database in your service.
 
-10 years ago, when we talked about the topic of application architecture, what we suddenly realized was 3-tiered applications and B/S architecture, which was the mainstream in that era. Today we have a word named it, **monolithic applications**.  
+When I start a new project, should I embrace Microservice architecture right now?
 
-In the latest years, cloud based applications make mobile devices become the main clients instead of browsers in your personal computer. RESTful architecture is a good option to serve different clients.
+Although we are talking about Microservice in this post, I still suggest you start building your application in a monolithic architecture if you know little about the complexity of Microservice, it could be consist of a RESTful backend and a SPA based frontend UI. In the initial development stage, either monolithic architecture or Microservice, you have to spend lots of time on clarifying the problem domains, defining the bounded context etc. Starting a monolithic application is still valuable when you are ready for migrating to Microservice architecture.
 
-*I have created a Spring based [RESTful application sample](https://github.com/hantsy/angularjs-springmvc-sample) and its [Spirng Boot variant](https://github.com/hantsy/angularjs-springmvc-sample-boot) to demonstrate how to build a  RESTful API based backend with Spring technology stack and a SPA frontend application with AngularJS.*
+## Cook our first service
 
-Compare to the traditional enterprise applications, RESTful architecture improves the the scalability by separating the backend RESTful API and frontend UI into different smaller applications. And the RESTful APIs provided in the backend can serve varied clients, such as frontend websites, a mobile applications, or third-party applications.
+This sample application is built on the newest Spring technology stack, including Spring Boot, Spring Data, Spring Security, etc. 
 
-To improve the scalability of backend, just need to add one or more copies behind a load balance server. 
+* Every small service is a Spring Boot application. Every service will be packaged as a **jar** file and use the embedded Tomcat as target runtime to serve the services.
+* Every small service owns its database, eg. we use MySQL as the backing database for **auth-service**, and PostgreSQL for the **post-service**.
+* Spring Data is used for simplifying data operations.
+* Spring Session provides a simple strategy to generate and validate header based authentication token via sharing sessions in a backing session repository, in this sample we use Redis as session storage.
+* Spring Security is responsible for protecting RESTful APIs.
 
-![rest-api](./rest-api.png)
+Follow the 12 factors application guide, I suggest you use Docker in both development and production environment to make sure the same code base works well in different environments.
 
-It is a really good start point for building modern applications. 
+In this section, we will build our first service, **post-service**, which is designated to exposes REST APIs to clients.
 
->NOTE: Although we are talking about Microservice in this post, I still suggest you start building your application with a monolithic RESTful backend and SPA based frontend UI if you know little about the complexity of Microservice. In the initial development stage, you have to spend lots of time on clarifying the problem domains, defining the bounded context etc, it is valuable when you are ready for migrating to Microservice architecture.
-
-No doubt the above backend is still considered as a monolithic application. As time goes by, when the application becomes more complex, the backend will be problematic as you faced in the traditional 3-tiered applications.
-
-* When apply a change, you have to redeploy the whole backend application even it is just a small fix.
-* When you deploy multi copies of the backend applications behinds a load balance server, the transactional consistence will be a new challenge.
-* The database itself will be a huge performance bottleneck when the concurrency of incoming requests is increasing. 
-
-
-Besides these, we use **nginx** as the **API Gateway**, which is just responsible for routing the incoming requests to downstream services. 
-
-## Prerequisites
+### Prerequisites
 
 I assume you have some experience of Spring, and know well about the [REST convention](https://en.wikipedia.org/wiki/Representational_state_transfer), esp the [CHAPTER 5: Representational State Transfer (REST)](https://www.ics.uci.edu/~fielding/pubs/dissertation/rest_arch_style.htm) from Roy Fielding's dissertation: [Architectural Styles and
 the Design of Network-based Software Architectures](https://www.ics.uci.edu/~fielding/pubs/dissertation/top.htm). 
@@ -97,21 +128,12 @@ And you have also installed the following software.
   * [Eclipse IDE](http://www.eclipse.org) (or  Eclipse based IDE,  Spring ToolSuite is highly recommended) 
   * [Intellij IDEA](http://www.jetbrains.com)
 
-This sample application is built on the newest Spring technology stack, including Spring Boot, Spring Data, Spring Security, etc. 
-
-* Every small service is a Spring Boot application. Every service will be packaged as a **jar** file and use the embedded Tomcat as target runtime to serve the services.
-* Every small service owns its database, eg. we use MySQL as the backing database for **auth-service**, and PostgreSQL for the **post-service**.
-* Spring Data is used for simplifying data operations.
-* Spring Session provides a simple strategy to generate and validate header based authentication token via sharing sessions in a backing session repository, in this sample we use Redis as session storage.
-* Spring Security is responsible for protecting RESTful APIs.
-
-Follow the 12 factors application guide, I suggest you use Docker in both development and production environment to make sure the same code base works well in different environments.
 
 ### Setup local development environment
 
 Make sure you have installed the latest Docker, Docker Compose and Docker Machine, more info please refer to the installation guide from [Docker official website](https://www.docker.com).
 
->NOTE: I used the official Docker Toolbox in development stage under Windows 10, you can also used Docker for Windows instead.
+>NOTE: I used the official Docker Toolbox in development stage under Windows 10, you can also use Docker for Windows instead.
 
 Docker Compose allow you start up the dependent infrastructural services(such as Database etc) via a single `docker-compose` command.
 
@@ -188,9 +210,7 @@ Forward the virtualbox ports to your local system, thus you can access the serve
 
 Then run the dependent servers via `docker-compose` command line.
 
-## Cook your first service
-
-As an example, we build the **post-service** as the start point. 
+### Generate project skeleton
 
 With [Spring Initializr](https://start.spring.io), you can get a Spring Boot based project skeleton in seconds. 
 
@@ -207,7 +227,7 @@ After downloading the generated archive, extract the files into your local disk 
 
 ### REST API overview
 
-Following the REST convention and HTTP protocol specification, the REST APIs of post-service can be designed as the following table.
+Following the REST convention and HTTP protocol specification, the REST APIs of post-service are designed as the following table.
 
 | Uri                    | Http Method | Request                                  | Response                                 | Description                              |
 | ---------------------- | ----------- | ---------------------------------------- | ---------------------------------------- | ---------------------------------------- |
@@ -220,9 +240,11 @@ Following the REST convention and HTTP protocol specification, the REST APIs of 
 | /posts/{slug}/comments | POST        | {'content':'test content'}               | 201                                      | Create a new comment of the certain post |
 
 
-### Create domain models
+### Create an entity
 
-JPA @Entity is a good match with DDD(Domain Driven Design) **Entity**, create **Post** entity.
+In DDD, an entity is a persistent object in DDD concept, JPA @Entity a is a good match.
+
+Create our first entity `Post`.
 
 ```java
 @Data
@@ -261,13 +283,15 @@ class Post extends AuditableEntity {
 }
 ```
 
-`@Data`, `@Builder`, `@NoArgsConstructor` and `@AllArgsConstructor` are from project **Lombok**, which are some helper annotations to make your source codes clean. With `@Data`, you can remove the tedious setters, getters of all fields, and the generic `equals`, `hashCode`, `toString` methods. These facilities are generated at compile time by JDK **Annotation Processing Tooling**. `@Builder` will generate a inner builder class. `@NoArgsConstructor` will create a none-argument constructor, `@AllArgsConstructor` will take all fields as arguments.
+`@Data`, `@Builder`, `@NoArgsConstructor` and `@AllArgsConstructor` are from project **Lombok**, which provides some helper annotations to make your source codes clean. With `@Data`, you can remove the tedious setters, getters of all fields, and the generic `equals`, `hashCode`, `toString` methods. `@Builder` will generate a inner builder class. `@NoArgsConstructor` will create a none-argument constructor, `@AllArgsConstructor` will take all fields as constructor arguments.
+
+These annotations will be handled by JDK **Annotation Processing Tooling**, and generate code fragment in class files at compile time. 
 
 `@Entity` indicates `Post` is a standard JPA Entity.
 
-The `@PrePersist` method will be executed before the entity is persisted.  We use post slug as the unique identifier of a `Post`.
+`@PrePersist` is a JPA lifecycle hook. The `@PrePersist` annotated methods will be executed before the entity is persisted.  We use post slug as the unique identifier of a `Post`, and we use `slugify()` method to generate the post slug automatically.
 
-`AuditableEntity` is helper class to centralize some common fields of a JPA entity.
+`AuditableEntity` is a helper class to centralize some common fields of a JPA entity in one place.
 
 ```java
 @Data
@@ -295,7 +319,7 @@ public abstract class AuditableEntity extends PersistableEntity {
 
 `@CreatedDate` and `@CreatedBy` will fill in the creation date timestamp and the current user if the data auditing feature is enabled. 
 
-Use a standalone `@Configuration` to configure Spring Data JPA auditing.
+Use a standalone `@Configuration` bean to configure Spring Data JPA auditing.
 
 ```java
 @Configuration
@@ -345,7 +369,7 @@ public abstract class PersistableEntity implements Serializable {
 }
 ```
 
-Similarly create a `Comment` entity.
+Similarly, create an another entity `Comment`.
 
 ```java
 @Data
@@ -374,9 +398,9 @@ public class Comment extends AuditableEntity {
 }
 ```
 
->NOTE: we do not user a JPA @OneToMany or @ManyToOne to connect two entities, but use a simple Post `Slug` identifier object instead.
+>NOTE: we do not user a JPA `@OneToMany` or `@ManyToOne` to connect two entities, but use a simple Post `Slug` identifier object instead. If one day this service becomes heavy, we could split comments into another standalone service.
 
-### Declare a `Repository` for `Post` entity
+### Declare a `Repository`
 
 In DDD, a **Repository** is responsible for retrieving entities from or saving back to a **Repository**.  Spring Data `Repository` interface and Spring Data JPA specific `JpaRepository` interface are a good match with **Repository** concept in DDD.
 
@@ -436,7 +460,7 @@ public class PostService {
 }
 ```
 
-In the `PostService`, the main purpose is treating with exceptions when creating or update a post. In a real world application, you could handle domain events, eg. Post is pulished etc.
+In the `PostService`, the main purpose is treating with exceptions when creating or update a post. In a real world application, you could handle domain events, eg. Post is published etc.
 
 ### Produces RESTful APIs
 
@@ -569,7 +593,7 @@ public class PostController {
 }
 ```
 
-`getAllPosts` method accepts a *q* (keyword) and a *status* (post status) and a  `Pageable` as query parameters, it returns a `Page<Post>` result. The `postRepository.findAll` method accepts a `Specification` object. `Specification` is a wrapper class of JPA 2.0 criteria APIs, which provides effective type safe query condition building. 
+`getAllPosts` method accepts a **q** (keyword) and a **status** (post status) and a  `Pageable` as query parameters, it returns a `Page<Post>` result. The `postRepository.findAll` method accepts a `Specification` object. `Specification` is a wrapper class of JPA 2.0 criteria APIs, which provides effective type safe query condition building. 
 
 
 ```java
@@ -648,7 +672,7 @@ public class PostExceptionHandler {
 
 ### Miscellaneous
 
-In a real world application, when you fetch post list, you maybe want to not show the post content in the list. It is easy to control the representation view sent to client by customizing  Jackson  `JsonView`.
+In a real world application, when you fetch post list, you maybe do not want to show all fields of the post. It is easy to control the representation view sent to client by customizing Jackson `JsonView`.
 
 ```java
 public final class View {
@@ -688,7 +712,7 @@ public ResponseEntity<Page<Post>> getAllPosts()
 
 Thus only the `Summary` labeled fields will be included in the result of `getAllPosts`.
 
-Another small issue, you could have found, the `Page` object serialized result looks a little tedious, too much unused `Pageable` info in the result.
+Another small issue you could have found is the `Page` object serialized result looks a little tedious, too much unused fields from `Pageable` are included in the json result.
 
 ```json
 {
@@ -791,17 +815,17 @@ When this bean is activated, the result cloud look like the following:
 
 The details of **auth-service** and **user-service**, please check the [source codes](https://github.com/hantsy/spring-microservice-sample) and explore them yourself.
 
-## Secures microservice
+## Secures Microservice
 
 Let's have a look at how a user get authentication in this demo.
 
 1. A user try to get authentication from **auth-service** using usename and password.
 2. If it is a valid user and it is authenticated successfully, the response header will include a **X-AUTH-TOKEN** header.
-3. Put **X-AUTH-TOKEN** header in the new request to get access permission of the protected resource, such as APIs in **post-service**.
+3. Extract the value of  **X-AUTH-TOKEN** header, and add **X-AUTH-TOKEN** header into the new request to get access permission of the protected resource, such as APIs in **post-service**.
 
 We use Spring Session and Redis to archive this purpose.
 
-In all services, we add the following codes to indicate resovle Session by HTTP header instead of Cookie.
+In all services, we add the following codes to resolve Session by HTTP header instead of Cookie.
 
 ```java
 @Configuration
@@ -1049,7 +1073,7 @@ ENV JAVA_OPTS=""
 ENTRYPOINT [ "sh", "-c", "java $JAVA_OPTS -Djava.security.egd=file:/dev/./urandom -jar /app.jar" ]
 ```
 
-The Dockerfile in auth-service and user-service are similar, just replaced the maven build target file.
+The Dockerfile in **auth-service** and **user-service** are similar, just replaced the maven build target file.
 
 ```dockerfile
 FROM frolvlad/alpine-oraclejdk8:slim
@@ -1189,7 +1213,7 @@ docker-compose -f docker-compose.yml -f docker-compose.local.yml up --build
 
 The `--build` parameter tells Docker build Docker images for all services firstly, then create containers based on the built images.  
 
-Due we have run a Nginx a reverse proxy, all APIs can be accessed through a single entry. 
+We have run a Nginx a reverse proxy, all APIs can be accessed through a single entry. 
 
 The following services will be provided.
 
