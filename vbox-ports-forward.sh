@@ -16,5 +16,7 @@ VBoxManage modifyvm "springms" --natpf1 "tcp-port8091,tcp,localhost,8091,,8091"
 VBoxManage modifyvm "springms" --natpf1 "tcp-port8092,tcp,localhost,8092,,8092" 
 VBoxManage modifyvm "springms" --natpf1 "tcp-port8093,tcp,localhost,8093,,8093" 
 VBoxManage modifyvm "springms" --natpf1 "tcp-port8094,tcp,localhost,8094,,8094" 
+VBoxManage modifyvm "springms" --natpf1 "tcp-port9200,tcp,localhost,9200,,9200" 
 VBoxManage modifyvm "springms" --natpf1 "tcp-port11210,tcp,localhost,11210,,11210" 
 
+#VBoxManage modifyvm xp --natpf1 delete guestrdp

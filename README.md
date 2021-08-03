@@ -3,21 +3,27 @@
 **Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
 
 - [Build a Microservice application with Spring Boot](#build-a-microservice-application-with-spring-boot)
-  - [Prerequisites](#prerequisites)
+  - [What is microservice?](#what-is-microservice)
+  - [Migrate to  Microservice architecture](#migrate-to--microservice-architecture)
+  - [Cook our first service](#cook-our-first-service)
+    - [Prerequisites](#prerequisites)
     - [Setup local development environment](#setup-local-development-environment)
       - [Docker Toolbox Notes](#docker-toolbox-notes)
-  - [Cook your first service](#cook-your-first-service)
+    - [Generate project skeleton](#generate-project-skeleton)
     - [REST API overview](#rest-api-overview)
-    - [Create domain models](#create-domain-models)
-    - [Declare a `Repository` for `Post` entity](#declare-a-repository-for-post-entity)
+    - [Create an entity](#create-an-entity)
+    - [Declare a `Repository`](#declare-a-repository)
     - [Create a domain service](#create-a-domain-service)
     - [Produces RESTful APIs](#produces-restful-apis)
     - [Exception Handling](#exception-handling)
     - [Miscellaneous](#miscellaneous)
-  - [Secures microservice](#secures-microservice)
+  - [Secures Microservice](#secures-microservice)
   - [Run the application locally](#run-the-application-locally)
   - [Run all services via Docker Compose](#run-all-services-via-docker-compose)
-  - [Docker Swarm](#docker-swarm)
+  - [Testing Microservice](#testing-microservice)
+  - [Create a private Docker Registry](#create-a-private-docker-registry)
+  - [Deployment on Docker Swarm](#deployment-on-docker-swarm)
+  - [Deployment on Kubernetes](#microservice-deployment-on-kubernetes)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -199,9 +205,9 @@ eval "$(docker-machine env springms)"
 
 Forward the virtualbox ports to your local system, thus you can access the servers via `localhost` instead of the docker machine IP address.
 
-```
+```d
  VBoxManage modifyvm "springms" --natpf1 "tcp-port3306,tcp,,3306,,3306"
- VBoxManage modifyvm "springms" --natpf1 "tcp-port3307,tcp,,3307,,3307"
+ VBoxManage modifyvm "springms" --natpf1 "tcp-port5432,tcp,,5432,,5432"
  VBoxManage modifyvm "springms" --natpf1 "tcp-port5672,tcp,,5672,,5672"
  VBoxManage modifyvm "springms" --natpf1 "tcp-port15672,tcp,,15672,,15672"
  VBoxManage modifyvm "springms" --natpf1 "tcp-port6379,tcp,,6379,,6379"
@@ -242,7 +248,7 @@ Following the REST convention and HTTP protocol specification, the REST APIs of 
 
 ### Create an entity
 
-In DDD, an entity is a persistent object in DDD concept, JPA @Entity a is a good match.
+A domain entity is a persistent object in DDD concept, JPA @Entity a is a good match.
 
 Create our first entity `Post`.
 
@@ -1550,8 +1556,10 @@ sudo mv ~/ca.crt /etc/docker/certs.d/hostname/ca.crt
 exit
 docker-machine restart
 
-openssl req -newkey rsa:4096 -nodes -sha256 -keyout certs/domain.key \
-				-x509 -days 356 -out certs/domain.crt
+#https://github.com/docker/machine/issues/4407
+"C:\Program Files\Git\usr\bin\scp.exe" -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o LogLevel=quiet -3 -o IdentitiesOnly=yes -o Port=22 -o IdentityFile="C:\\Users\\admin\\.docker\\machine\\machines\\default\\id_rsa" certs/domain.crt docker@127.0.0.1:/home/docker
+
+openssl req -newkey rsa:4096 -nodes -sha256 -keyout certs/domain.key -x509 -days 365 -out certs/domain.crt
 
 ## Deployment on Docker Swarm
 
