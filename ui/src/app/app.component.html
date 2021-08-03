@@ -1,0 +1,77 @@
+<div fxLayout="column" fxFlex [class.dark-theme]="isDarkTheme">
+
+  <mat-toolbar color="primary">
+    <mat-toolbar-row>
+      <span>Angular Material</span>
+      <!-- Filler that pushes the menu button to the end of the toolbar -->
+      <span fxFlex></span>
+
+      <button mat-icon-button [matMenuTriggerFor]="themeMenu">
+        <mat-icon>more_vert</mat-icon>
+      </button>
+    </mat-toolbar-row>
+  </mat-toolbar>
+
+  <mat-sidenav-container fxFlex>
+    <mat-sidenav mode="side" opened>
+      <div class="name-container">
+        <div *showAuthed="false">
+          <a mat-button color="accent" [routerLink]="['', 'auth', 'signin']">SIGN IN</a>
+        </div>
+        <div *showAuthed="true">
+          <div>Welcome, {{(currentUser|async)?.name}}</div>
+          <div>
+            <button mat-button mat-raised-button color="warn" (click)="signout()">SIGN OUT</button>
+          </div>
+        </div>
+      </div>
+
+      <mat-nav-list>
+        <a mat-list-item  *ngFor="let link of links"  [routerLink]="[link.path]">
+          <mat-icon matListIcon>{{link.icon}}</mat-icon>
+          <span>{{link.label}}</span>
+        </a>
+      </mat-nav-list>
+      <!-- <mat-tab-group>
+        <mat-tab label="Users">
+          <mat-nav-list>
+            <mat-list-item *ngFor="let user of users">
+              <mat-icon matListAvatar svgIcon="avatars:{{user.avatar}}" class="avatar"></mat-icon>
+              <span>{{user.name}}</span>
+            </mat-list-item>
+          </mat-nav-list>
+        </mat-tab>
+        <mat-tab label="Settings">
+          <span>Settings</span>
+        </mat-tab>
+      </mat-tab-group> -->
+    </mat-sidenav>
+    <div class="content"
+    fxFlex
+    fxFlex.gt-sm="66"
+    fxLayout="row space-around"
+    fxLayoutGap="15px"
+    fxLayout.sm="column"
+    fxLayoutGap.sm="0px">
+
+      <!-- <mat-card fxFlex="80">
+        <mat-icon svgIcon="avatars:{{selectedUser.avatar}}" class="avatar"></mat-icon>
+        <h2>{{selectedUser.name}}</h2>
+        <p>{{selectedUser.details}}</p>
+      </mat-card>
+
+      <mat-card fxFlex fxLayout="column" fxLayoutGap="14px">
+        <mat-slide-toggle [(ngModel)]="selectedUser.isAdmin">Is Admin?</mat-slide-toggle>
+        <mat-slide-toggle [(ngModel)]="selectedUser.isCool">Is Cool?</mat-slide-toggle>
+      </mat-card> -->
+      <router-outlet fxFlex>
+    </router-outlet>
+
+    </div>
+  </mat-sidenav-container>
+  <mat-menu #themeMenu x-position="before">
+    <button mat-menu-item (click)="isDarkTheme = !isDarkTheme">Toggle Theme</button>
+  </mat-menu>
+
+
+</div>

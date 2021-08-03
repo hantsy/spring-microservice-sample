@@ -1,0 +1,15 @@
+  <mat-card fxFlex>
+    <mat-card-header>
+      <!-- <div mat-card-avatar class="example-header-image"></div> -->
+      <mat-card-title><h1 class="mat-heading">{{'new-post'}}</h1></mat-card-title>
+      <mat-card-subtitle>
+        <small>all fields marked with star are required.</small>
+      </mat-card-subtitle>
+    </mat-card-header>
+    <mat-card-content>
+      <app-post-form fxFlex [post]="post" (save)="onPostSaved($event)"></app-post-form>
+    </mat-card-content>
+    <mat-card-footer>
+      back to <a [routerLink]="['','post', 'list']">{{'post-list'}}</a>
+    </mat-card-footer>
+  </mat-card>

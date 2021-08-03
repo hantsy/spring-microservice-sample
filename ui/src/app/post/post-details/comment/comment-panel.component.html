@@ -1,0 +1,28 @@
+<mat-card>
+  <mat-card-header>
+    <!-- <div mat-card-avatar class="example-header-image"></div> -->
+    <mat-card-title class="text-upper">{{'comments'}}</mat-card-title>
+    <mat-card-subtitle>
+      <small>You have to login before add your comments.</small>
+    </mat-card-subtitle>
+  </mat-card-header>
+  <mat-card-content>
+    <app-comment-list [comments]="comments"></app-comment-list>
+  </mat-card-content>
+  <!-- <mat-card-footer>
+  </mat-card-footer> -->
+</mat-card>
+
+
+  <mat-card>
+    <div *showAuthed="true" mat-content>
+      <app-comment-form [post]="post" (save)="onCommentSaved($event)"></app-comment-form>
+    </div>
+    <div *showAuthed="false" class="pad text-center">
+      <p>Please signin and add your comments.</p>
+      <div>
+        <a mat-raised-button color="primary" class="mat-button-lg" [routerLink]="['/auth','signin']">SIGN IN</a>
+      </div>
+    </div>
+  </mat-card>
+

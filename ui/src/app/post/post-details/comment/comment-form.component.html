@@ -1,0 +1,15 @@
+<form id="form" name="form" class="form" [formGroup]="commentForm" (ngSubmit)="saveCommentForm()"
+  novalidate>
+  <p>
+    <mat-form-field fxFlex>
+      <textarea  matInput  name="content" id="content" [formControl]="content" rows="8" required>
+      </textarea>
+      <mat-error align="start" *ngIf="content.hasError('required')">Comment is required</mat-error>
+      <mat-error align="start" *ngIf="content.hasError('minlength')">At least 10 chars</mat-error>
+    </mat-form-field>
+  </p>
+  <p>
+    <button mat-button mat-raised-button type="submit" color="primary" [disabled]="commentForm.invalid || commentForm.pending">  {{'save'}}
+    </button>
+  </p>
+</form>

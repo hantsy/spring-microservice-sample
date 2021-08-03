@@ -1,0 +1,21 @@
+<mat-card fxFlex>
+  <mat-card-header>
+    <!-- <div mat-card-avatar class="example-header-image"></div> -->
+    <mat-card-title>
+      <h1 class="mat-heading">{{'edit-post'}}</h1>
+    </mat-card-title>
+    <mat-card-subtitle>
+      <p>created at: {{post.createdDate|date:'short'}} &bull; {{post.author?.username||'user'}}</p>
+      <p>
+        <small>all fields marked with star are required.</small>
+      </p>
+    </mat-card-subtitle>
+  </mat-card-header>
+  <mat-card-content>
+    <app-post-form fxFlex [post]="post" (save)="onPostUpdated($event)"></app-post-form>
+  </mat-card-content>
+  <mat-card-footer>
+    back to
+    <a [routerLink]="['','post', 'list']">{{'post-list'}}</a>
+  </mat-card-footer>
+</mat-card>

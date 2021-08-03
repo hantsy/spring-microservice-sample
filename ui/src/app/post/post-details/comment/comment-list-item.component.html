@@ -1,0 +1,5 @@
+<mat-list-item fxFlex>
+  <mat-icon matListIcon>account_circle</mat-icon>
+  <h3 mat-line class="tc-blue-grey-500">{{comment.author?.username||'user'}} &bull; {{comment.createdDate|date:'short'}} </h3>
+  <p mat-line class="tc-blue-grey-300">{{comment.content}}</p>
+</mat-list-item>

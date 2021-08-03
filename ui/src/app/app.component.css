@@ -1,0 +1,38 @@
+:host {
+  display: flex;
+  flex: 1;
+}
+
+mat-sidenav {
+  width: 320px;
+}
+
+.content {
+  padding: 12px;
+}
+/* removed
+/deep/ mat-icon.avatar
+*/
+mat-list-item mat-icon {
+  overflow: hidden;
+  width: 64px;
+  height: 64px;
+/*  border-radius: 50%; */
+  margin: 12px;
+}
+
+.name-container{
+  display: flex;
+  margin: 25px;
+  justify-content: center;
+}
+
+router-outlet{
+  margin: 0px
+}
+
+/* we don't need this as it makes the sidenav not fill the height by 100% and looks like floating
+/deep/ .mat-list-item-content {
+  height: auto !important;
+}
+ */

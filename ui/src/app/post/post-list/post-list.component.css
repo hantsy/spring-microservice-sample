@@ -1,0 +1,13 @@
+:host{
+  display: flex;
+  flex: 1 1 auto;
+  flex-flow: row wrap;
+}
+
+.fab-bottom-right {
+  position: fixed;
+ /*add z-index*/
+  z-index: 10;
+  right: 16px;
+  bottom: 16px;
+}
