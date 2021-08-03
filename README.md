@@ -29,7 +29,7 @@
 
 # Build a Microservice application with Spring Boot
 
-**Microservice** is a very hot topic in these years, you can see it everywhere, there is a lots of books, blog entries, conference sessions, training courses etc are talking about it.
+**Microservice** is a very hot topic in these years, you can see it everywhere, there are a lots of books, blog entries, conference sessions, training courses etc are talking about it.
 
 ## What is microservice?
 
@@ -49,7 +49,7 @@ Chris Richardson, the author of POJOs in Action and the creator of the original 
 
 There are some common characteristics can be used to describe a Microservice based application.
 
-* A Microservice application should be consist of a collection of small services. One service is not Microservice. Every service are fine-grained, and target to perform a small function. So Microservice was described as *fine-grained SOA* or *SOA done right* in some articles. So This is the main difference from traditional monolithic applications.
+* A Microservice application should be consisted of a collection of small services. One service is not Microservice. Every service is fine-grained, and target to perform a small function. So Microservice was described as *fine-grained SOA* or *SOA done right* in some articles. So This is the main difference from traditional monolithic applications.
 
 * Every service should have its own independent life cycle. Every service can be developed and deployed independently, if you are using a CI/CD automation service, every service should be done in a complete DevOps pipeline flow, but not affect others.
 
@@ -63,9 +63,9 @@ Microservice componentizes your application into small services(componentized ap
 
 Contrast with Microservice applications, traditional layered enterprise applications were called **monolithic** applications.
 
-In the past years, I have created some samples to demonstrate different technology stack, such as [REST APIs sample with Spring MVC](https://github.com/hantsy/angularjs-springmvc-sample), [REST APIs sample with Spring Boot](https://github.com/hantsy/angularjs-springmvc-sample-boot), in these samples, the backends are monolithic application and they are based on the same model prototype, **a blog application**.
+In the past years, I have created some samples to demonstrate different technology stack, such as [REST APIs sample with Spring MVC](https://github.com/hantsy/angularjs-springmvc-sample), [REST APIs sample with Spring Boot](https://github.com/hantsy/angularjs-springmvc-sample-boot), in these samples, the backends are monolithic applications and they are based on the same model prototype, **a blog application**.
 
-* A user can login with an existed account, or sign up a new account.
+* A user can log in with an existed account, or sign up a new account.
 * An authenticated user can create a new post.
 * An authenticated user can update his/her posts.
 * An authenticated user who has **ADMIN** role can delete a post directly.
@@ -81,13 +81,13 @@ No doubt these monolithic backend applications are easy to develop and deploy, b
 
 Microservice architecture addresses these problems, including:
 
-1. Smaller services are more easy to develop and deploy, when you upgrade one of the services, you do not need to shutdown all services in production.
+1. Smaller services are easier to develop and deploy, when you upgrade one of the services, you do not need to shut down all services in production.
 2. ACID can not satisfy the scenario of those long run workflow which across several services, although it is still a good option within a single service, but for these long run **transactions**, a stateful Saga or workflow solution fills this field. 
 3. A service can has its own database, and only responsible for storing data of this service itself.  Traditional complex queries will become a big challenge, in Microservice architecture, it could need to query multi independent database and aggregate the query results. CQRS, Event Store can save these. Perform commands in standalone services, and execute queries in another service which has marshal view of the data and was synced with messaging from events triggered by other services.
 
 Follow the **Bounded Context** concept of DDD(Domain Driven Design), we break the backend monolithic application into three small services, including:
 
-* A **auth-service** is serving the operations of signin, signup and signout.
+* An **auth-service** is serving the operations of signin, signup and signout.
 * A **user-service** is responsible for user management.
 * A **post-service** exposes APIs for a simple CMS, including posts and comments.
 * An **API Gateway** which is just responsible for routing the incoming requests to downstream services.
@@ -98,12 +98,12 @@ Follow the **Bounded Context** concept of DDD(Domain Driven Design), we break th
 As mentioned, if there is a [legacy application](https://github.com/hantsy/angularjs-springmvc-sample) planned to migrate to Microservice architecture, you can follow the following steps to extract some domain into a standalone service.
 
 1. Find the domains which are easiest to separate from the main application, eg, posts and comments in our application.
-2. Use an identifier object in the entity links instead of the hard relations of entities outside of this domain. eg. use a `Username` which stands for an unique username of an `User` entity, and erase the direct connection to `User` entity.
+2. Use an identifier object in the entity links instead of the hard relations of entities outside of this domain. eg. use a `Username` which stands for a unique username of a `User` entity, and erase the direct connection to `User` entity.
 3. Move the related data to a standalone database, and connect to this new database in your service.
 
 When I start a new project, should I embrace Microservice architecture right now?
 
-Although we are talking about Microservice in this post, I still suggest you start building your application in a monolithic architecture if you know little about the complexity of Microservice, it could be consist of a RESTful backend and a SPA based frontend UI. In the initial development stage, either monolithic architecture or Microservice, you have to spend lots of time on clarifying the problem domains, defining the bounded context etc. Starting a monolithic application is still valuable when you are ready for migrating to Microservice architecture.
+Although we are talking about Microservice in this post, I still suggest you start building your application in a monolithic architecture if you know little about the complexity of Microservice, it could be consisted of a RESTful backend and an SPA based frontend UI. In the initial development stage, either monolithic architecture or Microservice, you have to spend lots of time on clarifying the problem domains, defining the bounded context etc. Starting a monolithic application is still valuable when you are ready for migrating to Microservice architecture.
 
 ## Cook our first service
 
@@ -289,7 +289,7 @@ class Post extends AuditableEntity {
 }
 ```
 
-`@Data`, `@Builder`, `@NoArgsConstructor` and `@AllArgsConstructor` are from project **Lombok**, which provides some helper annotations to make your source codes clean. With `@Data`, you can remove the tedious setters, getters of all fields, and the generic `equals`, `hashCode`, `toString` methods. `@Builder` will generate a inner builder class. `@NoArgsConstructor` will create a none-argument constructor, `@AllArgsConstructor` will take all fields as constructor arguments.
+`@Data`, `@Builder`, `@NoArgsConstructor` and `@AllArgsConstructor` are from project **Lombok**, which provides some helper annotations to make your source codes clean. With `@Data`, you can remove the tedious setters, getters of all fields, and the generic `equals`, `hashCode`, `toString` methods. `@Builder` will generate an inner builder class. `@NoArgsConstructor` will create a none-argument constructor, `@AllArgsConstructor` will take all fields as constructor arguments.
 
 These annotations will be handled by JDK **Annotation Processing Tooling**, and generate code fragment in class files at compile time. 
 
@@ -944,7 +944,7 @@ Let's try to run the demo in local system.
 
 Make sure the dependent servers are running by executing `docker-compose up`. 
 
-Enter the root folder of every services, execute the following command to start up them one by one.
+Enter the root folder of every service, execute the following command to start up them one by one.
 
 ```
 mvn spring-boot:run // run in user-service, auth-service, post-service
@@ -1549,12 +1549,12 @@ openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout ssl/nginx.key -out s
 
 ## Create a private Docker Registry
 
-https://github.com/boot2docker/boot2docker/pull/1195
-docker-machine scp certfile default:ca.crt
-docker-machine ssh default
-sudo mv ~/ca.crt /etc/docker/certs.d/hostname/ca.crt
-exit
-docker-machine restart
+- https://github.com/boot2docker/boot2docker/pull/1195
+- docker-machine scp certfile default:ca.crt
+- docker-machine ssh default
+- sudo mv ~/ca.crt /etc/docker/certs.d/hostname/ca.crt
+- exit
+- docker-machine restart
 
 #https://github.com/docker/machine/issues/4407
 "C:\Program Files\Git\usr\bin\scp.exe" -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o LogLevel=quiet -3 -o IdentitiesOnly=yes -o Port=22 -o IdentityFile="C:\\Users\\admin\\.docker\\machine\\machines\\default\\id_rsa" certs/domain.crt docker@127.0.0.1:/home/docker
