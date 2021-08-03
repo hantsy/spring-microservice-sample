@@ -2,66 +2,68 @@
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 **Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
 
-- [Build a Microservice application with Spring Boot](#build-a-microservice-application-with-spring-boot)
-  - [What is microservice?](#what-is-microservice)
-  - [Migrate to  Microservice architecture](#migrate-to--microservice-architecture)
-  - [Cook our first service](#cook-our-first-service)
+- [Building a Microservices  application with Spring Boot](#building-a-microservices--application-with-spring-boot)
+  - [What is Microservices ?](#what-is-microservices-)
+  - [Migrating to  Microservices  Architecture](#migrating-to--microservices--architecture)
+  - [Cooking your first service](#cooking-your-first-service)
     - [Prerequisites](#prerequisites)
     - [Setup local development environment](#setup-local-development-environment)
       - [Docker Toolbox Notes](#docker-toolbox-notes)
     - [Generate project skeleton](#generate-project-skeleton)
-    - [REST API overview](#rest-api-overview)
-    - [Create an entity](#create-an-entity)
-    - [Declare a `Repository`](#declare-a-repository)
-    - [Create a domain service](#create-a-domain-service)
-    - [Produces RESTful APIs](#produces-restful-apis)
+    - [REST API Overview](#rest-api-overview)
+    - [Create a new Entity](#create-a-new-entity)
+    - [Create `Repository` for Entities](#create-repository-for-entities)
+    - [Create a Domain Service](#create-a-domain-service)
+    - [Expose RESTful APIs](#expose-restful-apis)
     - [Exception Handling](#exception-handling)
     - [Miscellaneous](#miscellaneous)
-  - [Secures Microservice](#secures-microservice)
-  - [Run the application locally](#run-the-application-locally)
-  - [Run all services via Docker Compose](#run-all-services-via-docker-compose)
-  - [Testing Microservice](#testing-microservice)
-  - [Create a private Docker Registry](#create-a-private-docker-registry)
-  - [Deployment on Docker Swarm](#deployment-on-docker-swarm)
-  - [Deployment on Kubernetes](#microservice-deployment-on-kubernetes)
+  - [Secures Microservices](#secures-microservices)
+  - [Running Microservices application](#running-microservices-application)
+    - [Running application via Maven plugin](#running-application-via-maven-plugin)
+    - [Running application via Docker Compose](#running-application-via-docker-compose)
+  - [Testing Microservices](#testing-microservices)
+  - [Deploying Microservices application](#deploying-microservices-application)
+    - [Publishing Docker Images to Docker Hub](#publishing-docker-images-to-docker-hub)
+    - [Deploying to Docker Swarm](#deploying-to-docker-swarm)
+    - [Deploying to Kubernetes](#deploying-to-kubernetes)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
-# Build a Microservice application with Spring Boot
+# Building a Microservices  application with Spring Boot
 
-**Microservice** is a very hot topic in these years, you can see it everywhere, there are a lots of books, blog entries, conference sessions, training courses etc are talking about it.
+**Microservices ** is a very hot topic in these years, you can see it everywhere, there are a lots of books, blog entries, conference sessions, training courses etc are talking about it.
 
-## What is microservice?
+## What is Microservices ?
 
-Microservice is not a standard specification, so there is no official definition. Here I listed some well-known explanation from the communities.
+Microservices  is not a standard specification, so there is no official definition. Here I listed some well-known explanation from the communities.
 
-[Martin Fowler](https://martinfowler.com/) described it as the following in his article [Microservice](https://martinfowler.com/articles/microservices.html):
+[Martin Fowler](https://martinfowler.com/) described it as the following in his article [Microservices ](https://martinfowler.com/articles/Microservices s.html):
 
->In short, the microservice architectural style is an approach to developing a single application as a suite of small services, each running in its own process and communicating with lightweight mechanisms, often an HTTP resource API. These services are built around business capabilities and independently deployable by fully automated deployment machinery. There is a bare minimum of centralized management of these services, which may be written in different programming languages and use different data storage technologies. 
+>In short, the Microservices  architectural style is an approach to developing a single application as a suite of small services, each running in its own process and communicating with lightweight mechanisms, often an HTTP resource API. These services are built around business capabilities and independently deployable by fully automated deployment machinery. There is a bare minimum of centralized management of these services, which may be written in different programming languages and use different data storage technologies. 
 
-On the [Wikipedia Microservice page](https://en.wikipedia.org/wiki/Microservices), Microservice was defined as:
+On the [Wikipedia Microservices  page](https://en.wikipedia.org/wiki/Microservices s), Microservices  was defined as:
 
->Microservices is a variant of the service-oriented architecture (SOA) architectural style that structures an application as a collection of loosely coupled services. In a microservices architecture, services should be fine-grained and the protocols should be lightweight. The benefit of decomposing an application into different smaller services is that it improves modularity and makes the application easier to understand, develop and test. It also parallelizes development by enabling small autonomous teams to develop, deploy and scale their respective services independently.[1] It also allows the architecture of an individual service to emerge through continuous refactoring. Microservices-based architectures enable continuous delivery and deployment.
+>Microservices is a variant of the service-oriented architecture (SOA) architectural style that structures an application as a collection of loosely coupled services. In a Microservices architecture, services should be fine-grained and the protocols should be lightweight. The benefit of decomposing an application into different smaller services is that it improves modularity and makes the application easier to understand, develop and test. It also parallelizes development by enabling small autonomous teams to develop, deploy and scale their respective services independently.[1] It also allows the architecture of an individual service to emerge through continuous refactoring. Microservices s-based architectures enable continuous delivery and deployment.
 
-Chris Richardson, the author of POJOs in Action and the creator of the original CloudFoundry.com, and also an advocator of Microservice, summarized Microservice as the following in the home page of [Microservices.io](http://microservices.io/index.html).
+Chris Richardson, the author of POJOs in Action and the creator of the original CloudFoundry.com, and also an advocator of Microservices , summarized Microservices  as the following in the home page of [Microservices.io](http://Microservices.io/index.html).
 
->Microservices - also known as the Microservice architecture - is an architectural style that structures an application as a collection of loosely coupled services, which implement business capabilities. The Microservice architecture enables the continuous delivery/deployment of large, complex applications. It also enables an organization to evolve its technology stack.
+>Microservices - also known as the Microservices  architecture - is an architectural style that structures an application as a collection of loosely coupled services, which implement business capabilities. The Microservices  architecture enables the continuous delivery/deployment of large, complex applications. It also enables an organization to evolve its technology stack.
 
-There are some common characteristics can be used to describe a Microservice based application.
+There are some common characteristics can be used to describe a Microservices  based application.
 
-* A Microservice application should be consisted of a collection of small services. One service is not Microservice. Every service is fine-grained, and target to perform a small function. So Microservice was described as *fine-grained SOA* or *SOA done right* in some articles. So This is the main difference from traditional monolithic applications.
+* A Microservices  application should be consisted of a collection of small services. One service is not Microservices . Every service is fine-grained, and target to perform a small function. So Microservices  was described as *fine-grained SOA* or *SOA done right* in some articles. So This is the main difference from traditional monolithic applications.
 
 * Every service should have its own independent life cycle. Every service can be developed and deployed independently, if you are using a CI/CD automation service, every service should be done in a complete DevOps pipeline flow, but not affect others.
 
 * Service-to-service communication is based on light-weight protocols, eg. HTTP based REST APIs for synchronous communication, WebSocket for asynchronous messages, MQTT/AMQP protocol for varied messaging from client or devices(eg. IOT applications).
 
-* The organization or team structures should be changed simultaneously when you are embracing Microservice architecture. You have to break your traditional organization tree. In traditional application development, your teams are organized by roles, eg architects, database administrators, developers, testers, operators etc. In the development stage of a Microservice based application, a team should be responsible for the whole DevOps lifecycle of one or more services. 
+* The organization or team structures should be changed simultaneously when you are embracing Microservices  architecture. You have to break your traditional organization tree. In traditional application development, your teams are organized by roles, eg architects, database administrators, developers, testers, operators etc. In the development stage of a Microservices  based application, a team should be responsible for the whole DevOps lifecycle of one or more services. 
 
-Microservice componentizes your application into small services(componentized applications), and make it more maintainable and scalable. In this demo application, I will show you building a Microservice application via Spring Boot. 
+Microservices  componentizes your application into small services(componentized applications), and make it more maintainable and scalable. In this demo application, I will show you building a Microservices  application via Spring Boot. 
 
-## Migrate to  Microservice architecture
+## Migrating to  Microservices  Architecture
 
-Contrast with Microservice applications, traditional layered enterprise applications were called **monolithic** applications.
+Contrast with Microservices  applications, traditional layered enterprise applications were called **monolithic** applications.
 
 In the past years, I have created some samples to demonstrate different technology stack, such as [REST APIs sample with Spring MVC](https://github.com/hantsy/angularjs-springmvc-sample), [REST APIs sample with Spring Boot](https://github.com/hantsy/angularjs-springmvc-sample-boot), in these samples, the backends are monolithic applications and they are based on the same model prototype, **a blog application**.
 
@@ -79,11 +81,11 @@ No doubt these monolithic backend applications are easy to develop and deploy, b
 * When you scale your applications and deploy multi copies of the backend applications behinds a load balance server, the transactional consistence will be a new challenge.
 * The database itself will be a huge performance bottleneck when the concurrency of incoming requests are increasing. 
 
-Microservice architecture addresses these problems, including:
+Microservices  architecture addresses these problems, including:
 
 1. Smaller services are easier to develop and deploy, when you upgrade one of the services, you do not need to shut down all services in production.
 2. ACID can not satisfy the scenario of those long run workflow which across several services, although it is still a good option within a single service, but for these long run **transactions**, a stateful Saga or workflow solution fills this field. 
-3. A service can has its own database, and only responsible for storing data of this service itself.  Traditional complex queries will become a big challenge, in Microservice architecture, it could need to query multi independent database and aggregate the query results. CQRS, Event Store can save these. Perform commands in standalone services, and execute queries in another service which has marshal view of the data and was synced with messaging from events triggered by other services.
+3. A service can has its own database, and only responsible for storing data of this service itself.  Traditional complex queries will become a big challenge, in Microservices  architecture, it could need to query multi independent database and aggregate the query results. CQRS, Event Store can save these. Perform commands in standalone services, and execute queries in another service which has marshal view of the data and was synced with messaging from events triggered by other services.
 
 Follow the **Bounded Context** concept of DDD(Domain Driven Design), we break the backend monolithic application into three small services, including:
 
@@ -91,21 +93,21 @@ Follow the **Bounded Context** concept of DDD(Domain Driven Design), we break th
 * A **user-service** is responsible for user management.
 * A **post-service** exposes APIs for a simple CMS, including posts and comments.
 * An **API Gateway** which is just responsible for routing the incoming requests to downstream services.
-* The databases are also aligned to Microservice architecture, and **user-service** and **post-service** have their own databases, a **Redis** is used for sharing session between services, and to simplify the security.
+* The databases are also aligned to Microservices  architecture, and **user-service** and **post-service** have their own databases, a **Redis** is used for sharing session between services, and to simplify the security.
 
-![microservice](./microservice.png)
+![Microservices ](./Microservices .png)
 
-As mentioned, if there is a [legacy application](https://github.com/hantsy/angularjs-springmvc-sample) planned to migrate to Microservice architecture, you can follow the following steps to extract some domain into a standalone service.
+As mentioned, if there is a [legacy application](https://github.com/hantsy/angularjs-springmvc-sample) planned to migrate to Microservices  architecture, you can follow the following steps to extract some domain into a standalone service.
 
 1. Find the domains which are easiest to separate from the main application, eg, posts and comments in our application.
 2. Use an identifier object in the entity links instead of the hard relations of entities outside of this domain. eg. use a `Username` which stands for a unique username of a `User` entity, and erase the direct connection to `User` entity.
 3. Move the related data to a standalone database, and connect to this new database in your service.
 
-When I start a new project, should I embrace Microservice architecture right now?
+When I start a new project, should I embrace Microservices  architecture right now?
 
-Although we are talking about Microservice in this post, I still suggest you start building your application in a monolithic architecture if you know little about the complexity of Microservice, it could be consisted of a RESTful backend and an SPA based frontend UI. In the initial development stage, either monolithic architecture or Microservice, you have to spend lots of time on clarifying the problem domains, defining the bounded context etc. Starting a monolithic application is still valuable when you are ready for migrating to Microservice architecture.
+Although we are talking about Microservices  in this post, I still suggest you start building your application in a monolithic architecture if you know little about the complexity of Microservices , it could be consisted of a RESTful backend and an SPA based frontend UI. In the initial development stage, either monolithic architecture or Microservices , you have to spend lots of time on clarifying the problem domains, defining the bounded context etc. Starting a monolithic application is still valuable when you are ready for migrating to Microservices  architecture.
 
-## Cook our first service
+## Cooking your first service
 
 This sample application is built on the newest Spring technology stack, including Spring Boot, Spring Data, Spring Security, etc. 
 
@@ -121,14 +123,14 @@ In this section, we will build our first service, **post-service**, which is des
 
 ### Prerequisites
 
-I assume you have some experience of Spring, and know well about the [REST convention](https://en.wikipedia.org/wiki/Representational_state_transfer), esp the [CHAPTER 5: Representational State Transfer (REST)](https://www.ics.uci.edu/~fielding/pubs/dissertation/rest_arch_style.htm) from Roy Fielding's dissertation: [Architectural Styles and
+I assume you have some experience of Spring, and know well about the [REST convention](https://en.wikipedia.org/wiki/Representational_state_transfer), especially the [CHAPTER 5: Representational State Transfer (REST)](https://www.ics.uci.edu/~fielding/pubs/dissertation/rest_arch_style.htm) from Roy Fielding's dissertation: [Architectural Styles and
 the Design of Network-based Software Architectures](https://www.ics.uci.edu/~fielding/pubs/dissertation/top.htm). 
 
 And you have also installed the following software.
 
-* [Oracle Java 8 SDK](https://java.oracle.com) 
-* [Apache Maven](https://maven.apache.org)
-* [Gradle](http://www.gradle.org) if you prefer Gradle as build tools
+* JDK 8, eg. [Oracle Java 8 SDK](https://java.oracle.com) 
+* The latest [Apache Maven](https://maven.apache.org)
+* Optional [Gradle](http://www.gradle.org) if you prefer Gradle as build tools
 * Your favorite IDE, including :
   * [NetBeans IDE](http://www.netbeans.org)
   * [Eclipse IDE](http://www.eclipse.org) (or  Eclipse based IDE,  Spring ToolSuite is highly recommended) 
@@ -139,9 +141,9 @@ And you have also installed the following software.
 
 Make sure you have installed the latest Docker, Docker Compose and Docker Machine, more info please refer to the installation guide from [Docker official website](https://www.docker.com).
 
->NOTE: I used the official Docker Toolbox in development stage under Windows 10, you can also use Docker for Windows instead.
+>NOTE: Under Windows system, you can install Docker Desktop for Windows to simplify the installation.
 
-Docker Compose allow you start up the dependent infrastructural services(such as Database etc) via a single `docker-compose` command.
+Docker Compose allows you start up the dependent infrastructural services(such as Database etc) via a single `docker-compose` command.
 
 ```
 docker-compose up
@@ -189,7 +191,7 @@ services:
 
 #### Docker Toolbox Notes
 
-If you are using Docker Toolbox, create a new machine for this project.
+If you are using the legacy Docker Toolbox, create a new machine for this project.
 
 ```
 $ docker-machine create -d virtualbox --engine-registry-mirror https://docker.mirrors.ustc.edu.cn springms
@@ -223,7 +225,7 @@ With [Spring Initializr](https://start.spring.io), you can get a Spring Boot bas
 Open your browser, go to [Spring Initializr](https://start.spring.io) page, fill the following essential fields for a project.
 
 1. Choose **Java** as programming language.
-2. Select the latest version of Spring Boot, **2.0.0.M7** is the latest milestone at the moment when I wrote this post.
+2. Select the latest version of Spring Boot, **2.0.0.RELEASE** is the latest milestone at the moment when I wrote this post.
 3. Search and select the required facilities will be used in your project, such as **Web**, **Data JPA**, **Data Redis**, **Security**, **Session**, **Lombok** etc.
 4. Set project name(maven artifact id) to **post-service**. 
 
@@ -231,7 +233,7 @@ Click **Generate Project** button or press **ALT+ENTER** keys to generate the pr
 
 After downloading the generated archive, extract the files into your local disk and import it into your favorite IDE.
 
-### REST API overview
+### REST API Overview
 
 Following the REST convention and HTTP protocol specification, the REST APIs of post-service are designed as the following table.
 
@@ -246,9 +248,9 @@ Following the REST convention and HTTP protocol specification, the REST APIs of 
 | /posts/{slug}/comments | POST        | {'content':'test content'}               | 201                                      | Create a new comment of the certain post |
 
 
-### Create an entity
+### Create a new Entity
 
-A domain entity is a persistent object in DDD concept, JPA @Entity a is a good match.
+A domain entity is a persistent object in DDD concept, JPA `@Entity` a is a good match.
 
 Create our first entity `Post`.
 
@@ -406,9 +408,11 @@ public class Comment extends AuditableEntity {
 
 >NOTE: we do not user a JPA `@OneToMany` or `@ManyToOne` to connect two entities, but use a simple Post `Slug` identifier object instead. If one day this service becomes heavy, we could split comments into another standalone service.
 
-### Declare a `Repository`
+### Create `Repository` for Entities
 
 In DDD, a **Repository** is responsible for retrieving entities from or saving back to a **Repository**.  Spring Data `Repository` interface and Spring Data JPA specific `JpaRepository` interface are a good match with **Repository** concept in DDD.
+
+Create a `Repository` for the `Post`  Entity.
 
 ```java
 public interface PostRepository extends JpaRepository<Post, Long>, JpaSpecificationExecutor<Post> {
@@ -418,7 +422,7 @@ public interface PostRepository extends JpaRepository<Post, Long>, JpaSpecificat
 }
 ```
 
-### Create a domain service
+### Create a Domain Service
 
 ```java
 @Service
@@ -466,9 +470,9 @@ public class PostService {
 }
 ```
 
-In the `PostService`, the main purpose is treating with exceptions when creating or update a post. In a real world application, you could handle domain events, eg. Post is published etc.
+In the `PostService`, the main purpose is treating with exceptions when creating or update a post. In a real world application, you could handle domain events in a domain service, eg. Post is published, etc.
 
-### Produces RESTful APIs
+### Expose RESTful APIs
 
 Let's expose RESTful APIs for `Post` via `PostController`.
 
@@ -599,7 +603,10 @@ public class PostController {
 }
 ```
 
-`getAllPosts` method accepts a **q** (keyword) and a **status** (post status) and a  `Pageable` as query parameters, it returns a `Page<Post>` result. The `postRepository.findAll` method accepts a `Specification` object. `Specification` is a wrapper class of JPA 2.0 criteria APIs, which provides effective type safe query condition building. 
+In the above codes, 
+
+* `getAllPosts` method accepts a **q** (keyword) and a **status** (post status) and a  `Pageable` as query parameters, it returns a `Page<Post>` result. 
+* The `postRepository.findAll` method accepts a `Specification` object. `Specification` is a wrapper class of JPA 2.0 criteria APIs, which provides effective type safe query condition building. 
 
 
 ```java
@@ -819,9 +826,9 @@ When this bean is activated, the result cloud look like the following:
 }
 ```
 
-The details of **auth-service** and **user-service**, please check the [source codes](https://github.com/hantsy/spring-microservice-sample) and explore them yourself.
+The details of **auth-service** and **user-service**, please check the [source codes](https://github.com/hantsy/spring-Microservices -sample) and explore them yourself.
 
-## Secures Microservice
+## Secures Microservices 
 
 Let's have a look at how a user get authentication in this demo.
 
@@ -936,11 +943,15 @@ public class SecurityConfig {
         };   
     }
 }
-``` 
+```
 
 Let's try to run the demo in local system.
 
-## Run the application locally
+## Running Microservices application
+
+In your local development environment, it is easy to run the services one by one via Spring Boot maven plugin or build and run them in local Docker container via a predefined *docker compose* file.
+
+### Running application via Maven plugin
 
 Make sure the dependent servers are running by executing `docker-compose up`. 
 
@@ -1066,9 +1077,11 @@ curl -v  http://localhost:8002/posts/4 -H "Accept: application/json"
 {"id":4,"title":"test post","content":"test content of post","status":"DRAFT","author":null,"createdDate":null}*
 ```
 
-## Run all services via Docker Compose
+### Running application via Docker Compose
 
-Prepare a *Dockfile* for every service.
+Firstly build all services into Docker images.
+
+Prepare a *Dockfile* for every service. For example,  create a Dockerfile in the root folder of *post-service* project.
 
 ```dockerfile
 FROM frolvlad/alpine-oraclejdk8:slim
@@ -1079,7 +1092,7 @@ ENV JAVA_OPTS=""
 ENTRYPOINT [ "sh", "-c", "java $JAVA_OPTS -Djava.security.egd=file:/dev/./urandom -jar /app.jar" ]
 ```
 
-The Dockerfile in **auth-service** and **user-service** are similar, just replaced the maven build target file.
+The Dockerfile in **auth-service** and **user-service** are similar, just replaced the maven build target **jar**  file.
 
 ```dockerfile
 FROM frolvlad/alpine-oraclejdk8:slim
@@ -1089,8 +1102,7 @@ RUN sh -c 'touch /app.jar'
 ENV JAVA_OPTS=""
 ENTRYPOINT [ "sh", "-c", "java $JAVA_OPTS -Djava.security.egd=file:/dev/./urandom -jar /app.jar" ]
 ```
-
-Create a Dockerfile for ngnix.
+Create a *Dockerfile* for ngnix. We will use ngnix as a reverse proxy to unite the entry of the application.
 
 ```dockerfile
 # Set nginx base image
@@ -1229,7 +1241,9 @@ The following services will be provided.
 | user-service | http://localhost/users                   | User management APIs                     |
 | post-service | http://localhost/posts                   | Post and comment APIs                    |
 
-Get authentication.
+Next, let's try the endpoints by `curl` command.
+
+Get authentication by sending user/password pair via  HTTP BASIC header.
 
 ```
 curl -v  http://localhost/user -u user:test123
@@ -1252,7 +1266,9 @@ curl -v  http://localhost/user -u user:test123
 {"name":"user","roles":["USER"]}* Connection #0 to host localhost left intact
 ```
 
-Create a new post.
+As you see the response headers includes a **X-Auth-Token** item.
+
+Then add this header to the request headers when creating a new post, it return a successful *CREATED* status, and the new created post can be located via *Location* header in the response.
 
 ```
 curl -v  http://localhost/posts -X POST -H "X-Auth-Token: 8b185a90-37db-444a-832b-6cbcd6db6df8" -H "Content-Type:application/json" -d "{\"title\": \"test post\", \"content\":\"test content of post\"}"
@@ -1324,7 +1340,7 @@ Note: Unnecessary use of -X or --request, POST is already inferred.
 * Connection #0 to host localhost left intact
 ```
 
-Verify the created posts.
+Get all post, and verify the created posts.
 
 ```
 curl -v  http://localhost/posts  -H "Accpet:application/json"
@@ -1398,7 +1414,7 @@ curl -v  http://localhost/posts  -H "Accpet:application/json"
 }* Connection #0 to host localhost left intact
 ```
 
-Create a comment for "test post 2".
+Create a comment for "test post 2". Do not forget to add the **X-Auth-Token** header to the request headers.
 
 ```
 curl -v  http://localhost/posts/test-post-2/comments -X POST -H "X-Auth-Token: 8b185a90-37db-444a-832b-6cbcd6db6df8" -H "Content-Type:application/json" -d "{ \"content\":\"conmment content of post 2\"}"
@@ -1470,7 +1486,7 @@ Note: Unnecessary use of -X or --request, POST is already inferred.
 * Connection #0 to host localhost left intact
 ```
 
-Verify the comments.
+Now get all comments of the post *test-post-2* to verify the comments.
 
 ```
 curl -v  http://localhost/posts/test-post-2/comments  -H "Accpet:application/json"
@@ -1541,29 +1557,66 @@ curl -v  http://localhost/posts/test-post-2/comments  -H "Accpet:application/jso
 }* Connection #0 to host localhost left intact
 ```
 
-## Testing Microservice
+## Testing Microservices 
 
+As stated in the previous sections, every single service is a small Spring Boot application. To test the whole Microservices application, firstly you should fully test the services/components themselves.
+
+
+## Deploying Microservices application
+
+In this section, we will explore how to deploy the services to the popular container platform, including  Docker Swarm and Kubernetes.
+
+### Publishing Docker Images to Docker Hub
+
+Create an account on the official [Docker Hub](https://hub.docker.com/), after the account is created, you will get a special namespace for yourself. 
+
+In former steps, we have set the image name with a *hantsy/* prefix where the hantsy is the account name in the DockerHub.
+
+After the Docker is installed, you can login to docker hub in the terminal.
+
+```bash
+docker login
+
+// follow the guide to input user name and password to log in.
 ```
-openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout ssl/nginx.key -out ssl/nginx.crt
+
+ Then run the following command to publish your Docker images to the public Docker Hub.
+
+```bash
+docker push hantsy/post-service
+docker push hantsy/user-service
+docker push hantsy/auth-service
+docker push hantsy/ngnix-proxy
 ```
 
-## Create a private Docker Registry
+When all are finished, go to  [Docker Hub](https://hub.docker.com/), login and you will see the uploaded Docker images. 
 
-- https://github.com/boot2docker/boot2docker/pull/1195
-- docker-machine scp certfile default:ca.crt
-- docker-machine ssh default
-- sudo mv ~/ca.crt /etc/docker/certs.d/hostname/ca.crt
-- exit
-- docker-machine restart
+To verify the Docker Images is available via DockerHub, run the following commands to pull them from Docker Hub.  
 
-#https://github.com/docker/machine/issues/4407
-"C:\Program Files\Git\usr\bin\scp.exe" -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o LogLevel=quiet -3 -o IdentitiesOnly=yes -o Port=22 -o IdentityFile="C:\\Users\\admin\\.docker\\machine\\machines\\default\\id_rsa" certs/domain.crt docker@127.0.0.1:/home/docker
+```bash
+//remove the existing images.
+docker rmi post-service
 
-openssl req -newkey rsa:4096 -nodes -sha256 -keyout certs/domain.key -x509 -days 365 -out certs/domain.crt
+//pull the docker images
+docker pull hantsy/post-service
+```
 
-## Deployment on Docker Swarm
+If you do not want to expose your docker images to the public, choose a paid service or setup a private Docker registry server.
 
-Use Docker Machine to create multi nodes. 
+No panic the official docker registry is available as a Docker image, follow the official guide to [deploy a docker registry server](https://docs.docker.com/registry/deploying/).
+
+Besides the official Docker Hub and private Docker registry, almost all cloud platforms provide private Docker registry service for the customers. 
+
+And Github and GitLab provides a Packages feature which includes hosting Docker images services, check the following docs:
+
+* [Working with Github Packages Registry](https://docs.github.com/en/packages/working-with-a-github-packages-registry)
+* [GitLab Container Registry](https://docs.gitlab.com/ee/user/packages/container_registry/)
+
+### Deploying to Docker Swarm
+
+Use Docker Machine to create multiple nodes. 
+
+> These steps are tested on the legacy Docker Toolbox and use VritualBox as virtual machines. If you are using Docker Desktop for Windows,  use Hyper-V instead.
 
 In order to demonstrate running this project in Swarm mode, we will create two managers and three workers.
 
@@ -1680,4 +1733,4 @@ Remove this stack by the following command.
 docker stack rm blogapp
 ```
 
-## Microservice deployment on Kubernetes
+### Deploying to Kubernetes
