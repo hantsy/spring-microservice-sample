@@ -1,0 +1,72 @@
+version: 2
+updates:
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+  - package-ecosystem: maven
+    directory: "/auth-service"
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 10
+    reviewers:
+      - "hantsy"
+    assignees:
+      - "hantsy"
+    labels:
+      - "dependencies"
+      - "maven"
+    ignore: 
+      - dependency-name: "org.springframework.boot:*"
+        update-types: ["version-update:semver-patch"]
+
+  - package-ecosystem: maven
+    directory: "/post-service"
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 10
+    reviewers:
+      - "hantsy"
+    assignees:
+      - "hantsy"
+    labels:
+      - "dependencies"
+      - "maven"
+    ignore: 
+      - dependency-name: "org.springframework.boot:*"
+        update-types: ["version-update:semver-patch"]
+
+  - package-ecosystem: maven
+    directory: "/user-service"
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 10
+    reviewers:
+      - "hantsy"
+    assignees:
+      - "hantsy"
+    labels:
+      - "dependencies"
+      - "maven"
+    ignore: 
+      - dependency-name: "org.springframework.boot:*"
+        update-types: ["version-update:semver-patch"]
+
+
+  - package-ecosystem: maven
+    directory: "/functional-tests"
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 10
+    reviewers:
+      - "hantsy"
+    assignees:
+      - "hantsy"
+    labels:
+      - "dependencies"
+      - "maven"
+    ignore: 
+      - dependency-name: "org.springframework.boot:*"
+        update-types: ["version-update:semver-patch"]
+
+        
