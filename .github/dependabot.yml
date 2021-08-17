@@ -27,6 +27,8 @@ updates:
         update-types: [ "version-update:semver-major", "version-update:semver-minor"]  
       - dependency-name: "com.github.tomakehurst:wiremock-standalone"  
         update-types: [ "version-update:semver-major", "version-update:semver-minor"]  
+      - dependency-name: "*"  
+        update-types: [ "version-update:semver-major"]    
         
   - package-ecosystem: npm
     directory: "/ui"
