@@ -43,5 +43,5 @@ updates:
     ignore: 
       - dependency-name: "@angular/*"
         update-types: ["version-update:semver-major"]
-      - dependency-name: "typescript"
+      - dependency-name: "*"
         update-types: ["version-update:semver-major", "version-update:semver-minor"]  
