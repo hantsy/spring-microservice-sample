@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.cloud.contract.stubrunner.spring.AutoConfigureStubRunner;
+import org.springframework.cloud.contract.stubrunner.spring.StubRunnerProperties;
 import org.springframework.test.context.junit4.SpringRunner;
 import wiremock.org.apache.http.HttpStatus;
 
@@ -22,7 +23,7 @@ import static org.junit.Assert.*;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 //@AutoConfigureStubRunner(workOffline = true, ids = "com.hantsylabs.sample.springmicroservice:user-service:+:stubs:8001")
 @AutoConfigureStubRunner(
-    workOffline = true,
+    stubsMode = StubRunnerProperties.StubsMode.LOCAL,
     stubsPerConsumer = true,
     consumerName = "auth-service",
     ids = "com.hantsylabs.sample.springmicroservice.contracts:user-service-producer:+:stubs:8001"
