@@ -31,7 +31,7 @@
 
 # Building a Microservices  application with Spring Boot
 
-**Microservices ** is a very hot topic in these years, you can see it everywhere, there are a lots of books, blog entries, conference sessions, training courses etc are talking about it.
+**Microservices** is a very hot topic in these years, you can see it everywhere, there are a lots of books, blog entries, conference sessions, training courses etc. are talking about it.
 
 ## What is Microservices ?
 
@@ -43,29 +43,29 @@ Microservices  is not a standard specification, so there is no official definiti
 
 On the [Wikipedia Microservices  page](https://en.wikipedia.org/wiki/Microservices s), Microservices  was defined as:
 
->Microservices is a variant of the service-oriented architecture (SOA) architectural style that structures an application as a collection of loosely coupled services. In a Microservices architecture, services should be fine-grained and the protocols should be lightweight. The benefit of decomposing an application into different smaller services is that it improves modularity and makes the application easier to understand, develop and test. It also parallelizes development by enabling small autonomous teams to develop, deploy and scale their respective services independently.[1] It also allows the architecture of an individual service to emerge through continuous refactoring. Microservices s-based architectures enable continuous delivery and deployment.
+>Microservices is a variant of the service-oriented architecture (SOA) architectural style that structures an application as a collection of loosely coupled services. In a Microservices architecture, services should be fine-grained and the protocols should be lightweight. The benefit of decomposing an application into different smaller services is that it improves modularity and makes the application easier to understand, develop and test. It also parallelizes development by enabling small autonomous teams to develop, deploy and scale their respective services independently.[1] It also allows the architecture of an individual service to emerge through continuous refactoring. Microservices-based architectures enable continuous delivery and deployment.
 
-Chris Richardson, the author of POJOs in Action and the creator of the original CloudFoundry.com, and also an advocator of Microservices , summarized Microservices  as the following in the home page of [Microservices.io](http://Microservices.io/index.html).
+Chris Richardson, the author of *POJOs in Action* and the creator of the original CloudFoundry.com, and also an advocator of Microservices , summarized Microservices  as the following in the home page of [Microservices.io](http://Microservices.io/index.html).
 
 >Microservices - also known as the Microservices  architecture - is an architectural style that structures an application as a collection of loosely coupled services, which implement business capabilities. The Microservices  architecture enables the continuous delivery/deployment of large, complex applications. It also enables an organization to evolve its technology stack.
 
 There are some common characteristics can be used to describe a Microservices  based application.
 
-* A Microservices  application should be consisted of a collection of small services. One service is not Microservices . Every service is fine-grained, and target to perform a small function. So Microservices  was described as *fine-grained SOA* or *SOA done right* in some articles. So This is the main difference from traditional monolithic applications.
+* A Microservices  application should be consisted of a collection of small services. One single service is not Microservices . Every service is fine-grained, and target to perform a small functionality. So Microservices  was described as *fine-grained SOA* or *SOA done right* in some articles. So This is the main difference from traditional monolithic applications.
 
-* Every service should have its own independent life cycle. Every service can be developed and deployed independently, if you are using a CI/CD automation service, every service should be done in a complete DevOps pipeline flow, but not affect others.
+* Every service should have its own independent life cycle. Every service can be developed and deployed independently, if you are using a CI/CD automation service, every service should be delivered through a standard DevOps pipeline, but not affect others.
 
 * Service-to-service communication is based on light-weight protocols, eg. HTTP based REST APIs for synchronous communication, WebSocket for asynchronous messages, MQTT/AMQP protocol for varied messaging from client or devices(eg. IOT applications).
 
-* The organization or team structures should be changed simultaneously when you are embracing Microservices  architecture. You have to break your traditional organization tree. In traditional application development, your teams are organized by roles, eg architects, database administrators, developers, testers, operators etc. In the development stage of a Microservices  based application, a team should be responsible for the whole DevOps lifecycle of one or more services. 
+* The organization or team structures should be changed simultaneously when you are embracing Microservices  architecture.  In the traditional application development, especially your organization follows the waterfall development prototype, your teams are organized by roles, eg architects, database administrators, developers, testers, operators etc. You have to break your traditional organization tree. In the development stage of a Microservices  based application, a small team should be responsible for the whole DevOps lifecycle (design, develop, test, deploy, etc.) of one or more services. 
 
-Microservices  componentizes your application into small services(componentized applications), and make it more maintainable and scalable. In this demo application, I will show you building a Microservices  application via Spring Boot. 
+Microservices componentizes your application into small services(componentized applications), and make it more maintainable and scalable. In this demo application, I will show you building a Microservices application via Spring Boot. 
 
-## Migrating to  Microservices  Architecture
+## Migrating to  Microservices  architecture
 
-Contrast with Microservices  applications, traditional layered enterprise applications were called **monolithic** applications.
+Contrast with Microservices applications, traditional layered enterprise applications were called **monolithic** applications.
 
-In the past years, I have created some samples to demonstrate different technology stack, such as [REST APIs sample with Spring MVC](https://github.com/hantsy/angularjs-springmvc-sample), [REST APIs sample with Spring Boot](https://github.com/hantsy/angularjs-springmvc-sample-boot), in these samples, the backends are monolithic applications and they are based on the same model prototype, **a blog application**.
+In the past years, I have created some samples to demonstrate different technology stack, such as [REST APIs sample with Spring MVC](https://github.com/hantsy/angularjs-springmvc-sample), [REST APIs sample with Spring Boot](https://github.com/hantsy/angularjs-springmvc-sample-boot).  In these code samples, the backends are monolithic applications and they are based on the same model prototype, **a blog application**.
 
 * A user can log in with an existed account, or sign up a new account.
 * An authenticated user can create a new post.
@@ -77,14 +77,14 @@ In the past years, I have created some samples to demonstrate different technolo
 
 No doubt these monolithic backend applications are easy to develop and deploy, but as time goes by, when the application becomes more complex, the backend will be problematic, you maybe face some barriers which block you to the next stages.
 
-* When you apply a change, you have to redeploy the whole backend application even it is just a small fix. The application may be stopped to work for some minutes or some hours.
-* When you scale your applications and deploy multi copies of the backend applications behinds a load balance server, the transactional consistence will be a new challenge.
+* When applying a change, you have to redeploy the whole backend application even it is just a small fix. The application may be stopped to work for some minutes or some hours.
+* When scaling your applications and deploying multiple copies of the backend applications behinds a load balance server, the transactional consistence will be a new challenge.
 * The database itself will be a huge performance bottleneck when the concurrency of incoming requests are increasing. 
 
 Microservices  architecture addresses these problems, including:
 
-1. Smaller services are easier to develop and deploy, when you upgrade one of the services, you do not need to shut down all services in production.
-2. ACID can not satisfy the scenario of those long run workflow which across several services, although it is still a good option within a single service, but for these long run **transactions**, a stateful Saga or workflow solution fills this field. 
+1. Smaller services are easier to maintain in a complex application, when you upgrade one service, you do not need to shut down all services in the production environment.
+2. ACID can not satisfy the scenario of those long run workflows which across several services, although it is still a good option in a single service, but for these long run **transactions**, a stateful *Saga* or workflow solution fills this field. 
 3. A service can has its own database, and only responsible for storing data of this service itself.  Traditional complex queries will become a big challenge, in Microservices  architecture, it could need to query multi independent database and aggregate the query results. CQRS, Event Store can save these. Perform commands in standalone services, and execute queries in another service which has marshal view of the data and was synced with messaging from events triggered by other services.
 
 Follow the **Bounded Context** concept of DDD(Domain Driven Design), we break the backend monolithic application into three small services, including:
@@ -95,7 +95,7 @@ Follow the **Bounded Context** concept of DDD(Domain Driven Design), we break th
 * An **API Gateway** which is just responsible for routing the incoming requests to downstream services.
 * The databases are also aligned to Microservices  architecture, and **user-service** and **post-service** have their own databases, a **Redis** is used for sharing session between services, and to simplify the security.
 
-![Microservices ](./Microservices .png)
+![Microservices ](./microservice.png)
 
 As mentioned, if there is a [legacy application](https://github.com/hantsy/angularjs-springmvc-sample) planned to migrate to Microservices  architecture, you can follow the following steps to extract some domain into a standalone service.
 
@@ -1716,7 +1716,7 @@ docker stack deploy -c docker-stack.yml blogapp
 The services will be scheduled to deploy in this swarm.
 
 
-The *docker-stack.yml* file includes a `visualizer` service to visualize all services. It can be accessed via http://&lt;any manager ip&gt;:8080, you will see the deployment progress.
+The *docker-stack.yml* file includes a `visualizer` service to visualize all services. It can be accessed via *http://&lt;any manager ip&gt;:8080*, you will see the deployment progress.
 
 ![visualizer](./docker-viz.png)
 
@@ -1734,3 +1734,4 @@ docker stack rm blogapp
 ```
 
 ### Deploying to Kubernetes
+

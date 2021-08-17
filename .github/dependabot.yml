@@ -5,7 +5,7 @@ updates:
     schedule:
       interval: "weekly"
   - package-ecosystem: maven
-    directory: "/auth-service"
+    directory: "/"
     schedule:
       interval: weekly
     open-pull-requests-limit: 10
@@ -17,56 +17,31 @@ updates:
       - "dependencies"
       - "maven"
     ignore: 
-      - dependency-name: "org.springframework.boot:*"
-        update-types: ["version-update:semver-patch"]
-
-  - package-ecosystem: maven
-    directory: "/post-service"
-    schedule:
-      interval: weekly
-    open-pull-requests-limit: 10
-    reviewers:
-      - "hantsy"
-    assignees:
-      - "hantsy"
-    labels:
-      - "dependencies"
-      - "maven"
-    ignore: 
-      - dependency-name: "org.springframework.boot:*"
-        update-types: ["version-update:semver-patch"]
-
-  - package-ecosystem: maven
-    directory: "/user-service"
-    schedule:
-      interval: weekly
-    open-pull-requests-limit: 10
-    reviewers:
-      - "hantsy"
-    assignees:
-      - "hantsy"
-    labels:
-      - "dependencies"
-      - "maven"
-    ignore: 
-      - dependency-name: "org.springframework.boot:*"
-        update-types: ["version-update:semver-patch"]
-
-
-  - package-ecosystem: maven
-    directory: "/functional-tests"
-    schedule:
-      interval: weekly
-    open-pull-requests-limit: 10
-    reviewers:
-      - "hantsy"
-    assignees:
-      - "hantsy"
-    labels:
-      - "dependencies"
-      - "maven"
-    ignore: 
-      - dependency-name: "org.springframework.boot:*"
-        update-types: ["version-update:semver-patch"]
-
+      - dependency-name: "org.springframework.boot:spring-boot-starter-parent"
+        update-types: [ "version-update:semver-major", "version-update:semver-minor"]
+      - dependency-name: "org.springframework.cloud:spring-cloud-dependencies"
+        update-types: [ "version-update:semver-major", "version-update:semver-minor"]
+      - dependency-name: "au.com.dius:pact-jvm-provider-spring_2.12"
+        update-types: [ "version-update:semver-major", "version-update:semver-minor"]
+      - dependency-name: "au.com.dius:pact-jvm-consumer-junit_2.12"
+        update-types: [ "version-update:semver-major", "version-update:semver-minor"]  
+      - dependency-name: "com.github.tomakehurst:wiremock-standalone"  
+        update-types: [ "version-update:semver-major", "version-update:semver-minor"]  
         
+  - package-ecosystem: npm
+    directory: "/ui"
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 10
+    reviewers:
+      - "hantsy"
+    assignees:
+      - "hantsy"
+    labels:
+      - "dependencies"
+      - "npm"
+    ignore: 
+      - dependency-name: "@angular/*"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "typescript"
+        update-types: ["version-update:semver-major", "version-update:semver-minor"]  
