@@ -6,7 +6,7 @@
     <artifactId>contracts-parent</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <packaging>pom</packaging>
-    <name>Spring Microservice Contracts Repository</name>
+    <name>Spring Microservice Demo: Contracts Repository for CDC Tests</name>
     <modules>
         <module>user-service-producer</module>
     </modules>	

@@ -8,7 +8,7 @@
     <version>0.0.1-SNAPSHOT</version>
     <packaging>jar</packaging>
 
-    <name>ftest</name>
+    <name>Spring Microservice Demo: Functional Tests</name>
     <description>Functional tests for Spring Microservice Demo</description>
 
     <parent>
