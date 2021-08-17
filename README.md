@@ -37,11 +37,11 @@
 
 Microservices  is not a standard specification, so there is no official definition. Here I listed some well-known explanation from the communities.
 
-[Martin Fowler](https://martinfowler.com/) described it as the following in his article [Microservices ](https://martinfowler.com/articles/Microservices s.html):
+[Martin Fowler](https://martinfowler.com/) described it as the following in his article [Microservices](https://martinfowler.com/articles/Microservices.html):
 
 >In short, the Microservices  architectural style is an approach to developing a single application as a suite of small services, each running in its own process and communicating with lightweight mechanisms, often an HTTP resource API. These services are built around business capabilities and independently deployable by fully automated deployment machinery. There is a bare minimum of centralized management of these services, which may be written in different programming languages and use different data storage technologies. 
 
-On the [Wikipedia Microservices  page](https://en.wikipedia.org/wiki/Microservices s), Microservices  was defined as:
+On the [Wikipedia Microservices page](https://en.wikipedia.org/wiki/Microservices), Microservices  was defined as:
 
 >Microservices is a variant of the service-oriented architecture (SOA) architectural style that structures an application as a collection of loosely coupled services. In a Microservices architecture, services should be fine-grained and the protocols should be lightweight. The benefit of decomposing an application into different smaller services is that it improves modularity and makes the application easier to understand, develop and test. It also parallelizes development by enabling small autonomous teams to develop, deploy and scale their respective services independently.[1] It also allows the architecture of an individual service to emerge through continuous refactoring. Microservices-based architectures enable continuous delivery and deployment.
 
