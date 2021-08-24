@@ -145,7 +145,7 @@
         <dependency>
             <groupId>au.com.dius</groupId>
             <artifactId>pact-jvm-provider-spring_2.12</artifactId>
-            <version>3.5.11</version>
+            <version>3.5.25</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
