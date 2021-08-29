@@ -1,4 +1,4 @@
-FROM frolvlad/alpine-oraclejdk8:slim
+FROM adoptopenjdk:8-jre
 VOLUME /tmp
 ADD ./target/user-service-0.0.1-SNAPSHOT.jar app.jar
 RUN sh -c 'touch /app.jar'
