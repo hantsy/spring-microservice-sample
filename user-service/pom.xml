@@ -45,8 +45,8 @@
         <dependency>
             <groupId>org.hibernate</groupId>
             <artifactId>hibernate-jpamodelgen</artifactId>
+            <optional>true</optional>
         </dependency>
-        
 
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -77,30 +77,9 @@
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
+            <optional>true</optional>
         </dependency>
 
-        <!-- dependency injection jsr 330 -->
-        <dependency>
-            <groupId>javax.inject</groupId>
-            <artifactId>javax.inject</artifactId>
-            <version>1</version>
-        </dependency>
-        <dependency>
-            <groupId>javax.annotation</groupId>
-            <artifactId>jsr250-api</artifactId>
-            <version>1.0</version>
-        </dependency>
-
-        <dependency>
-            <groupId>commons-io</groupId>
-            <artifactId>commons-io</artifactId>
-            <version>2.11.0</version>
-        </dependency>
-        
-        <dependency>
-            <groupId>com.fasterxml.jackson.module</groupId>
-            <artifactId>jackson-module-parameter-names</artifactId>
-        </dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.datatype</groupId>
             <artifactId>jackson-datatype-jdk8</artifactId>
@@ -187,26 +166,8 @@
                 <extensions>true</extensions>
                 <configuration>
                     <baseClassForTests>
-                        com.hantsylabs.sample.springmicroservice.user.BaseTest
+                        com.example.user.BaseTest
                     </baseClassForTests>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>com.spotify</groupId>
-                <artifactId>dockerfile-maven-plugin</artifactId>
-                <version>1.4.13</version>
-                <!--                <executions>
-                    <execution>
-                        <id>default</id>
-                        <goals>
-                            <goal>build</goal>
-                            <goal>push</goal>
-                        </goals>
-                    </execution>
-                </executions>-->
-                <configuration>
-                    <repository>hantsy/${project.artifactId}</repository>
-                    <tag>${project.version}</tag>
                 </configuration>
             </plugin>
         </plugins>
@@ -234,7 +195,7 @@
                                 <!--</baseClassMapping>-->
                                 <baseClassMapping>
                                     <contractPackageRegex>.*rest.*</contractPackageRegex>
-                                    <baseClassFQN>com.hantsylabs.sample.springmicroservice.user.BaseTest</baseClassFQN>
+                                    <baseClassFQN>com.example.user.BaseTest</baseClassFQN>
                                 </baseClassMapping>
                             </baseClassMappings>
                             <!-- We want to use the JAR with contracts with the following coordinates -->
@@ -245,15 +206,15 @@
                             <!--<classifier>contracts</classifier>-->
                             <!--</contractDependency>-->
                             <!-- The JAR with contracts should be taken from Maven local -->
-                            <contractsWorkOffline>true</contractsWorkOffline>
+                            <contractsMode>local</contractsMode>
                             <!-- Base package for generated tests -->
-                            <basePackageForTests>com.hantsylabs.sample.springmicroservice.user</basePackageForTests>
+                            <basePackageForTests>com.example.user</basePackageForTests>
 
                             <contractsDirectory>${project.basedir}</contractsDirectory>
                         </configuration>
                         <dependencies>
                             <dependency>
-                                <groupId>com.hantsylabs.sample.springmicroservice.contracts</groupId>
+                                <groupId>com.example.contracts</groupId>
                                 <artifactId>user-service-producer</artifactId>
                                 <version>0.0.1-SNAPSHOT</version>
                             </dependency>
@@ -262,44 +223,31 @@
                 </plugins>
             </build>
         </profile>
+        <profile>
+            <id>dockerfile</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>com.spotify</groupId>
+                        <artifactId>dockerfile-maven-plugin</artifactId>
+                        <version>1.4.13</version>
+                        <executions>
+                            <execution>
+                                <id>default</id>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>build</goal>
+                                    <!--<goal>push</goal>-->
+                                </goals>
+                            </execution>
+                        </executions>
+                        <configuration>
+                            <repository>hantsy/${project.artifactId}</repository>
+                            <tag>${project.version}</tag>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
     </profiles>
-    <repositories>
-        <repository>
-            <id>spring-snapshots</id>
-            <name>Spring Snapshots</name>
-            <url>https://repo.spring.io/snapshot</url>
-            <snapshots>
-                <enabled>true</enabled>
-            </snapshots>
-        </repository>
-        <repository>
-            <id>spring-milestones</id>
-            <name>Spring Milestones</name>
-            <url>https://repo.spring.io/milestone</url>
-            <snapshots>
-                <enabled>false</enabled>
-            </snapshots>
-        </repository>
-    </repositories>
-
-    <pluginRepositories>
-        <pluginRepository>
-            <id>spring-snapshots</id>
-            <name>Spring Snapshots</name>
-            <url>https://repo.spring.io/snapshot</url>
-            <snapshots>
-                <enabled>true</enabled>
-            </snapshots>
-        </pluginRepository>
-        <pluginRepository>
-            <id>spring-milestones</id>
-            <name>Spring Milestones</name>
-            <url>https://repo.spring.io/milestone</url>
-            <snapshots>
-                <enabled>false</enabled>
-            </snapshots>
-        </pluginRepository>
-    </pluginRepositories>
-
-
 </project>

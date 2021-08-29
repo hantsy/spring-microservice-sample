@@ -241,11 +241,11 @@ Following the REST convention and HTTP protocol specification, the REST APIs of 
 | ---------------------- | ----------- | ---------------------------------------- | ---------------------------------------- | ---------------------------------------- |
 | /posts                 | GET         |                                          | 200, [{'id':1, 'title'},{}]              | Get all posts                            |
 | /posts                 | POST        | {'id':1, 'title':'test title','content':'test content'} | 201                                      | Create a new post                        |
-| /posts/{slug}          | GET         |                                          | 200, {'id':1, 'title'}                   | Get a post by slug                       |
-| /posts/{slug}          | PUT         | {'title':'test title','content':'test content'} | 204                                      | Update a post                            |
-| /posts/{slug}          | DELETE      |                                          | 204                                      | Delete a post by slug                    |
-| /posts/{slug}/comments | GET         |                                          | 200, [{'id':1, 'content':'comment content'},{}] | Get all comments of the certain post     |
-| /posts/{slug}/comments | POST        | {'content':'test content'}               | 201                                      | Create a new comment of the certain post |
+| /posts/{postSlug}          | GET         |                                          | 200, {'id':1, 'title'}                   | Get a post by postSlug                       |
+| /posts/{postSlug}          | PUT         | {'title':'test title','content':'test content'} | 204                                      | Update a post                            |
+| /posts/{postSlug}          | DELETE      |                                          | 204                                      | Delete a post by postSlug                    |
+| /posts/{postSlug}/comments | GET         |                                          | 200, [{'id':1, 'content':'comment content'},{}] | Get all comments of the certain post     |
+| /posts/{postSlug}/comments | POST        | {'content':'test content'}               | 201                                      | Create a new comment of the certain post |
 
 
 ### Create a new Entity
@@ -267,7 +267,7 @@ class Post extends AuditableEntity {
     private String title;
     
     @NotEmpty
-    private String slug;
+    private String postSlug;
 
     @JsonView(View.Public.class)
     @NotEmpty
@@ -285,7 +285,7 @@ class Post extends AuditableEntity {
       
     @PrePersist
     public void slugify(){
-        this.slug = new Slugify().slugify(this.title);
+        this.postSlug = new Slugify().slugify(this.title);
     }
 
 }
@@ -297,7 +297,7 @@ These annotations will be handled by JDK **Annotation Processing Tooling**, and 
 
 `@Entity` indicates `Post` is a standard JPA Entity.
 
-`@PrePersist` is a JPA lifecycle hook. The `@PrePersist` annotated methods will be executed before the entity is persisted.  We use post slug as the unique identifier of a `Post`, and we use `slugify()` method to generate the post slug automatically.
+`@PrePersist` is a JPA lifecycle hook. The `@PrePersist` annotated methods will be executed before the entity is persisted.  We use post postSlug as the unique identifier of a `Post`, and we use `slugify()` method to generate the post postSlug automatically.
 
 `AuditableEntity` is a helper class to centralize some common fields of a JPA entity in one place.
 
@@ -396,7 +396,7 @@ public class Comment extends AuditableEntity {
     @Embedded
     @AttributeOverrides(
         value = {
-            @AttributeOverride(name = "slug", column = @Column(name = "post_slug"))
+            @AttributeOverride(name = "postSlug", column = @Column(name = "post_slug"))
         }
     )
     @JsonIgnore
@@ -417,7 +417,7 @@ Create a `Repository` for the `Post`  Entity.
 ```java
 public interface PostRepository extends JpaRepository<Post, Long>, JpaSpecificationExecutor<Post> {
 
-    Optional<Post> findBySlug(String slug);
+    Optional<Post> findBySlug(String postSlug);
     
 }
 ```
@@ -444,10 +444,10 @@ public class PostService {
         return saved;
     }
 
-    public Post updatePost(String slug, PostForm form) {
-        Post _post = this.postRepository.findBySlug(slug).orElseThrow(
+    public Post updatePost(String postSlug, PostForm form) {
+        Post _post = this.postRepository.findBySlug(postSlug).orElseThrow(
             ()-> {
-                return new PostNotFoundException(slug);
+                return new PostNotFoundException(postSlug);
             }
         );
         
@@ -459,10 +459,10 @@ public class PostService {
        return saved;
     }
 
-    public void deletePost(String slug) {
-        this.postRepository.delete(this.postRepository.findBySlug(slug).orElseThrow(
+    public void deletePost(String postSlug) {
+        this.postRepository.delete(this.postRepository.findBySlug(postSlug).orElseThrow(
             () -> {
-                return new PostNotFoundException(slug);
+                return new PostNotFoundException(postSlug);
             }
         ));
     }
@@ -508,15 +508,15 @@ public class PostController {
         return ok(posts);
     }
 
-    @GetMapping(value = "/{slug}")
+    @GetMapping(value = "/{postSlug}")
     @JsonView(View.Public.class)
-    public ResponseEntity<Post> getPost(@PathVariable("slug") String slug) {
+    public ResponseEntity<Post> getPost(@PathVariable("postSlug") String postSlug) {
 
-        log.debug("get postsinfo by slug @" + slug);
+        log.debug("get postsinfo by postSlug @" + postSlug);
 
-        Post post = this.postRepository.findBySlug(slug).orElseThrow(
+        Post post = this.postRepository.findBySlug(postSlug).orElseThrow(
             () -> {
-                return new PostNotFoundException(slug);
+                return new PostNotFoundException(postSlug);
             }
         );
 
@@ -535,55 +535,55 @@ public class PostController {
         log.debug("saved post id is @" + saved.getId());
         URI createdUri = ServletUriComponentsBuilder
             .fromContextPath(request)
-            .path("/posts/{slug}")
+            .path("/posts/{postSlug}")
             .buildAndExpand(saved.getSlug())
             .toUri();
 
         return created(createdUri).build();
     }
 
-    @PutMapping(value = "/{slug}")
-    public ResponseEntity<Void> updatePost(@PathVariable("slug") String slug, @RequestBody @Valid PostForm form) {
+    @PutMapping(value = "/{postSlug}")
+    public ResponseEntity<Void> updatePost(@PathVariable("postSlug") String postSlug, @RequestBody @Valid PostForm form) {
 
-        log.debug("update post by id @" + slug + ", form content@" + form);
+        log.debug("update post by id @" + postSlug + ", form content@" + form);
 
-        this.postService.updatePost(slug, form);
-
-        return noContent().build();
-    }
-
-    @DeleteMapping(value = "/{slug}")
-    public ResponseEntity<Void> deletePostById(@PathVariable("slug") String slug) {
-
-        log.debug("delete post by id @" + slug);
-
-        this.postService.deletePost(slug);
+        this.postService.updatePost(postSlug, form);
 
         return noContent().build();
     }
 
-    @GetMapping(value = "/{slug}/comments")
+    @DeleteMapping(value = "/{postSlug}")
+    public ResponseEntity<Void> deletePostById(@PathVariable("postSlug") String postSlug) {
+
+        log.debug("delete post by id @" + postSlug);
+
+        this.postService.deletePost(postSlug);
+
+        return noContent().build();
+    }
+
+    @GetMapping(value = "/{postSlug}/comments")
     public ResponseEntity<Page<Comment>> getCommentsOfPost(
-        @PathVariable("slug") String slug,
+        @PathVariable("postSlug") String postSlug,
         @PageableDefault(page = 0, size = 10, sort = "createdDate", direction = Direction.DESC) Pageable page) {
 
-        log.debug("get comments of post@" + slug + ", page@" + page);
+        log.debug("get comments of post@" + postSlug + ", page@" + page);
 
-        Page<Comment> commentsOfPost = this.commentRepository.findByPost(new Slug(slug), page);
+        Page<Comment> commentsOfPost = this.commentRepository.findByPost(new Slug(postSlug), page);
 
         log.debug("get post comment size @" + commentsOfPost.getTotalElements());
 
         return ok(commentsOfPost);
     }
 
-    @PostMapping(value = "/{slug}/comments")
+    @PostMapping(value = "/{postSlug}/comments")
     public ResponseEntity<Void> createComment(
-        @PathVariable("slug") @NotNull String slug, @RequestBody CommentForm comment, HttpServletRequest request) {
+        @PathVariable("postSlug") @NotNull String postSlug, @RequestBody CommentForm comment, HttpServletRequest request) {
 
-        log.debug("new comment of post@" + slug + ", comment" + comment);
+        log.debug("new comment of post@" + postSlug + ", comment" + comment);
 
         Comment _comment = Comment.builder()
-            .post(new Slug(slug))
+            .post(new Slug(postSlug))
             .content(comment.getContent())
             .build();
 
@@ -593,8 +593,8 @@ public class PostController {
 
         URI location = ServletUriComponentsBuilder
             .fromContextPath(request)
-            .path("/posts/{slug}/comments/{id}")
-            .buildAndExpand(slug, saved.getId())
+            .path("/posts/{postSlug}/comments/{id}")
+            .buildAndExpand(postSlug, saved.getId())
             .toUri();
 
          return created(location).build();
@@ -649,15 +649,15 @@ As mentioned above, in our `PostService`, I have added some extra steps to check
 ```java
 public class PostNotFoundException extends RuntimeException {
 
-    private String slug;
+    private String postSlug;
 
-    public PostNotFoundException(String slug) {
-        super("post:" + slug + " was not found");
-        this.slug = slug;
+    public PostNotFoundException(String postSlug) {
+        super("post:" + postSlug + " was not found");
+        this.postSlug = postSlug;
     }
 
     public String getSlug() {
-        return slug;
+        return postSlug;
     }
     
 }
@@ -731,7 +731,7 @@ Another small issue you could have found is the `Page` object serialized result 
 {
   "content" : [ {
     "title" : "test post 2",
-    "slug" : "test-post-2",
+    "postSlug" : "test-post-2",
     "status" : "DRAFT",
     "id" : 2,
     "createdDate" : "2017-05-25T06:53:30",
@@ -740,7 +740,7 @@ Another small issue you could have found is the `Page` object serialized result 
     }
   }, {
     "title" : "test post",
-    "slug" : "test-post",
+    "postSlug" : "test-post",
     "status" : "DRAFT",
     "id" : 1,
     "createdDate" : "2017-05-25T06:52:45",
@@ -801,7 +801,7 @@ When this bean is activated, the result cloud look like the following:
 {
   "content" : [ {
     "title" : "test post 2",
-    "slug" : "test-post-2",
+    "postSlug" : "test-post-2",
     "status" : "DRAFT",
     "id" : 2,
     "createdDate" : "2017-05-25T06:53:30",
@@ -810,7 +810,7 @@ When this bean is activated, the result cloud look like the following:
     }
   }, {
     "title" : "test post",
-    "slug" : "test-post",
+    "postSlug" : "test-post",
     "status" : "DRAFT",
     "id" : 1,
     "createdDate" : "2017-05-25T06:52:45",
@@ -1372,7 +1372,7 @@ curl -v  http://localhost/posts  -H "Accpet:application/json"
 {
   "content" : [ {
     "title" : "test post 2",
-    "slug" : "test-post-2",
+    "postSlug" : "test-post-2",
     "status" : "DRAFT",
     "id" : 2,
     "createdDate" : "2017-05-25T06:53:30",
@@ -1381,7 +1381,7 @@ curl -v  http://localhost/posts  -H "Accpet:application/json"
     }
   }, {
     "title" : "test post",
-    "slug" : "test-post",
+    "postSlug" : "test-post",
     "status" : "DRAFT",
     "id" : 1,
     "createdDate" : "2017-05-25T06:52:45",

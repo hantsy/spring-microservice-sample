@@ -15,14 +15,12 @@ Contract.make {
 
     response {
         status 404
-        body(
-                [
-                        entity : "USER",
-                        id     : "noneExisting",
-                        code   : "not_found",
-                        message: "User:noneExisting was not found"
-                ]
-        )
+        body([
+            entity: "USER" ,
+            id: "noneExisting" ,
+            code: "not_found" ,
+            message: "User:noneExisting was not found"
+        ])
         headers {
             contentType(applicationJson())
         }
