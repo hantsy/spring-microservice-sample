@@ -1,8 +1,13 @@
 version: '3.1' # specify docker-compose version
 
 services:
+
   nginx-proxy:
     image: hantsy/nginx-proxy
+    container_name: nginx-proxy
+    build: 
+      context: ./nginx
+      dockerfile: Dockerfile
     depends_on:
       - auth-service
       - user-service
@@ -12,6 +17,10 @@ services:
       
   auth-service:
     image: hantsy/auth-service
+    container_name: auth-service
+    build: 
+      context: ./auth-service # specify the directory of the Dockerfile
+      dockerfile: Dockerfile
     environment:
       SERVICES_USER_SERVICE_URL: http://user-service:8001
       SPRING_REDIS_HOST: redis
@@ -23,6 +32,10 @@ services:
       
   user-service: 
     image: hantsy/user-service
+    container_name: user-service
+    build: 
+      context: ./user-service
+      dockerfile: Dockerfile
     environment:
       SPRING_DATASOURCE_URL: jdbc:mysql://userdb:3306/userdb
       SPRING_REDIS_HOST: redis
@@ -34,6 +47,10 @@ services:
   
   post-service: 
     image: hantsy/post-service
+    container_name: post-service
+    build: 
+      context: ./post-service
+      dockerfile: Dockerfile
     environment:
       SPRING_DATASOURCE_URL: jdbc:postgresql://postdb:5432/postdb
       SPRING_REDIS_HOST: redis

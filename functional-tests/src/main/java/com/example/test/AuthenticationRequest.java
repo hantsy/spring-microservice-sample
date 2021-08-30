@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.hantsylabs.sample.springmicroservice.test;
+package com.example.test;
 
 import java.io.Serializable;
 import lombok.Builder;

@@ -1,4 +1,4 @@
-package com.hantsylabs.sample.springmicroservice.test;
+package com.example.test;
 
 import java.io.Serializable;
 import javax.validation.constraints.NotEmpty;

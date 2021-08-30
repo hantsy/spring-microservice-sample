@@ -1,8 +1,8 @@
-package com.hantsylabs.sample.springmicroservice.ftest;
+package com.example.test.functional;
 
-import com.hantsylabs.sample.springmicroservice.test.AuthenticationRequest;
-import com.hantsylabs.sample.springmicroservice.test.CommentForm;
-import com.hantsylabs.sample.springmicroservice.test.PostForm;
+import com.example.test.AuthenticationRequest;
+import com.example.test.CommentForm;
+import com.example.test.PostForm;
 import lombok.extern.slf4j.Slf4j;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;

@@ -2,7 +2,6 @@ version: '3.1' # specify docker-compose version
 
 services:    
   userdb:
-    container_name: userdb
     image: mysql
     ports:
       - "3306:3306"
@@ -15,7 +14,6 @@ services:
       - ./data/userdb:/var/lib/mysql
       
   postdb:
-    container_name:  postdb
     image: postgres
     ports:
       - "5432:5432"
@@ -27,7 +25,6 @@ services:
       - ./data/postdb:/var/lib/postgresql
 
   redis:
-    container_name: redis
     image: redis
     ports:
       - "6379:6379"
