@@ -1561,6 +1561,312 @@ curl -v  http://localhost/posts/test-post-2/comments  -H "Accpet:application/jso
 
 As stated in the previous sections, every single service is a small Spring Boot application. To test the whole Microservices application, firstly you should fully test the services/components themselves.
 
+### Testing single service
+
+Testing a single service is similar to testing  a general Spring Boot application, for example, in this application, to test post service, you should test very components in this service. 
+
+*  Simple  POJOs, such as `@Entity` classes, DTOs. 
+*  Database related facilities, such as JPA and `Repository` classes.
+*  Web layer, such as `Controller`  and exception handlers. 
+*  Additionally,  integration tests is a must to ensure the application is working well close to a real world deployment environment.
+
+#### Testing POJOs
+
+It is very simple, like testing a single POJO classes in a Java application, no dependent object in it. An example of testing the `Post` entity class.
+
+```java
+public class PostTest {
+
+    @Test
+    public void testSlug() {
+        System.out.println("getSlug");
+        Post instance = new Post();
+        instance.setTitle("test post 1");
+        instance.slugify();
+        assertEquals("test-post-1", instance.getSlug());
+    }
+}
+```
+
+#### Testing Repository beans
+
+There are some utilities can be used to test a Spring Data  `Repository` bean. 
+
+For Spring Data JPA, there is a `@DataJpaTest` annotation which will autoconfigure the essential dependencies for testing a `Repository` bean, that means  it does not load all beans from the application context when running the tests. And when adding an embedded RDBMS, such as H2 in the test classpath, it will bypass the real database configuration in the application properties and use the embedded database instead when running the tests.
+
+Additionally, Spring Boot provides a `TestEntityManager` bean which is similar to the standard `EntityManager`, but provides more methods for test purpose.
+
+Add H2 to test scope in the *pom.xml* file.
+
+```xml
+<dependency>
+    <groupId>com.h2database</groupId>
+    <artifactId>h2</artifactId>
+    <scope>test</scope>
+</dependency>
+```
+
+Create a test calss to test `PostRepository`.
+
+```java
+ @RunWith(SpringRunner.class)
+ @DataJpaTest()
+ @Slf4j
+ public class PostRepositoryTest {
+ 
+     @Autowired
+     private TestEntityManager em;
+ 
+     @Autowired
+     PostRepository posts;
+ 
+     @Before
+     public void setup() {
+         assertNotNull("posts is not null", posts);
+         posts.deleteAllInBatch();
+         em.persist(Post.builder().title("test post 1").content("test content of test post 1").build());
+     }
+ 
+     @Test
+     public void testGetAllPosts() {
+         assertTrue(1 == posts.findAll().size());
+         Post post = posts.findAll().get(0);
+         assertTrue("test-post-1".equals(post.getSlug()));
+     }
+ 
+ }
+```
+
+ 
+
+#### Test PostService bean
+
+ The `PostService` depends on `PostRepsoitory` bean.  To test the internal logic of `PostService`, we can mock the dependent beans(eg. `PostRepository` bean) and stub the behavior of `PostRepository` bean, and verify the logic in `PostService` works as expected.
+
+```java
+@RunWith(SpringRunner.class)
+@Slf4j
+public class PostServiceTest {
+
+    @MockBean
+    private PostRepository posts;
+
+    @Autowired
+    private PostService postService;
+
+
+    @Test
+    public void createPost() {
+        final String TITLE = "test post title";
+        final String CONTENT = "test post content";
+
+        final PostForm input = PostForm.builder().title(TITLE).content(CONTENT).build();
+        Post expected = Post.builder().title(TITLE).content(CONTENT).build();
+        expected.setId(1L);
+
+        given(posts.save(Post.builder().title(input.getTitle()).content(input.getContent()).build()))
+                .willReturn(expected);
+
+        Post returned = postService.createPost(input);
+
+        assertTrue(returned == expected);
+
+        verify(posts, times(1)).save(any(Post.class));
+        verifyNoMoreInteractions(posts);
+    }
+
+    @TestConfiguration
+    @Import(PostService.class)
+    static class TestConfig {
+
+    }
+
+}
+```
+
+
+
+####  Testing web layer facilities
+
+For Spring WebMVC applications,  Spring Boot includes a simple `@WebMvcTest` to prepare the test environment for testing controller classes.  When running a test annotated with `@WebMvcTest`, a  `MockMvc`  bean is available in the application context. In the `@WebMvcTest`, use the `controllers`  to specify the controllers you wan to tests, and there is a  `secure` attribute indicates if enabling Spring Security support in this test.
+
+```java
+@RunWith(SpringRunner.class)
+@Slf4j
+@WebMvcTest(controllers = PostController.class, secure = false)
+public class PostControllerTest {
+
+    @MockBean
+    PostRepository posts;
+
+    @MockBean
+    CommentRepository comments;
+
+    @MockBean
+    PostService postService;
+
+    @Autowired
+    ObjectMapper objectMapper;
+
+    @Autowired
+    MockMvc mockMvc;
+
+    @Test
+    public void createPost() throws Exception {
+        Post _data = Post.builder().slug("test-my-first-post").title("my first post").content("my content of my post").build();
+        given(this.postService.createPost(any(PostForm.class)))
+                .willReturn(_data);
+
+        this.mockMvc
+                .perform(
+                        post("/posts")
+                                .content(objectMapper.writeValueAsString(PostForm.builder().title("my first post").content("my content of my post").build()))
+                                .contentType(MediaType.APPLICATION_JSON)
+                )
+                .andExpect(status().isCreated())
+                .andExpect(header().exists("Location"));
+
+        verify(this.postService, times(1)).createPost(any(PostForm.class));
+        verifyNoMoreInteractions(this.postService);
+    }
+
+}
+```
+
+>  Note: In the latest Spring Boot, the **secure** attribute of `@WebMvcTest` is deprecated. If you want to exclude Spring Security configuration, you have to exclude the Spring Security related Configurations, see [this example](https://github.com/hantsy/spring-webmvc-jwt-sample/blob/master/src/test/java/com/example/demo/VehicleControllerTest.java#L32).
+
+For fine grained configure the `MockMvc`,  you can create it through `MockMvcBuilders.standaloneSetup` or `MockMvcBuilders.webAppContextSetup`, the former will choose the controllers to tests, and the later will load all controllers from the application context. 
+
+The following is an example test using `MockMvcBuilders.standaloneSetup` to configure a `MockMvc` object.
+
+```java
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK)
+@RunWith(SpringRunner.class)
+@Slf4j
+public class ApplicationControllerMockMvcTest {
+
+    @Autowired
+    WebApplicationContext wac;
+
+    @MockBean
+    PostRepository posts;
+
+    @MockBean
+    CommentRepository comments;
+
+    @MockBean
+    PostService postService;
+
+    @Autowired
+    ObjectMapper objectMapper;
+
+    @Autowired
+    FilterChainProxy springSecurityFilterChain;
+
+    MockMvc mockMvc;
+
+    @Before
+    public void setup() {
+        this.mockMvc = standaloneSetup(new PostController(postService, posts, comments))
+                .setCustomArgumentResolvers(
+                        new PageableHandlerMethodArgumentResolver()
+                )
+                .setMessageConverters(
+                        new MappingJackson2HttpMessageConverter(objectMapper)
+                )
+                .alwaysDo(print())
+                .apply(springSecurity(springSecurityFilterChain))
+                .build();
+    }
+
+    @Test
+    //@Ignore
+    public void testGetAllPosts() throws Exception {
+        given(this.posts
+                .findAll(any(Specification.class), any(Pageable.class)))
+                .willReturn(
+                        new PageImpl(
+                                Arrays.asList(
+                                        Post.builder().title("my first post1").content("my content of my post1").build(),
+                                        Post.builder().title("my first post2").content("my content of my post2").build(),
+                                        Post.builder().title("my first post3").content("my content of my post3").build()
+                                ),
+                                PageRequest.of(0, 10),
+                                3L
+                        )
+                );
+
+        MvcResult result = this.mockMvc
+                .perform(
+                        get("/posts?q=my")
+                                .accept(MediaType.APPLICATION_JSON)
+                )
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.content[*].title", hasItem("my first post1")))
+                .andReturn();
+
+        log.debug("mvc result:::" + result.getResponse().getContentAsString());
+        verify(this.posts, times(1)).findAll(any(Specification.class), any(Pageable.class));
+        verifyNoMoreInteractions(this.posts);
+    }
+
+    @Test
+    public void createPostWithoutAuthentication() throws Exception {
+        Post _data = Post.builder().title("my first post").content("my content of my post").build();
+        given(this.postService.createPost(any(PostForm.class)))
+                .willReturn(_data);
+
+        MvcResult result = this.mockMvc
+                .perform(
+                        post("/posts")
+                                .content(objectMapper.writeValueAsString(PostForm.builder().title("my first post").content("my content of my post").build()))
+                                .contentType(MediaType.APPLICATION_JSON)
+                )
+                .andExpect(status().isUnauthorized())
+                .andReturn();
+
+        log.debug("mvc result::" + result.getResponse().getContentAsString());
+
+        verify(this.postService, times(0)).createPost(any(PostForm.class));
+        verifyNoMoreInteractions(this.postService);
+    }
+
+    @Test
+    @WithMockUser
+    public void createPostWithMockUser() throws Exception {
+        Post _data = Post.builder().title("my first post").content("my content of my post").build();
+        given(this.postService.createPost(any(PostForm.class)))
+                .willReturn(_data);
+
+        MvcResult result = this.mockMvc
+                .perform(
+                        post("/posts")
+                                .content(objectMapper.writeValueAsString(PostForm.builder().title("my first post").content("my content of my post").build()))
+                                .contentType(MediaType.APPLICATION_JSON)
+                )
+                .andExpect(status().isCreated())
+                .andExpect(header().string(HttpHeaders.LOCATION, containsString("/posts")))
+                .andReturn();
+
+        log.debug("mvc result::" + result.getResponse().getContentAsString());
+
+        verify(this.postService, times(1)).createPost(any(PostForm.class));
+    }
+
+}
+```
+
+Similarly you can build a `MockMvc` object using `MockMvcBuilders.webAppContextSetup`.
+
+```java
+this.mockMvc = webAppContextSetup(this.wac)
+    .alwaysDo(print())
+    .apply(springSecurity(springSecurityFilterChain))
+    .build();
+```
+
+RestAssured also extends the MockMVC support through `io.rest-assured:spring-mockp-mvc` module, explore the RestAsssured MockMvc  integration example yourself.
+
 
 ## Deploying Microservices application
 

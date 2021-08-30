@@ -52,7 +52,7 @@ import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppC
 @SpringBootTest(webEnvironment = WebEnvironment.MOCK)
 @RunWith(SpringRunner.class)
 @Slf4j
-public class ApplicationMockMvcTest {
+public class ApplicationContextMockMvcTest {
 
     @Autowired
     WebApplicationContext wac;
