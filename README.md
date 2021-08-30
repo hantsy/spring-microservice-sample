@@ -1865,7 +1865,48 @@ this.mockMvc = webAppContextSetup(this.wac)
     .build();
 ```
 
-RestAssured also extends the MockMVC support through `io.rest-assured:spring-mockp-mvc` module, explore the RestAsssured MockMvc  integration example yourself.
+RestAssured also extends the MockMvc support through `io.rest-assured:spring-mockp-mvc` module, explore the [RestAsssured MockMVC integration example](https://github.com/hantsy/spring-microservice-sample/blob/master/post-service/src/test/java/com/example/post/ApplicationRestAssuredMockMvcTest.java) yourself.
+
+Next let's move on  a small feature, I've created a `View` class to limit the result in the final JSON view.  Let's create a test for verify it.  Spring Boot provides a `@JsonTest` and allow you test the JSON serialization and deserialization. 
+
+```java
+@RunWith(SpringRunner.class)
+@JsonTest
+@Slf4j
+public class JsonViewTest {
+
+    @Autowired
+    private JacksonTester<Post> json;
+
+    @Test
+    public void serializeJson() throws IOException {
+        Post details = Post.builder().title("test title").content("test content").build();
+
+        assertThat(this.json.write(details)).extractingJsonPathStringValue("@.title")
+                .isEqualTo("test title");
+        assertThat(this.json.write(details)).extractingJsonPathStringValue("@.content")
+                .isEqualTo("test content");
+
+    }
+
+    @Test
+    public void serializeJsonWithView() throws IOException {
+        Post details = Post.builder().title("test title").content("test content").build();
+
+        ObjectMapper mapper = new ObjectMapper();
+        String result = mapper
+                .writerWithView(View.Summary.class)
+                .writeValueAsString(details);
+        log.debug("result:::" + result);
+
+        assertTrue(result.contains("test title"));
+        assertTrue(!result.contains("test content"));
+
+    }
+}
+```
+
+
 
 
 ## Deploying Microservices application
