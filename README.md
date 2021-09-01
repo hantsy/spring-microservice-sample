@@ -4,7 +4,7 @@
 
 - [Building a Microservices  application with Spring Boot](#building-a-microservices--application-with-spring-boot)
   - [What is Microservices ?](#what-is-microservices-)
-  - [Migrating to  Microservices  Architecture](#migrating-to--microservices--architecture)
+  - [Migrating to  Microservices  architecture](#migrating-to--microservices--architecture)
   - [Cooking your first service](#cooking-your-first-service)
     - [Prerequisites](#prerequisites)
     - [Setup local development environment](#setup-local-development-environment)
@@ -22,6 +22,18 @@
     - [Running application via Maven plugin](#running-application-via-maven-plugin)
     - [Running application via Docker Compose](#running-application-via-docker-compose)
   - [Testing Microservices](#testing-microservices)
+    - [Testing Single Service](#testing-single-service)
+      - [Testing POJOs](#testing-pojos)
+      - [Testing Repository](#testing-repository)
+      - [Testing PostService](#testing-postservice)
+      - [Testing web facilities](#testing-web-facilities)
+      - [Integration Tests](#integration-tests)
+    - [Testing against External Service](#testing-against-external-service)
+      - [MockRestServiceServer](#mockrestserviceserver)
+      - [WireMock](#wiremock)
+    - [Testing Service-to-Service Communication](#testing-service-to-service-communication)
+      - [Spring Cloud Contracts](#spring-cloud-contracts)
+      - [Pact](#pact)
   - [Deploying Microservices application](#deploying-microservices-application)
     - [Publishing Docker Images to Docker Hub](#publishing-docker-images-to-docker-hub)
     - [Deploying to Docker Swarm](#deploying-to-docker-swarm)
@@ -1561,7 +1573,7 @@ curl -v  http://localhost/posts/test-post-2/comments  -H "Accpet:application/jso
 
 As stated in the previous sections, every single service is a small Spring Boot application. To test the whole Microservices application, firstly you should fully test the services/components themselves.
 
-### Testing single service
+### Testing Single Service
 
 Testing a single service is similar to testing  a general Spring Boot application, for example, in this application, to test post service, you should test very components in this service. 
 
@@ -1588,7 +1600,7 @@ public class PostTest {
 }
 ```
 
-#### Testing Repository beans
+#### Testing Repository
 
 There are some utilities can be used to test a Spring Data  `Repository` bean. 
 
@@ -1639,7 +1651,7 @@ Create a test calss to test `PostRepository`.
 
  
 
-#### Test PostService bean
+#### Testing PostService 
 
  The `PostService` depends on `PostRepsoitory` bean.  To test the internal logic of `PostService`, we can mock the dependent beans(eg. `PostRepository` bean) and stub the behavior of `PostRepository` bean, and verify the logic in `PostService` works as expected.
 
@@ -1686,7 +1698,7 @@ public class PostServiceTest {
 
 
 
-####  Testing web layer facilities
+####  Testing web facilities
 
 For Spring WebMVC applications,  Spring Boot includes a simple `@WebMvcTest` to prepare the test environment for testing controller classes.  When running a test annotated with `@WebMvcTest`, a  `MockMvc`  bean is available in the application context. In the `@WebMvcTest`, use the `controllers`  to specify the controllers you wan to tests, and there is a  `secure` attribute indicates if enabling Spring Security support in this test.
 
@@ -1865,7 +1877,7 @@ this.mockMvc = webAppContextSetup(this.wac)
     .build();
 ```
 
-RestAssured also extends the MockMvc support through `io.rest-assured:spring-mockp-mvc` module, explore the [RestAsssured MockMVC integration example](https://github.com/hantsy/spring-microservice-sample/blob/master/post-service/src/test/java/com/example/post/ApplicationRestAssuredMockMvcTest.java) yourself.
+RestAssured also extends the MockMvc support through `io.rest-assured:spring-mock-mvc` module, explore the [RestAsssured MockMVC integration example](https://github.com/hantsy/spring-microservice-sample/blob/master/post-service/src/test/java/com/example/post/ApplicationRestAssuredMockMvcTest.java) yourself.
 
 Next let's move on  a small feature, I've created a `View` class to limit the result in the final JSON view.  Let's create a test for verify it.  Spring Boot provides a `@JsonTest` and allow you test the JSON serialization and deserialization. 
 
@@ -1905,6 +1917,536 @@ public class JsonViewTest {
     }
 }
 ```
+
+
+
+#### Integration Tests
+
+Now web run the application with all dependent services, esp. with the real database.  
+
+The following is a sample integration tests. 
+
+```java
+@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
+@RunWith(SpringRunner.class)
+@Slf4j
+public class IntegrationTests {
+
+    @LocalServerPort
+    int port;
+
+    @Autowired
+    PostRepository posts;
+
+    @Autowired
+    CommentRepository comments;
+
+    String test_title = "test title";
+    String test_content = "test content";
+    String test_comment = "test_comment";
+    String slug = "";
+
+    @Before
+    public void setup() {
+        RestAssured.reset();
+        RestAssured.port = this.port;
+        this.comments.deleteAllInBatch();
+        this.posts.deleteAllInBatch();
+
+        Post post = posts.save(
+                Post.builder()
+                        .title(test_title)
+                        .content(test_content)
+                        .build()
+        );
+        log.debug("saved post:" + post);
+        this.slug = post.getSlug();
+
+        log.debug("print all posts:");
+        posts.findAll().forEach(System.out::println);
+
+        Comment comment = this.comments.save(
+                Comment.builder()
+                        .content(test_comment)
+                        .post(new PostSlug(this.slug))
+                        .build()
+        );
+        log.debug("saved comment:" + comment);
+    }
+
+    @Test
+    public void testGetNoneExistingPost_shouldReturn404() throws Exception {
+        //@formatter:off
+        when()
+            .get("/posts/100000")
+        .then()
+            .statusCode(HttpStatus.SC_NOT_FOUND);
+        //@formatter:on
+    }
+
+
+    @Test
+    public void testGetAllPosts_shouldBeOK() throws Exception {
+        //@formatter:off
+        when()
+            .get("/posts")
+        .then()
+            .body("content[0].title", is(test_title))
+            .statusCode(HttpStatus.SC_OK);
+        //@formatter:on
+    }
+
+    @Test
+    public void testGetPostBySlug_shouldBeOK() throws Exception {
+        //@formatter:off
+        when()
+            .get("/posts/"+ this.slug)
+        .then()
+            .body("title", is(test_title))
+            .body("content", is(test_content))
+            .statusCode(HttpStatus.SC_OK);
+        //@formatter:on
+    }
+
+    @Test
+    public void testGetCommentsOfPostBySlug_shouldBeOK() throws Exception {
+        //@formatter:off
+        when()
+            .get("/posts/"+ this.slug+"/comments")
+        .then()
+            .body("content[0].content", is(test_comment))
+            .statusCode(HttpStatus.SC_OK);
+        //@formatter:on
+    }
+
+    //-------------- test with auth -----------------------
+    @Test
+    public void testCreateAPost_withoutUserAuth_shouldReturn401() throws Exception {
+        PostForm _data = PostForm.builder().title(test_title).content(test_content).build();
+
+        //@formatter:off
+        given()
+            //.auth().basic("user", "password")
+            .body(_data)
+            .contentType(ContentType.JSON)
+        .when()
+            .post("/posts")
+        .then()
+            .statusCode(HttpStatus.SC_UNAUTHORIZED);
+        //@formatter:on
+    }
+
+    @Test
+    public void testCreateAPost_withUserAuth_shouldBeOK() throws Exception {
+        PostForm _data = PostForm.builder().title(test_title).content(test_content).build();
+
+        //@formatter:off
+        given()
+            .auth().basic("user", "password")
+            .body(_data)
+            .contentType(ContentType.JSON)
+        .when()
+            .post("/posts")
+        .then()
+            .header("Location", containsString("/posts"))
+            .statusCode(HttpStatus.SC_CREATED);
+        //@formatter:on
+    }
+
+
+    @Test
+    public void testUpdateAPost_withoutUserAuth_shouldReturn401() throws Exception {
+        PostForm _data = PostForm.builder().title(test_title).content(test_content).build();
+
+        //@formatter:off
+        given()
+            //.auth().basic("user", "password")
+            .body(_data)
+            .contentType(ContentType.JSON)
+        .when()
+            .put("/posts/"+ this.slug)
+        .then()
+            .statusCode(HttpStatus.SC_UNAUTHORIZED);
+        //@formatter:on
+    }
+
+    @Test
+    public void testUpdateAPost_withUserAuth_shouldBeOK() throws Exception {
+        PostForm _data = PostForm.builder().title(test_title).content(test_content).build();
+
+        //@formatter:off
+        given()
+            .auth().basic("user", "password")
+            .body(_data)
+            .contentType(ContentType.JSON)
+        .when()
+            .put("/posts/"+ this.slug)
+        .then()
+            .statusCode(HttpStatus.SC_NO_CONTENT);
+        //@formatter:on
+    }
+
+
+    @Test
+    public void testDeleteAPost_withoutAuth_shouldReturn401() throws Exception {
+
+        //@formatter:off
+        when()
+            .delete("/posts/"+ this.slug)
+        .then()
+            .statusCode(HttpStatus.SC_UNAUTHORIZED);
+        //@formatter:on
+    }
+
+    @Test
+    public void testDeleteAPost_withUserAuth_shouldReturn403() throws Exception {
+
+        //@formatter:off
+        given()
+            .auth().basic("user", "password")
+        .when()
+            .delete("/posts/"+ this.slug)
+        .then()
+            .statusCode(HttpStatus.SC_FORBIDDEN);
+        //@formatter:on
+    }
+
+
+    @Test
+    public void testDeleteAPost_withAdminAuth_shouldOK() throws Exception {
+
+        //@formatter:off
+        given()
+            .auth().basic("admin", "password")
+        .when()
+            .delete("/posts/"+ this.slug)
+        .then()
+            .statusCode(HttpStatus.SC_NO_CONTENT);
+        //@formatter:on
+    }
+
+
+    @Test
+    public void testCreateACommentsOfPostBySlug_withoutAuth_shouldReturn401() throws Exception {
+        CommentForm _data = CommentForm.builder().content(test_comment).build();
+
+        //@formatter:off
+        given()
+            .body(_data)
+            .contentType(ContentType.JSON)
+        .when()
+            .post("/posts/"+ this.slug+"/comments")
+        .then()
+            .statusCode(HttpStatus.SC_UNAUTHORIZED);
+        //@formatter:on
+    }
+
+    @Test
+    public void testCreateACommentsOfPostBySlug_withUserAuth_shouldBeOk() throws Exception {
+        CommentForm _data = CommentForm.builder().content(test_comment).build();
+
+        //@formatter:off
+        given()
+            .auth().basic("user", "password")
+            .body(_data)
+            .contentType(ContentType.JSON)
+        .when()
+            .post("/posts/"+ this.slug+"/comments")
+        .then()
+            .header("Location", containsString("/posts/"+ this.slug+"/comments"))
+            .statusCode(HttpStatus.SC_CREATED);
+        //@formatter:on
+    }
+
+    
+    @TestComponent
+    @Slf4j
+    static class TestUserDetailsService implements UserDetailsService {
+
+        private final PasswordEncoder passwordEncoder;
+
+        TestUserDetailsService(PasswordEncoder passwordEncoder) {
+            this.passwordEncoder = passwordEncoder;
+        }
+
+        @Override
+        public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+            UserDetails user = User.withUsername("user")
+                    .password(passwordEncoder.encode("password"))
+                    .roles("USER")
+                    .accountExpired(false)
+                    .accountLocked(false)
+                    .credentialsExpired(false)
+                    .disabled(false)
+                    .build();
+
+            UserDetails admin = User.withUsername("admin")
+                    .password(passwordEncoder.encode("password"))
+                    .roles("ADMIN")
+                    .accountExpired(false)
+                    .accountLocked(false)
+                    .credentialsExpired(false)
+                    .disabled(false)
+                    .build();
+
+            log.debug("dummy user:" + user);
+            log.debug("dummy admin:" + admin);
+
+
+            if ("user".equals(username)) {
+                return user;
+            } else {
+                return admin;
+            }
+        }
+    }
+
+    @TestConfiguration
+    @Slf4j
+    @Import(TestUserDetailsService.class)
+    @Order(-1)
+    static class TestSecurityConfig extends WebSecurityConfigurerAdapter {
+
+        @Autowired
+        PasswordEncoder passwordEncoder;
+
+        @Autowired
+        UserDetailsService userDetailsService;
+
+        @Override
+        protected void configure(HttpSecurity http) throws Exception {
+            http
+                    .httpBasic()
+                    .and()
+                    .authorizeRequests()
+                    .antMatchers(HttpMethod.GET, "/posts/**").permitAll()
+                    .antMatchers(HttpMethod.DELETE, "/posts/**").hasRole("ADMIN")
+                    .anyRequest().authenticated()
+                    .and()
+                    .csrf().disable();
+        }
+
+        @Override
+        protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+            auth.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder);
+        }
+
+        @Override
+        @Bean
+        public AuthenticationManager authenticationManagerBean() throws Exception {
+            return super.authenticationManagerBean();
+        }
+
+    }
+}
+```
+
+From the former sections, we have introduced how to get authentication from the **auth-service**. In the above codes, we add some custom Security configuration to override Spring [Security Config](https://github.com/hantsy/spring-microservice-sample/blob/master/post-service/src/main/java/com/example/post/PostServiceApplication.java#L51)  to isolate the authentication from **auth-service**. Here we use a simple HTTP Basic authentication instead.
+
+### Testing against External Service
+
+In our application, the auth service depends on user service to complete the authentication process.  There is a `UserServiceClient` in the auth service used for signup and authentication.
+
+```java
+@Component
+public class UserServiceClient {
+
+    private RestTemplate restTemplate;
+
+    private ObjectMapper objectMapper;
+
+    @Value("${services.user-service-url}")
+    private String userServiceUrl;
+
+    public UserServiceClient(RestTemplateBuilder builder, ObjectMapper objectMapper) {
+        this.restTemplate = builder.build();
+        this.objectMapper = objectMapper;
+    }
+
+    public void handleSignup(SignupForm form) {
+        try {
+            ResponseEntity<Void> response = this.restTemplate.postForEntity(userServiceUrl + "/users", form, Void.class);
+        } catch (HttpClientErrorException e) {
+            if (e.getStatusCode() == CONFLICT) {
+                Map map = null;
+                try {
+                    map = objectMapper.readValue(e.getResponseBodyAsByteArray(), Map.class);
+                } catch (IOException e1) {
+                    e1.printStackTrace();
+                }
+                throw new SignupConflictException((String) map.get("message"));
+            }
+        }
+    }
+
+    public User findByUsername(String username) {
+        try {
+            ResponseEntity<User> response = this.restTemplate.getForEntity(userServiceUrl + "/users/{username}", User.class, username);
+            return response.getBody();
+        } catch (HttpClientErrorException e) {
+            if (e.getStatusCode() == NOT_FOUND) {
+                return null;
+            }
+        }
+        return null;
+    }
+}
+```
+
+In the above codes, we use `RestTemplate` to access the remote *user service*.  To test `UserServiceClient`, we have to mock a remote rest server  to ensure the endpoints is available when running the tests.  There are some several approaches to archive this.
+
+* Spring provides a `MockRestServiceServer` to setup a mock rest service easily.
+* [WireMock](http://wiremock.org/) is a more common solution for mocking HTTP endpoints.
+
+Next, let's explore them one by one.
+
+#### MockRestServiceServer
+
+The following is an example using `MockRestServiceServer`.  The stubbing step is similar to the Mockito `when`/`given`, set the mocked data when submitting a specific request.
+
+```java
+@RunWith(SpringRunner.class)
+@RestClientTest(UserServiceClient.class)
+@Slf4j
+public class UserServiceClientTest {
+
+    @Value("${services.user-service-url:http://localhost:8001}")
+    private String userServiceUrl;
+
+    @Autowired
+    private UserServiceClient client;
+
+    @Autowired
+    private MockRestServiceServer server;
+
+    @Test
+    public void testFindbyUsername() {
+        this.server.expect(requestTo(userServiceUrl + "/users/user"))
+            .andRespond(withSuccess(new ClassPathResource("/find-user-by-username.json"), MediaType.APPLICATION_JSON_UTF8));
+            //.andRespond(withSuccess("{\"username\":\"user\",\"password\":\"password\",\"email\":\"user@example.com\"}", MediaType.APPLICATION_JSON_UTF8));
+
+        User user = this.client.findByUsername("user");
+        assertNotNull(user);
+        assertEquals("user", user.getUsername());
+
+        this.server.verify();
+    }
+
+    @Test
+    public void testFindbyUsername_notFound() {
+        this.server.expect(requestTo(userServiceUrl + "/users/user1"))
+            .andRespond(withStatus(NOT_FOUND));
+
+        User user = this.client.findByUsername("user1");
+        assertNull(user);
+
+        this.server.verify();
+    }
+}
+```
+
+Similar to Spring Boot `@WebMvcTest`, `@DataJpaTest`, etc.  The `@RestClientTest` is also a *slice test* utility which only provides a `RestTemplateBuilder` in the test context.
+
+#### WireMock
+
+WireMock is a general purpose solution for mocking HTTP endpoints.  
+
+There is an example of using WireMock to test `UserServiceClient` .
+
+```java
+@RunWith(SpringRunner.class)
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@Slf4j
+public class UserServiceClientWireMockTest {
+
+    @Value("${services.user-service-url:http://localhost:8001}")
+    private String userServiceUrl;
+
+    @Autowired
+    private UserServiceClient client;
+
+    @Rule
+    public WireMockRule wireMockRule = new WireMockRule(options().port(8001));
+
+    @Before
+    public void setup() {
+        WireMock.reset();
+    }
+
+    @Test
+    public void testFindbyUsername() {
+
+        stubFor(
+            get("/users/user")
+                //.withHeader("Accept", equalTo(MediaType.APPLICATION_JSON_VALUE))
+                .willReturn(
+                    okJson("{\"username\":\"user\",\"password\":\"password\",\"email\":\"user@example.com\"}")
+                )
+        );
+
+        User user = this.client.findByUsername("user");
+        assertNotNull(user);
+        assertEquals("user", user.getUsername());
+
+        verify(1, getRequestedFor(urlMatching( "/users/user")));
+    }
+
+    @Test
+    public void testFindbyUsername_notFound() {
+        stubFor(
+            get( "/users/user1")
+                //.withHeader("Accept", equalTo(MediaType.APPLICATION_JSON_VALUE))
+                .willReturn(
+                    aResponse()
+                        .withStatus(HttpStatus.SC_NOT_FOUND)
+                )
+        );
+
+        User user = this.client.findByUsername("user1");
+        assertNull(user);
+
+        verify(1, getRequestedFor(urlMatching( "/users/user1")));
+    }
+}
+```
+
+In the above codes, WireMock provides a  `@Rule` to wire the stubbing into the lifecycle of the JUnit runner. 
+
+
+
+### Testing Service-to-Service Communication
+
+The above `MockRestServiceServer` or `WireMock` is widely used when the existing external service is out of control, eg. it is from the 3rd party  company or organization.
+
+In our application, the auth service and user service are developed by ourselves, but may be produced by two different teams. 
+
+Assume when the auth service requires to embed  the result of  a `/users` endpoints that should be provided by user service, but at that moment such an AP does not exist in the user service at all.  To resolve the problem, the best way is the developers from two sides sit down at a table and *sign a contract* about the communication details between these two services.  Firstly the auth service developer lists all required HTTP endpoints that should be provided by the user service. For example.
+
+* When sending a  `GET`  request on the endpoints  `/users/user1`, then return a  response  with the json content like this: `{'username':'uesr', roles:'USER'}`, etc.
+* When  the requesting endpoint is `/users/noneexisting`, then return a 404 error. 
+* ...
+
+The user service developer reviews the requirements, and confirm the items one by one, and make sure they are on the same page. 
+
+Then they are back to work and focus on their own development. When the development(both side) is done, they can use a real world environment to verify if they have complied with the rules defined in the contracts they have signed. 
+
+In the software development world, this kind of scene is called *Consumer Driven Contracts*. In the CDC world,  the auth service is called the API consumer, and the user service is the API producer/provider. In these years, CDC/Contracts testing becomes more and more popular.
+
+Obviously, an advantage of applying this pattern is the consumer side can start work immediately when the contract is *signed* and do not need to wait for the complete work from the producer side.
+
+There are a few projects available to improve the CDC development process.
+
+*  Spring Cloud includes a [Spring Cloud Contracts](https://spring.io/projects/spring-cloud-contract) subproject, which is heavily dependent on the Spring ecosystem.
+*  [Pact](https://pact.io/) is a general HTTP endpoints contracts verification solution, not limited to Spring ecosystem.
+
+#### Spring Cloud Contracts
+
+[Spring Cloud Contracts Workshop](https://spring-cloud-samples.github.io/spring-cloud-contract-samples/workshops.html) provides the best practice when introducing Spring Cloud Contracts into your Microservices project.
+
+
+
+#### Pact
+
 
 
 
